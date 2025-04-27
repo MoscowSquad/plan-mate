@@ -1,4 +1,8 @@
 package logic.usecases
 
-class AuditUseCase {
+import logic.repositoies.AuditRepository
+
+class AuditUseCase(
+    private val auditRepository: AuditRepository
+) {
 }

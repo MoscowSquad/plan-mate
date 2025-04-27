@@ -1,4 +1,6 @@
 package data.repositories
 
-class AuditRepositoryImpl {
+import logic.repositoies.AuditRepository
+
+class AuditRepositoryImpl : AuditRepository {
 }
