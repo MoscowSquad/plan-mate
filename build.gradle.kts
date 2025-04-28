@@ -1,5 +1,70 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     kotlin("jvm") version "2.1.10"
+    jacoco
+    id("org.jlleitschuh.gradle.ktlint") version "11.6.1"
+}
+
+// Kotlin version verification task
+tasks.register("kotlinVersionCheck") {
+    doLast {
+        require(kotlin.coreLibrariesVersion == "2.1.10") {
+            "Kotlin version mismatch! Expected 2.1.10, found ${kotlin.coreLibrariesVersion}"
+        }
+    }
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        jvmTarget = "17"
+        freeCompilerArgs = listOf("-Xjsr305=strict")
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.11"
+    reportsDirectory.set(layout.buildDirectory.dir("reports/jacoco"))
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+
+    classDirectories.setFrom(
+        files(classDirectories.files.map {
+            fileTree(it).apply {
+                exclude(
+                    "**/config/**",
+                    "**/*Application*",
+                    "**/model/**"
+                )
+            }
+        })
+    )
+}
+
+tasks.jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = "0.80".toBigDecimal()
+            }
+        }
+    }
+}
+
+tasks.build {
+    dependsOn(tasks.jacocoTestCoverageVerification)
 }
 
 group = "org.moscow"
