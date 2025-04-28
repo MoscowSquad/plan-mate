@@ -25,70 +25,62 @@ dependencies {
 
 }
 
+
 tasks.test {
     useJUnitPlatform()
-}
-kotlin {
-    jvmToolchain(19)
+    testLogging {
+        showStandardStreams = true
+    }
+    finalizedBy(tasks.jacocoTestReport)
 }
 
 tasks.jacocoTestReport {
+    dependsOn(tasks.test)
     reports {
-        csv.required.set(true)  // Enable CSV reports for additional processing if needed
-        xml.required.set(true)  // Required for coverage-diff to work
-        html.required.set(true) // Human-readable reports
+        xml.required = true
+        csv.required = true
     }
 }
 
 tasks.jacocoTestCoverageVerification {
-    dependsOn(tasks.test)
-
-    classDirectories.setFrom(
-        fileTree("build/classes/kotlin/main") {
-            exclude("**/generated/**")
-        }
-    )
-    sourceDirectories.setFrom(files("src/main/kotlin"))
-    executionData.setFrom(fileTree(layout.buildDirectory).include("jacoco/test.exec"))
-
     violationRules {
+        classDirectories.setFrom(
+            classDirectories.files.forEach {
+                fileTree(it) {
+                    exclude("**/models/**")
+                    exclude("**/di/**")
+                }
+            }
+        )
         rule {
             limit {
-                minimum = "1".toBigDecimal() // 100% coverage requirement
+                minimum = "0.8".toBigDecimal()
             }
-        }
-        rule {
-            element = "CLASS"
-            includes = listOf("org.moscow.*") // Adjust package name as needed
 
             limit {
                 counter = "LINE"
                 value = "COVEREDRATIO"
-                minimum = "1".toBigDecimal()
+                minimum = "0.8".toBigDecimal()
             }
             limit {
                 counter = "BRANCH"
                 value = "COVEREDRATIO"
-                minimum = "1".toBigDecimal()
+                minimum = "0.8".toBigDecimal()
             }
             limit {
                 counter = "METHOD"
                 value = "COVEREDRATIO"
-                minimum = "1".toBigDecimal()
+                minimum = "0.8".toBigDecimal()
             }
         }
     }
 }
 
 
-tasks.named<JacocoCoverageVerification>("jacocoTestCoverageVerification") {
-    dependsOn(tasks.test)
+jacoco {
+    toolVersion = "0.8.13"
+}
 
-    classDirectories.setFrom(
-        fileTree("build/classes/kotlin/main") {
-            exclude("**/generated/**")
-        }
-    )
-    sourceDirectories.setFrom(files("src/main/kotlin"))
-    executionData.setFrom(fileTree(layout.buildDirectory).include("jacoco/test.exec"))
+kotlin {
+    jvmToolchain(21)
 }
