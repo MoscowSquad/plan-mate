@@ -2,9 +2,9 @@ name: 🧪 Test & Coverage
 
 on:
   push:
-    branches: [ main, development, testing-ci ]
+    branches: [ main, development ]
   pull_request:
-    branches: [ main, development, testing-ci ]
+    branches: [ main, development ]
 permissions:
   checks: write
   pull-requests: write
