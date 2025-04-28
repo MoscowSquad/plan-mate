@@ -45,7 +45,7 @@ tasks.jacocoTestReport {
 tasks.jacocoTestCoverageVerification {
     violationRules {
         classDirectories.setFrom(
-            classDirectories.files.forEach {
+            classDirectories.files.map {
                 fileTree(it) {
                     exclude("**/models/**")
                     exclude("**/di/**")
@@ -53,24 +53,14 @@ tasks.jacocoTestCoverageVerification {
             }
         )
         rule {
-            limit {
-                minimum = "0.8".toBigDecimal()
-            }
-
-            limit {
-                counter = "LINE"
-                value = "COVEREDRATIO"
-                minimum = "0.8".toBigDecimal()
-            }
-            limit {
-                counter = "BRANCH"
-                value = "COVEREDRATIO"
-                minimum = "0.8".toBigDecimal()
-            }
-            limit {
-                counter = "METHOD"
-                value = "COVEREDRATIO"
-                minimum = "0.8".toBigDecimal()
+            listOf(null, "LINE", "BRANCH", "METHOD").forEach { counterType ->
+                limit {
+                    if (counterType != null) {
+                        counter = counterType
+                        value = "COVERED RATIO"
+                    }
+                    minimum = "0.8".toBigDecimal()
+                }
             }
         }
     }
