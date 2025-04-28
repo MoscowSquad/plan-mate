@@ -2,6 +2,4 @@ package data.repositories
 
 import logic.repositoies.AuthenticationRepository
 
-class AuthenticationRepositoryImpl: AuthenticationRepository {
-
-}
+class AuthenticationRepositoryImpl: AuthenticationRepository

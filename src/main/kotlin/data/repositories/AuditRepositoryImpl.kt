@@ -2,5 +2,4 @@ package data.repositories
 
 import logic.repositoies.AuditRepository
 
-class AuditRepositoryImpl : AuditRepository {
-}
+class AuditRepositoryImpl : AuditRepository
