@@ -1,8 +1,7 @@
-package logic.entities
+package logic.models
 
-import logic.models.EntityType
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 data class AuditLog(
     val id: UUID,
