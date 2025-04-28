@@ -1,0 +1,138 @@
+name: 🚀 Kotlin CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+    tags: [ 'v*.*.*' ]
+  pull_request:
+    branches: [ main, develop ]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  KOTLIN_VERSION: "2.1.10"
+  JDK_VERSION: "17"
+  GRADLE_OPTS: -Dorg.gradle.daemon=false -Xmx2g
+
+jobs:
+  setup:
+    name: 🛠️ Setup & Validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🛠️ Setup JDK ${{ env.JDK_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JDK_VERSION }}
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: ⚙️ Cache Dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ env.KOTLIN_VERSION }}-${{ hashFiles('**/*.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-${{ env.KOTLIN_VERSION }}-
+
+      - name: 🔍 Verify Kotlin Version
+        run: |
+          ./gradlew kotlinVersionCheck -Pkotlin.version=${{ env.KOTLIN_VERSION }}
+          echo "Using Kotlin ${{ env.KOTLIN_VERSION }}"
+
+  test:
+    name: 🧪 Test & Coverage
+    needs: setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🛠️ Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JDK_VERSION }}
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: 🧪 Run Tests
+        run: ./gradlew test --stacktrace -Pkotlin.version=${{ env.KOTLIN_VERSION }}
+
+      - name: 📊 Generate Coverage
+        run: |
+          ./gradlew jacocoTestReport \
+            -Pkotlin.version=${{ env.KOTLIN_VERSION }} \
+            --no-daemon \
+            --stacktrace
+
+      - name: 🚨 Verify Coverage
+        run: |
+          ./gradlew jacocoTestCoverageVerification \
+            -Pkotlin.version=${{ env.KOTLIN_VERSION }} \
+            --no-daemon \
+            --stacktrace
+
+      - name: 📦 Archive Reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            build/reports/tests/
+            build/reports/jacoco/
+            build/test-results/
+
+  build:
+    name: 🏗️ Build
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🛠️ Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JDK_VERSION }}
+          distribution: 'temurin'
+          cache: 'gradle'
+
+      - name: 🏗️ Build Artifacts
+        run: |
+          ./gradlew assemble \
+            -Pkotlin.version=${{ env.KOTLIN_VERSION }} \
+            --no-daemon \
+            --stacktrace
+
+      - name: 📦 Archive Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-outputs
+          path: build/libs/*.jar
+
+  deploy:
+    name: 🚀 Deploy
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🚀 Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/libs/*.jar
+          generate_release_notes: true
+          discussion_category_name: "Releases"
