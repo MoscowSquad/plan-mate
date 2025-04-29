@@ -43,5 +43,69 @@ class PasswordExtensionsKtTest {
         }
     }
 
+    @Nested
+    inner class PasswordFormatValidationTests {
+        @Test
+        fun `should return false when password is less than 8 characters`() {
+            // Given
+            val password = "Alt12*"
+            // When
+            val actual = password.isValidPasswordFormat()
+            // Then
+            assertFalse { actual }
+        }
+
+        @Test
+        fun `should return false when password not have at least one small letter`() {
+            // Given
+            val password = "ALTERNATIVE#I12"
+            // When
+            val actual = password.isValidPasswordFormat()
+            // Then
+            assertFalse { actual }
+        }
+
+        @Test
+        fun `should return false when password not have at least one capital letter`() {
+            // Given
+            val password = "alternative12*"
+            // When
+            val actual = password.isValidPasswordFormat()
+            // Then
+            assertFalse { actual }
+        }
+
+        @Test
+        fun `should return false when password not have at least one symbol`() {
+            // Given
+            val password = "Alternative1"
+            // When
+            val actual = password.isValidPasswordFormat()
+            // Then
+            assertFalse { actual }
+        }
+
+        @Test
+        fun `should return false when password not have at least one number letter`() {
+            // Given
+            val password = "Alternative#"
+            // When
+            val actual = password.isValidPasswordFormat()
+            // Then
+            assertFalse { actual }
+        }
+
+        @Test
+        fun `should return true when the password is valid`() {
+            // Given
+            val password = "Alternative123#"
+            // When
+            val actual = password.isValidPasswordFormat()
+            // Then
+            assertTrue { actual }
+        }
+    }
+
+
 
 }
