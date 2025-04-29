@@ -166,16 +166,70 @@ fun `should return task ID and Task state when add task without any issue`() {
     // change task state test cases
     @Test
     fun `should return task ID when state changed successfully `() {
-
+        // Given
+        val taskId = 123
+        every { tasksRepository.gelAllTasks() } returns listOf(
+            Task(id = taskId),
+            Task(id = 124)
+        )
+        // When
+        val result = tasksUseCase.changeTaskState(taskId)
+        // Then
+        assertTrue(result)
     }
     @Test
-    fun `should Throw exception when task ID is null during change state `(){}
+    fun `should Throw exception when task ID is null during change state `() {
+        // Given
+        every { tasksRepository.gelAllTasks() } returns listOf(
+            Task(id = 1234, title = "Task"),
+            Task(id = 124, title = "Videos")
+        )
+        val inputId = null
+
+        // When & Then
+        assertThrows<Exception> {
+            tasksUseCase.changeTaskState(inputId)
+        }
+    }
     @Test
-    fun `should Throw exception when state ID is null during change state `(){}
+    fun `should Throw exception when state ID is null during change state `() {
+        // Given
+        every { tasksRepository.gelAllTasks() } returns listOf(
+            Task(id = 1234, title = "Task", stateId = null),
+            Task(id = 124, title = "Videos", stateId = 890)
+        )
+        val inputId = 1234
+
+        // When & Then
+        assertThrows<Exception> {
+            tasksUseCase.changeTaskState(inputId)
+        }
+    }
     @Test
-    fun `should Throw exception when title is null during change state `(){}
+    fun `should Throw exception when title is null during change state `() {
+        // Given
+        every { tasksRepository.gelAllTasks() } returns listOf(
+            Task(id = 1234, title = null),
+            Task(id = 124, title = "Videos")
+        )
+        val inputId = 1234
+
+        // When & Then
+        assertThrows<Exception> {
+            tasksUseCase.changeTaskState(inputId)
+        }
+    }
     @Test
-    fun `should Throw exception when there is no tasks found to change state`(){}
+    fun `should Throw exception when there is no tasks found to change state`() {
+        // Given
+        every { tasksRepository.gelAllTasks() } returns emptyList()
+        val inputId = 1234
+
+        // When & Then
+        assertThrows<Exception> {
+            tasksUseCase.changeTaskState(inputId)
+        }
+    }
 
     // Delete all tasks test cases
     @Test
