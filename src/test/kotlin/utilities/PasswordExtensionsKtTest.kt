@@ -106,6 +106,37 @@ class PasswordExtensionsKtTest {
         }
     }
 
+    @Nested
+    inner class HashMatchingTests {
+        @Test
+        fun `should return false when hashes don't match`() {
+            // Given
+            val hash = "f834f1ba5e63f744bfab1d5c4b787d4e"
+            // When
+            val actual = hash.matchesMD5Hash("fcdb8862247d1b571b2715c7e8762d57")
+            // Then
+            assertFalse { actual }
+        }
 
+        @Test
+        fun `should return false when matching empty hashes`() {
+            // Given
+            val hash = ""
+            // When
+            val actual = hash.matchesMD5Hash("")
+            // Then
+            assertFalse { actual }
+        }
+
+        @Test
+        fun `should return true when hashes match`() {
+            // Given
+            val hash = "f834f1ba5e63f744bfab1d5c4b787d4e"
+            // When
+            val actual = hash.matchesMD5Hash("f834f1ba5e63f744bfab1d5c4b787d4e")
+            // Then
+            assertTrue { actual }
+        }
+    }
 
 }
