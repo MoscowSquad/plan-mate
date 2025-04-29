@@ -1,4 +1,4 @@
-package logic.repositories
+package logic.repositoies
 
 interface AuthenticationRepository {
 

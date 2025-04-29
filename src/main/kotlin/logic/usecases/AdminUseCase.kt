@@ -3,8 +3,8 @@ package logic.usecases
 import logic.models.Exceptions.UnauthorizedException
 import logic.models.Project
 import logic.models.Role
-import logic.repositories.ProjectsRepository
-import logic.repositories.UsersRepository
+import logic.repositoies.ProjectsRepository
+import logic.repositoies.UsersRepository
 import java.util.*
 
 class AdminUseCase(

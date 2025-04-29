@@ -6,8 +6,8 @@ import logic.models.Project
 import logic.models.Role
 import logic.models.State
 import logic.models.User
-import logic.repositories.ProjectsRepository
-import logic.repositories.UsersRepository
+import logic.repositoies.ProjectsRepository
+import logic.repositoies.UsersRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.*

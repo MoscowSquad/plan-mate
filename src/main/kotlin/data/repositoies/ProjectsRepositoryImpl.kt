@@ -1,7 +1,7 @@
-package data.repositories
+package data.repositoies
 
 import logic.models.Project
-import logic.repositories.ProjectsRepository
+import logic.repositoies.ProjectsRepository
 import java.util.UUID
 
 class ProjectsRepositoryImpl: ProjectsRepository {

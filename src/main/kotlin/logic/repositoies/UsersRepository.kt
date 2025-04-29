@@ -1,4 +1,4 @@
-package logic.repositories
+package logic.repositoies
 
 import logic.models.User
 import java.util.UUID
