@@ -1,7 +1,7 @@
-package logic.repositoies.project.exception
+package utilities.exception
 
 import logic.repositoies.project.ProjectsRepository
-import logic.repositoies.project.exception.ProjectException.ProjectNotFoundException
+import utilities.exception.ProjectException.ProjectNotFoundException
 import java.util.*
 
 class ValidateProjectExists(private val projectsRepository: ProjectsRepository)

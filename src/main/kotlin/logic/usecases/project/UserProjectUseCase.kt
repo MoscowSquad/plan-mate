@@ -2,8 +2,8 @@ package logic.usecases.project
 
 import logic.models.User
 import logic.repositoies.project.UserProjectRepository
-import logic.repositoies.project.exception.ProjectException.UserNotFoundException
-import logic.repositoies.project.exception.ValidateProjectExists
+import utilities.exception.ProjectException.UserNotFoundException
+import utilities.exception.ValidateProjectExists
 import java.util.*
 import kotlin.collections.List
 

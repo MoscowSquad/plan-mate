@@ -2,7 +2,7 @@ package logic.usecases.project
 
 import logic.models.Project
 import logic.repositoies.project.ProjectsRepository
-import logic.repositoies.project.exception.ValidateProjectExists
+import utilities.exception.ValidateProjectExists
 import java.util.*
 
 class ProjectUseCase(
@@ -16,7 +16,7 @@ class ProjectUseCase(
         return projectRepository.getAllProjects()
     }
 
-    fun getProjectById(projectId: UUID): Project{
+    fun getProjectById(projectId: UUID): Project?{
         validateProjectExists.isValidById(projectId)
         return projectRepository.getProjectById(projectId)
     }

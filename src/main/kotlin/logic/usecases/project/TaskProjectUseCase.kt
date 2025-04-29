@@ -1,9 +1,9 @@
 package logic.usecases.project
 
 import logic.models.Task
-import logic.repositoies.project.exception.ProjectException.TaskNotFoundException
+import utilities.exception.ProjectException.TaskNotFoundException
 import logic.repositoies.project.TaskProjectRepository
-import logic.repositoies.project.exception.ValidateProjectExists
+import utilities.exception.ValidateProjectExists
 import java.util.*
 
 class TaskProjectUseCase(

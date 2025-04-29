@@ -2,7 +2,7 @@ package logic.usecases.project
 
 import logic.models.AuditLog
 import logic.repositoies.project.AuditProjectRepository
-import logic.repositoies.project.exception.ValidateProjectExists
+import utilities.exception.ValidateProjectExists
 
 import java.util.*
 

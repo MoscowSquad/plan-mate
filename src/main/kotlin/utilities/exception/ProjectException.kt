@@ -1,4 +1,4 @@
-package logic.repositoies.project.exception
+package utilities.exception
 
 sealed class ProjectException(message: String) : Exception(message) {
 
