@@ -1,4 +1,4 @@
-package data.repositoies
+package data.repositories
 
 import logic.models.Project
 import logic.repositoies.ProjectsRepository
