@@ -126,16 +126,48 @@ fun `should return task ID and Task state when add task without any issue`() {
     // Delete task test cases
     @Test
     fun `should return task ID when task deleted successfully `() {
-
+        // Given
+        val taskId = 123
+        every { tasksRepository.gelAllTasks() } returns listOf(
+            Task(id = taskId),
+            Task(id = 124)
+        )
+        // When
+        val result = tasksUseCase.deleteTask(taskId)
+        // Then
+        assertTrue(result)
     }
     @Test
-    fun `should Throw exception when task  ID is null during deleting `(){}
+    fun `should Throw exception when task ID is null during deleting `() {
+        // Given
+        every { tasksRepository.gelAllTasks() } returns listOf(
+            Task(id = 1234, title = "Task"),
+            Task(id = 124, title = "Videos")
+        )
+        val inputId = null
+
+        // When & Then
+        assertThrows<Exception> {
+            tasksUseCase.deleteTask(inputId)
+        }
+    }
     @Test
-    fun `should Throw exception when there is no tasks found to delete`(){}
+    fun `should Throw exception when there is no tasks found to delete`() {
+        // Given
+        every { tasksRepository.gelAllTasks() } returns emptyList()
+        val inputId = 1234
+
+        // When & Then
+        assertThrows<Exception> {
+            tasksUseCase.deleteTask(inputId)
+        }
+    }
 
     // change task state test cases
     @Test
-    fun `should return task ID when state changed successfully `(){}
+    fun `should return task ID when state changed successfully `() {
+
+    }
     @Test
     fun `should Throw exception when task ID is null during change state `(){}
     @Test
