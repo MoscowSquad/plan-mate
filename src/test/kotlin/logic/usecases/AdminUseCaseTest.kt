@@ -29,8 +29,8 @@ class AdminUseCaseTest {
         usersRepository = mockk(relaxed = true)
         adminUseCase = AdminUseCase(projectsRepository, usersRepository)
 
-        adminUser = User(UUID.randomUUID(), "admin", "hashedPassword", Role.ADMIN)
-        mateUser = User(UUID.randomUUID(), "mate", "hashedPassword", Role.MATE)
+        adminUser = User(UUID.randomUUID(), "Yasser", "12345678", Role.ADMIN)
+        mateUser = User(UUID.randomUUID(), "Ahmed", "87654321", Role.MATE)
 
         every { usersRepository.getUserById(adminUser.id) } returns adminUser
         every { usersRepository.getUserById(mateUser.id) } returns mateUser
