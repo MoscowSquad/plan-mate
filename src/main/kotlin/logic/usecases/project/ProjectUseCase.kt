@@ -2,18 +2,22 @@ package logic.usecases.project
 
 import logic.models.Project
 import logic.repositoies.project.ProjectsRepository
+import logic.repositoies.project.exception.ValidateProjectExists
 import java.util.*
 
 class ProjectUseCase(
-    private val projectRepository: ProjectsRepository
+    private val projectRepository: ProjectsRepository,
+    private val validateProjectExists: ValidateProjectExists
 ) {
 
     fun getAllProjects(): List<Project>
     {
-       return projectRepository.getAllProjects() ?: throw IllegalStateException("All projects can't be null")
+        validateProjectExists.isValid()
+        return projectRepository.getAllProjects()
     }
 
     fun getProjectById(projectId: UUID): Project{
-        return projectRepository.getProjectById(projectId) ?: throw IllegalStateException("Project with id $projectId can't be null")
+        validateProjectExists.isValidById(projectId)
+        return projectRepository.getProjectById(projectId)
     }
 }

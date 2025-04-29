@@ -2,22 +2,22 @@ package logic.usecases.project
 
 import logic.models.Task
 import logic.repositoies.project.exception.ProjectException.TaskNotFoundException
-import logic.repositoies.project.ProjectsRepository
 import logic.repositoies.project.TaskProjectRepository
-import logic.repositoies.project.exception.validateProjectExists
+import logic.repositoies.project.exception.ValidateProjectExists
 import java.util.*
 
 class TaskProjectUseCase(
-    private val taskProjectRepository: TaskProjectRepository
+    private val taskProjectRepository: TaskProjectRepository,
+    private val validateProjectExists: ValidateProjectExists
 ) {
 
     fun getSpecificTaskByProjectId(projectId: UUID) : Task? {
-         validateProjectExists(projectId)
+        validateProjectExists.isValidById(projectId)
         return taskProjectRepository.getSpecificTaskByProjectId(projectId)
     }
 
     fun getAllTasksByProjectId(projectId : UUID): List<Task> {
-        validateProjectExists(projectId)
+        validateProjectExists.isValidById(projectId)
         return taskProjectRepository.getAllTasksByProjectId(projectId) ?:
         throw TaskNotFoundException("Task with ID $projectId was not found.")
     }
