@@ -10,7 +10,7 @@ class TasksUseCase(
     fun addTask(task: Task): Boolean = false
     fun editTasks(id: Int?): Boolean = false
     fun deleteTask(id: Int?): Boolean = false
-    fun deleteAllTasks(): Boolean = false
-    fun changeTaskState(): Boolean = false
-    fun getTaskById(): Boolean = false
+    fun changeTaskState(id: Int?): Boolean = false
+    fun deleteAllTasks(isAdmin: Boolean = false): Boolean = false
+    fun getTaskById(id: Int?): Boolean = false
 }
