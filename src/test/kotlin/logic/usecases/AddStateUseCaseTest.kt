@@ -5,6 +5,7 @@ import logic.models.State
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.util.*
 
 class AddStateUseCaseTest{
@@ -41,10 +42,10 @@ class AddStateUseCaseTest{
   )
 
   // When && Then
-  org.junit.jupiter.api.assertThrows<Exception> {
-    addStateUseCase.invoke(newState)
-    Exception("the project id should be valid")
+  val exception = assertThrows<IllegalArgumentException> {
+   addStateUseCase.invoke(newState)
   }
+  assertEquals("the project id should be valid", exception.message)
  }
 
  @Test
