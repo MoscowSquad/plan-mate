@@ -1,5 +1,7 @@
 package logic.repositoies
 
-interface TasksRepository {
+import logic.models.Task
 
+interface TasksRepository {
+    fun gelAllTasks(): List<Task>
 }
