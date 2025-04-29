@@ -240,7 +240,7 @@ fun `should return task ID and Task state when add task without any issue`() {
             Task(id = 1245)
         )
         // When
-        val result = tasksUseCase.deleteAllTasks()
+        val result = tasksUseCase.deleteAllTasks(true)
         // Then
         assertTrue(result)
     }
@@ -251,7 +251,7 @@ fun `should return task ID and Task state when add task without any issue`() {
 
         // When & Then
         assertThrows<Exception> {
-            tasksUseCase.deleteAllTasks()
+            tasksUseCase.deleteAllTasks(true)
         }
     }
     @Test

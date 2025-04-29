@@ -11,6 +11,6 @@ class TasksUseCase(
     fun editTasks(id: Int?): Boolean = false
     fun deleteTask(id: Int?): Boolean = false
     fun changeTaskState(id: Int?): Boolean = false
-    fun deleteAllTasks(isAdmin: Boolean = false): Boolean = false
+    fun deleteAllTasks(isAdmin: Boolean ): Boolean = false
     fun getTaskById(id: Int?): Boolean = false
 }
