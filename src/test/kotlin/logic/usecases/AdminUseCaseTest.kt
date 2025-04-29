@@ -67,14 +67,14 @@ class AdminUseCaseTest {
     fun `admin should be able to edit a project`() {
         // Given
         val projectId = UUID.randomUUID()
-        val project = Project(projectId, "Old Name", mutableListOf(), mutableListOf())
+        val project = Project(projectId=projectId, name =  "Old Name", states = mutableListOf(), tasks =  mutableListOf())
         val newName = "Updated Project"
 
         every { projectsRepository.getProjectById(projectId) } returns project
         every { projectsRepository.saveProject(any()) } just runs
 
         // When
-        val updatedProject = adminUseCase.editProject(adminUser.id, projectId, newName)
+        val updatedProject = adminUseCase.editProject(adminUser.id, projectId=projectId,newName= newName)
 
         // Then
         assertEquals(newName, updatedProject.name)
@@ -89,7 +89,7 @@ class AdminUseCaseTest {
 
         // When/Then
         assertFailsWith<UnauthorizedException> {
-            adminUseCase.editProject(mateUser.id, projectId, newName)
+            adminUseCase.editProject(mateUser.id,projectId, newName)
         }
         verify(exactly = 0) { projectsRepository.saveProject(any()) }
     }
@@ -98,7 +98,7 @@ class AdminUseCaseTest {
     fun `admin should be able to delete a project`() {
         // Given
         val projectId = UUID.randomUUID()
-        val project = Project(projectId, "Test Project", mutableListOf(), mutableListOf())
+        val project = Project(projectId=projectId, name =  "Test Project", states =  mutableListOf(), tasks =  mutableListOf())
 
         every { projectsRepository.getProjectById(projectId) } returns project
         every { projectsRepository.deleteProject(projectId) } just runs
@@ -128,7 +128,7 @@ class AdminUseCaseTest {
         val projectId = UUID.randomUUID()
         val stateId = UUID.randomUUID()
         val state = State(stateId, "Test State", projectId)
-        val project = Project(projectId, "Test Project", mutableListOf(state), mutableListOf())
+        val project = Project(projectId, name = "Test Project", states=mutableListOf(state), tasks =  mutableListOf())
 
         every { projectsRepository.getProjectById(projectId) } returns project
         every { projectsRepository.saveProject(any()) } just runs
