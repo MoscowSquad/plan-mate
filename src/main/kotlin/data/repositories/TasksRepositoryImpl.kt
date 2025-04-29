@@ -1,5 +1,5 @@
 package data.repositories
 
-import logic.repositoies.TasksRepository
+import logic.repositories.TasksRepository
 
 class TasksRepositoryImpl : TasksRepository

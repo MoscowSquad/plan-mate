@@ -1,5 +1,5 @@
 package data.repositories
 
-import logic.repositoies.AuthenticationRepository
+import logic.repositories.AuthenticationRepository
 
 class AuthenticationRepositoryImpl: AuthenticationRepository

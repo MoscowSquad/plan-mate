@@ -1,4 +1,4 @@
-package logic.repositoies
+package logic.repositories
 
 interface TasksRepository {
 

@@ -1,6 +1,6 @@
 package logic.usecases
 
-import logic.repositoies.ProjectsRepository
+import logic.repositories.ProjectsRepository
 
 class ProjectsUseCase(
     private val projectsRepository: ProjectsRepository

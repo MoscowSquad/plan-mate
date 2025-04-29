@@ -1,5 +1,5 @@
 package data.repositories
 
-import logic.repositoies.AuditRepository
+import logic.repositories.AuditRepository
 
 class AuditRepositoryImpl : AuditRepository

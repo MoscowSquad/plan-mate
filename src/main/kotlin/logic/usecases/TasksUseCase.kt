@@ -1,6 +1,6 @@
 package logic.usecases
 
-import logic.repositoies.TasksRepository
+import logic.repositories.TasksRepository
 
 class TasksUseCase(
     private val tasksRepository: TasksRepository
