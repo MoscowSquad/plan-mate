@@ -1,6 +1,5 @@
 package logic.repositoies.project.exception
 
-import data.repositories.ProjectsRepositoryImpl
 import logic.repositoies.project.ProjectsRepository
 import logic.repositoies.project.exception.ProjectException.ProjectNotFoundException
 import java.util.*
