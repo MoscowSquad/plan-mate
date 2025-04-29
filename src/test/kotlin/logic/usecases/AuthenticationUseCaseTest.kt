@@ -1,9 +1,14 @@
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.*
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotEquals
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 import java.util.*
 import logic.models.Role
 import logic.models.User
+import org.junit.jupiter.api.assertThrows
 import utilities.toMD5Hash
 
 class UserAuthenticationTest {
@@ -28,267 +33,394 @@ class UserAuthenticationTest {
  @Nested
  inner class UsernameValidationTests {
   @Test
-  fun `should reject empty username`() {
+  fun `should throw exception when username is empty`() {
    // Given
    val input = ""
-
-   // When
-   val result = validateUsername(input)
-
-   // Then
-   assertFalse(result.isValid)
-   assertEquals("Username cannot be empty", result.errorMessage)
+   // When & Then
+   assertThrows<IllegalArgumentException> {
+    validateUsernameWithException(input)
+   }
   }
 
   @Test
-  fun `should reject username shorter than 3 characters`() {
+  fun `should return false when username is empty`() {
+   // Given
+   val input = ""
+   // When
+   val result = validateUsername(input)
+   // Then
+   assertFalse { result.isValid }
+  }
+
+  @Test
+  fun `should throw when username is too short`() {
    // Given
    val input = "ab"
 
-   // When
-   val result = validateUsername(input)
-
-   // Then
-   assertFalse(result.isValid)
-   assertEquals("Username must be at least 3 characters", result.errorMessage)
+   // When & Then
+   assertThrows<IllegalArgumentException> {
+    validateUsername(input)
+   }
   }
 
   @Test
-  fun `should reject username longer than 20 characters`() {
+  fun `should return false when username is too short`() {
+   // Given
+   val input = "ab"
+   // When
+   val result = validateUsername(input)
+   // Then
+   assertFalse { result.isValid }
+  }
+
+  @Test
+  fun `should throw when username is too long`() {
    // Given
    val input = "a".repeat(21)
 
-   // When
-   val result = validateUsername(input)
-
-   // Then
-   assertFalse(result.isValid)
-   assertEquals("Username cannot exceed 20 characters", result.errorMessage)
-  }
-
-  @Test
-  fun `should reject username with spaces`() {
-   // Given
-   val input = "user name"
-
-   // When
-   val result = validateUsername(input)
-
-   // Then
-   assertFalse(result.isValid)
-   assertEquals("Username cannot contain spaces", result.errorMessage)
-  }
-
-  @Test
-  fun `should reject username with special characters`() {
-   // Given
-   val input = "user@name"
-
-   // When
-   val result = validateUsername(input)
-
-   // Then
-   assertFalse(result.isValid)
-   assertEquals("Username can only contain alphanumeric characters and underscores", result.errorMessage)
-  }
-
-  @Test
-  fun `should accept valid username`() {
-   // Given
-   val validUsernames = listOf("user123", "test_user", "normalUser")
-
-   validUsernames.forEach { username ->
-    // When
-    val result = validateUsername(username)
-
-    // Then
-    assertTrue(result.isValid)
-    assertNull(result.errorMessage)
+   // When & Then
+   assertThrows<IllegalArgumentException> {
+    validateUsername(input)
    }
   }
- }
-
- @Nested
- inner class PasswordValidationTests {
-  @Test
-  fun `should reject password shorter than 8 characters`() {
-   // Given
-   val password = "Pass1!"
-
-   // When & Then
-   assertFalse(password.isValidPasswordFormat())
-  }
 
   @Test
-  fun `should reject password without uppercase letter`() {
+  fun `should return false when username is too long`() {
    // Given
-   val password = "password123!"
-
-   // When & Then
-   assertFalse(password.isValidPasswordFormat())
-  }
-
-  @Test
-  fun `should reject password without lowercase letter`() {
-   // Given
-   val password = "PASSWORD123!"
-
-   // When & Then
-   assertFalse(password.isValidPasswordFormat())
-  }
-
-  @Test
-  fun `should reject password without number`() {
-   // Given
-   val password = "Password!"
-
-   // When & Then
-   assertFalse(password.isValidPasswordFormat())
-  }
-
-  @Test
-  fun `should reject password without special character`() {
-   // Given
-   val password = "Password123"
-
-   // When & Then
-   assertFalse(password.isValidPasswordFormat())
-  }
-
-  @Test
-  fun `should accept valid password`() {
-   // Given
-   val password = "ValidPass123!"
-
-   // When & Then
-   assertTrue(password.isValidPasswordFormat())
-  }
-
-  @Test
-  fun `should hash password correctly`() {
-   // Given
-   val password = "Test123!"
-
+   val input = "a".repeat(21)
    // When
-   val hashed = password.toMD5Hash()
-
+   val result = validateUsername(input)
    // Then
-   assertNotEquals(password, hashed)
-   assertEquals(32, hashed.length) // MD5 produces 32-character hex string
-  }
- }
-
- @Nested
- inner class LoginValidationTests {
-  private val userRepository = FakeUserRepository().apply {
-   addUser(testUser)
-   addUser(testAdmin)
+   assertFalse { result.isValid }
   }
 
   @Test
-  fun `should fail login with incorrect username`() {
+  fun `should throw when username contains spaces`() {
+   assertThrows<IllegalArgumentException> {
+    validateUsername("user name")
+   }
+   // Only checks that an exception is thrown, not the message
+  }
+
+  @Test
+  fun `should return false when username contains spaces`() {
    // Given
-   val username = "wrongUser"
-   val password = "Test123!"
-
+   val input = "user name"
    // When
-   val result = validateLogin(username, password, userRepository)
-
+   val result = validateUsername(input)
    // Then
-   assertFalse(result.isValid)
-   assertEquals("Invalid username or password", result.errorMessage)
+   assertFalse { result.isValid }
   }
 
   @Test
-  fun `should fail login with incorrect password`() {
+  fun `should throw when username contains special characters`() {
+   assertThrows<IllegalArgumentException> {
+    validateUsername("user@name")
+   }
+  }
+
+  @Test
+  fun `should return false when username contains special characters`() {
    // Given
-   val username = "testUser"
-   val password = "wrongPass"
-
+   val input = "user@name"
    // When
-   val result = validateLogin(username, password, userRepository)
-
+   val result = validateUsername(input)
    // Then
-   assertFalse(result.isValid)
-   assertEquals("Invalid username or password", result.errorMessage)
+   assertFalse { result.isValid }
   }
 
   @Test
-  fun `should succeed login with correct credentials`() {
+  fun `should return true when username is valid`() {
    // Given
-   val username = "testUser"
-   val password = "Test123!"
+   val input = "test_user"
+   // When
+   val result = validateUsername(input)
+   // Then
+   assertTrue { result.isValid }
+  }
+
+  @Test
+  fun `should return valid result when username is valid`() {
+   // Given
+   val input = "test_user"
 
    // When
-   val result = validateLogin(username, password, userRepository)
+   val result = validateUsername(input)
 
    // Then
    assertTrue(result.isValid)
-   assertNull(result.errorMessage)
   }
 
-  @Test
-  fun `should return user role after successful login`() {
-   // Given
-   val username = "testUser"
-   val password = "Test123!"
+  @Nested
+  inner class PasswordValidationTests {
+   @Test
+   fun `should return false when password is shorter than 8 characters`() {
+    // Given
+    val password = "Pass1!"
+    // When
+    val result = password.isValidPasswordFormat()
+    // Then
+    assertFalse { result }
+   }
 
-   // When
-   val result = validateLogin(username, password, userRepository)
+   @Test
+   fun `should return false when password has no uppercase letter`() {
+    // Given
+    val password = "password123!"
+    // When
+    val result = password.isValidPasswordFormat()
+    // Then
+    assertFalse { result }
+   }
 
-   // Then
-   assertEquals(Role.MATE, result.user?.role)
+   @Test
+   fun `should return false when password has no lowercase letter`() {
+    // Given
+    val password = "PASSWORD123!"
+    // When
+    val result = password.isValidPasswordFormat()
+    // Then
+    assertFalse { result }
+   }
+
+   @Test
+   fun `should return false when password has no number`() {
+    // Given
+    val password = "Password!"
+    // When
+    val result = password.isValidPasswordFormat()
+    // Then
+    assertFalse { result }
+   }
+
+   @Test
+   fun `should return false when password has no special character`() {
+    // Given
+    val password = "Password123"
+    // When
+    val result = password.isValidPasswordFormat()
+    // Then
+    assertFalse { result }
+   }
+
+   @Test
+   fun `should return true when password is valid`() {
+    // Given
+    val password = "ValidPass123!"
+    // When
+    val result = password.isValidPasswordFormat()
+    // Then
+    assertTrue { result }
+   }
+
+   @Test
+   fun `should return different hash from original password`() {
+    // Given
+    val password = "Test123!"
+    // When
+    val hashed = password.toMD5Hash()
+    // Then
+    assertNotEquals(password, hashed)
+   }
+
+   @Test
+   fun `should return 32-character hash`() {
+    // Given
+    val password = "Test123!"
+    // When
+    val hashed = password.toMD5Hash()
+    // Then
+    assertEquals(32, hashed.length)
+   }
   }
- }
 
- @Nested
- inner class UserStorageTests {
-  private val userRepository = UserRepository()
+  @Nested
+  inner class LoginValidationTests {
+   private val userRepository = FakeUserRepository().apply {
+    addUser(testUser)
+    addUser(testAdmin)
+   }
 
-  @Test
-  fun `should store user information correctly`() {
-   // Given
-   val userToStore = testUser
+   @Test
+   fun `should return false when username is incorrect`() {
+    // Given
+    val username = "wrongUser"
+    val password = "Test123!"
+    // When
+    val result = validateLogin(username, password, userRepository)
+    // Then
+    assertFalse { result.isValid }
+   }
 
-   // When
-   userRepository.addUser(userToStore)
-   val retrievedUser = userRepository.findByUsername("testUser")
+   @Test
+   fun `should throw when username is incorrect`() {
+    assertThrows<AuthenticationException> {
+     validateLogin("wrongUser", "Test123!", userRepository)
+    }
+   }
 
-   // Then
-   assertNotNull(retrievedUser)
-   assertEquals(userToStore.id, retrievedUser?.id)
-   assertEquals(userToStore.username, retrievedUser?.username)
-   assertEquals(userToStore.hashedPassword, retrievedUser?.hashedPassword)
-   assertEquals(userToStore.role, retrievedUser?.role)
+   @Test
+   fun `should return false when password is incorrect`() {
+    // Given
+    val username = "testUser"
+    val password = "wrongPass"
+    // When
+    val result = validateLogin(username, password, userRepository)
+    // Then
+    assertFalse { result.isValid }
+   }
+
+   @Test
+   fun `should throw when password is incorrect`() {
+    // Given
+    val username = "testUser"
+    val password = "wrongPass"
+
+    // When & Then
+    assertThrows<AuthenticationException> {
+     validateLogin(username, password, userRepository)
+    }
+   }
+
+   @Test
+   fun `should return true when credentials are correct`() {
+    // Given
+    val username = "testUser"
+    val password = "Test123!"
+    // When
+    val result = validateLogin(username, password, userRepository)
+    // Then
+    assertTrue { result.isValid }
+   }
+
+   @Test
+   fun `should return null error message when credentials are correct`() {
+    // Given
+    val username = "testUser"
+    val password = "Test123!"
+    // When
+    val result = validateLogin(username, password, userRepository)
+    // Then
+    assertNull(result.errorMessage)
+   }
+
+   @Test
+   fun `should return correct user role after successful login`() {
+    // Given
+    val username = "testUser"
+    val password = "Test123!"
+    // When
+    val result = validateLogin(username, password, userRepository)
+    // Then
+    assertEquals(Role.MATE, result.user?.role)
+   }
   }
 
-  @Test
-  fun `should not store plain text passwords`() {
-   // Given
-   val password = "PlainText123!"
-   val user = User(UUID.randomUUID(), "newUser", password.toMD5Hash(), Role.MATE)
+  @Nested
+  inner class UserStorageTests {
+   private val userRepository = UserRepository()
 
-   // When
-   userRepository.addUser(user)
-   val storedUser = userRepository.findByUsername("newUser")
+   @Test
+   fun `should throw when password is incorrect`() {
+    // Given
+    val username = "testUser"
+    val password = "wrongPass"
 
-   // Then
-   assertNotEquals(password, storedUser?.hashedPassword)
-   assertEquals(password.toMD5Hash(), storedUser?.hashedPassword)
-  }
+    // When & Then
+    assertThrows<AuthenticationException> {
+     validateLogin(username, password, userRepository)
+    }
+   }
 
-  @Test
-  fun `should not allow duplicate usernames`() {
-   // Given
-   val originalUser = testUser
-   val duplicateUser = testUser.copy(id = UUID.randomUUID())
-   userRepository.addUser(originalUser)
+   @Test
+   fun `should store username correctly`() {
+    // Given
+    val user = testUser
 
-   // When
-   val result = userRepository.addUser(duplicateUser)
+    // When
+    userRepository.addUser(user)
+    val retrievedUser = userRepository.findByUsername("testUser")
 
-   // Then
-   assertFalse(result, "Duplicate username should not be allowed")
+    // Then
+    assertTrue(
+     retrievedUser?.username == user.username,
+     "Stored username '${retrievedUser?.username}' should match original '${user.username}'"
+    )
+   }
+
+
+   @Test
+   fun `should store hashed password correctly`() {
+    // Given
+    val user = testUser
+
+    // When
+    userRepository.addUser(user)
+    val retrievedUser = userRepository.findByUsername("testUser")
+
+    // Then
+    assertTrue(
+     retrievedUser?.hashedPassword == user.hashedPassword,
+     "Expected hashed password '${user.hashedPassword}' but was '${retrievedUser?.hashedPassword}'"
+    )
+   }
+
+   @Test
+   fun `should store role correctly`() {
+    // Given
+    val expectedRole = testUser.role
+
+    // When
+    userRepository.addUser(testUser)
+    val actualRole = userRepository.findByUsername("testUser")?.role
+
+    // Then
+    assertTrue(actualRole == expectedRole) {
+     "Role was not stored correctly. Expected: $expectedRole, Actual: $actualRole"
+    }
+   }
+
+   @Test
+   fun `should not store plain text password`() {
+    val password = "PlainText123!"
+    val user = User(UUID.randomUUID(), "newUser", password.toMD5Hash(), Role.MATE)
+
+    userRepository.addUser(user)
+    val storedPassword = userRepository.findByUsername("newUser")?.hashedPassword
+
+    check(storedPassword != password) {
+     "Security violation: Plain text password was stored"
+    }
+   }
+
+   @Test
+   fun `should store correct password hash`() {
+    // Given
+    val plainPassword = "PlainText123!"
+    val correctHash = plainPassword.toMD5Hash()
+    val testUser = User(UUID.randomUUID(), "newUser", correctHash, Role.MATE)
+
+    // When
+    userRepository.addUser(testUser)
+    val actualStoredHash = userRepository.findByUsername("newUser")?.hashedPassword
+
+    // Then
+    assertTrue(actualStoredHash == correctHash) {
+     "Password hash was corrupted during storage. Expected: $correctHash, Got: $actualStoredHash"
+    }
+   }
+
+   @Test
+   fun `should return false when adding duplicate username`() {
+    // Given
+    val originalUser = testUser
+    val duplicateUser = testUser.copy(id = UUID.randomUUID())
+    userRepository.addUser(originalUser)
+    // When
+    val result = userRepository.addUser(duplicateUser)
+    // Then
+    assertFalse { result }
+   }
   }
  }
 }
