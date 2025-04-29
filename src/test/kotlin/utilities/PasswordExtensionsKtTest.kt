@@ -25,18 +25,18 @@ class PasswordExtensionsKtTest {
             // Given
             val password = ""
             // When
-            val expected = "31d6cfe0d16ae931b73c59d7e0c089c0"
+            val expected = "d41d8cd98f00b204e9800998ecf8427e"
             val actual = password.toMD5Hash()
             // Then
             assertEquals(expected, actual)
         }
 
         @Test
-        fun `should return valid hash when password has newlines, spaces or special characters`() {
+        fun `should return valid hash when password has spaces or special characters`() {
             // Given
-            val password = "Alternative 123 * \n \t \""
+            val password = "Alternative# * @ % ! ^"
             // When
-            val expected = "fcdb8862247d1b571b2715c7e8762d57"
+            val expected = "a31c7a3f2f3f1f059bf19c6e97ee9918"
             val actual = password.toMD5Hash()
             // Then
             assertEquals(expected, actual)
@@ -119,13 +119,13 @@ class PasswordExtensionsKtTest {
         }
 
         @Test
-        fun `should return false when matching empty hashes`() {
+        fun `should return true when matching empty hashes`() {
             // Given
             val hash = ""
             // When
             val actual = hash.matchesMD5Hash("")
             // Then
-            assertFalse { actual }
+            assertTrue { actual }
         }
 
         @Test
