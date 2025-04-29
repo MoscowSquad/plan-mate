@@ -233,17 +233,81 @@ fun `should return task ID and Task state when add task without any issue`() {
 
     // Delete all tasks test cases
     @Test
-    fun `should return true when all tasks deleted successfully `(){}
+    fun `should return true when all tasks deleted successfully `() {
+        // Given
+        every { tasksRepository.gelAllTasks() } returns listOf(
+            Task(id = 1234),
+            Task(id = 1245)
+        )
+        // When
+        val result = tasksUseCase.deleteAllTasks()
+        // Then
+        assertTrue(result)
+    }
     @Test
-    fun `should Throw exception when there is no tasks found `(){}
+    fun `should Throw exception when there is no tasks found `() {
+        // Given
+        every { tasksRepository.gelAllTasks() } returns emptyList()
+
+        // When & Then
+        assertThrows<Exception> {
+            tasksUseCase.deleteAllTasks()
+        }
+    }
     @Test
-    fun `should return exception when user is not admin`(){}
+    fun `should return exception when user is not admin`() {
+        // Given
+        every { tasksRepository.gelAllTasks() } returns listOf(
+            Task(id = 1234, title = "Task"),
+            Task(id = 124, title = "Videos")
+        )
+
+        // When & Then
+        assertThrows<Exception> {
+            tasksUseCase.deleteAllTasks(isAdmin = false)
+        }
+    }
 
     // Get task by ID
     @Test
-    fun `should return task model when found task successfully `(){}
+    fun `should return task model when found task successfully `() {
+        // Given
+        every { tasksRepository.gelAllTasks() } returns listOf(
+            Task(id = 1234, title = "Task", state = "TODO"),
+            Task(id = 1245, title = "Videos", state = "Finished")
+        )
+        val inputId = 1234
+        // When
+        val result = tasksUseCase.getTaskById(inputId)
+        // Then
+        assertTrue(result)
+    }
     @Test
-    fun `should Throw exception when there is no tasks found during search`(){}
+    fun `should Throw exception when there is no tasks found during search`() {
+        // Given
+        every { tasksRepository.gelAllTasks() } returns listOf(
+            Task(id = 1234, title = "Task"),
+            Task(id = 124, title = "Videos")
+        )
+        val inputId = 5678
+
+        // When & Then
+        assertThrows<Exception> {
+            tasksUseCase.getTaskById(inputId)
+        }
+    }
     @Test
-    fun `should Throw exception when state ID is null during change search `(){}
+    fun `should Throw exception when state ID is null during change search `() {
+        // Given
+        every { tasksRepository.gelAllTasks() } returns listOf(
+            Task(id = 1234, title = "Task", stateId = null),
+            Task(id = 124, title = "Videos")
+        )
+        val inputId = 1234
+
+        // When & Then
+        assertThrows<Exception> {
+            tasksUseCase.getTaskById(inputId)
+        }
+    }
 }
