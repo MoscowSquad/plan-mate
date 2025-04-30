@@ -2,9 +2,9 @@ package logic.models
 
 
 data class Task(
-    val taskID: Int? = null,
-    var taskTitle: String? = null,
-    var taskDescription: String? = "",
+    val id: Int? = null,
+    var title: String? = null,
+    var description: String? = "",
     val project: Project?=null,
     var state: State? = null,
 )

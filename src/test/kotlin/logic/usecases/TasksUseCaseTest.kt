@@ -33,7 +33,7 @@ fun `should return list of Tasks when add task without any issue`() {
         createTaskHelper(taskID = 1234, taskTitle = "Videos1", state = State(id, "TODO", projectId)),
         createTaskHelper(taskID = 12345, taskTitle = "Videos2", state = State(id, "TODO", projectId))
     )
-    val task = Task(taskID = 123456, taskTitle = "Videos3", state = State(id, "TODO", projectId))
+    val task = Task(id = 123456, title = "Videos3", state = State(id, "TODO", projectId))
     every { tasksRepository.getAllTasks() } returns tasks
 
     val expected = listOf(
@@ -58,7 +58,7 @@ fun `should return list of Tasks when add task without any issue`() {
 
         // When & Then
         assertThrows<Exception> {
-            tasksUseCase.addTask(Task(taskID = 12345, taskTitle = null))
+            tasksUseCase.addTask(Task(id = 12345, title = null))
         }
     }
     @Test
@@ -72,7 +72,7 @@ fun `should return list of Tasks when add task without any issue`() {
 
         // When & Then
         assertThrows<Exception> {
-            tasksUseCase.addTask(Task(taskID = null, taskTitle = "Videos3"))
+            tasksUseCase.addTask(Task(id = null, title = "Videos3"))
         }
     }
     @Test
@@ -86,7 +86,7 @@ fun `should return list of Tasks when add task without any issue`() {
 
         // When & Then
         assertThrows<Exception> {
-            tasksUseCase.addTask(Task(taskID = 12345, taskTitle = "Videos3", state = null))
+            tasksUseCase.addTask(Task(id = 12345, title = "Videos3", state = null))
         }
     }
 
@@ -98,10 +98,10 @@ fun `should return list of Tasks when add task without any issue`() {
             createTaskHelper(taskID = 1234, taskTitle = "Videos1"),
             createTaskHelper(taskID = 12345, taskTitle = "Videos2")
         )
-        val inputTask = Task(taskID = 1234, taskTitle = "Book")
+        val inputTask = Task(id = 1234, title = "Book")
         every { tasksRepository.getAllTasks() } returns tasks
 
-        val expected = Task(taskID = 1234, taskTitle = "Book")
+        val expected = Task(id = 1234, title = "Book")
 
         // When
         val result = tasksUseCase.editTask(inputTask)
@@ -120,7 +120,7 @@ fun `should return list of Tasks when add task without any issue`() {
 
         // When & Then
         assertThrows<Exception> {
-            tasksUseCase.editTask(Task(taskID = 12345, taskTitle = null))
+            tasksUseCase.editTask(Task(id = 12345, title = null))
         }
     }
     @Test
@@ -134,7 +134,7 @@ fun `should return list of Tasks when add task without any issue`() {
 
         // When & Then
         assertThrows<Exception> {
-            tasksUseCase.editTask(Task(taskID = null, taskTitle = "Videos3"))
+            tasksUseCase.editTask(Task(id = null, title = "Videos3"))
         }
     }
     @Test
@@ -148,7 +148,7 @@ fun `should return list of Tasks when add task without any issue`() {
 
         // When & Then
         assertThrows<Exception> {
-            tasksUseCase.addTask(Task(taskID = 456, taskTitle = "Videos3"))
+            tasksUseCase.addTask(Task(id = 456, title = "Videos3"))
         }
     }
 
@@ -238,10 +238,10 @@ fun `should return list of Tasks when add task without any issue`() {
             createTaskHelper(taskID = 1234, taskTitle = "Videos1", state = State(id, "TODO", projectId)),
             createTaskHelper(taskID = 12345, taskTitle = "Videos2", state = State(id, "TODO", projectId))
         )
-        val inputTask = Task(taskID = 1234, state = State(id, "Done", projectId))
+        val inputTask = Task(id = 1234, state = State(id, "Done", projectId))
         every { tasksRepository.getAllTasks() } returns tasks
 
-        val expected = Task(taskID = 1234, taskTitle = "Videos1", state = State(id, "Done", projectId))
+        val expected = Task(id = 1234, title = "Videos1", state = State(id, "Done", projectId))
 
         // When
         val result = tasksUseCase.changeTaskState(inputTask)
@@ -260,7 +260,7 @@ fun `should return list of Tasks when add task without any issue`() {
         )
 
         every { tasksRepository.getAllTasks() } returns tasks
-        val input = Task(taskID = null, taskTitle = "Videos1", state = State(id, "TODO", projectId))
+        val input = Task(id = null, title = "Videos1", state = State(id, "TODO", projectId))
         // When & Then
         assertThrows<Exception> {
             tasksUseCase.changeTaskState(input)
@@ -277,7 +277,7 @@ fun `should return list of Tasks when add task without any issue`() {
             createTaskHelper(taskID = 12345, taskTitle = "Videos2", state = State(id, "TODO", projectId))
         )
         every { tasksRepository.getAllTasks() } returns tasks
-        val input = Task(taskID = 123, taskTitle = "Videos1", state = State(id, "TODO", projectId))
+        val input = Task(id = 123, title = "Videos1", state = State(id, "TODO", projectId))
         // When & Then
         assertThrows<Exception> {
             tasksUseCase.changeTaskState(input)
@@ -289,7 +289,7 @@ fun `should return list of Tasks when add task without any issue`() {
         val id: UUID = mockk()
         val projectId: UUID = mockk()
         every { tasksRepository.getAllTasks() } returns emptyList()
-        val input = Task(taskID = 123, taskTitle = "Videos1", state = State(id, "TODO", projectId))
+        val input = Task(id = 123, title = "Videos1", state = State(id, "TODO", projectId))
         // When & Then
         assertThrows<Exception> {
             tasksUseCase.changeTaskState(input)
@@ -308,7 +308,7 @@ fun `should return list of Tasks when add task without any issue`() {
 
         // When & Then
         assertThrows<Exception> {
-            tasksUseCase.changeTaskState(Task(taskID = 123, state = State(id, "Done", projectId)))
+            tasksUseCase.changeTaskState(Task(id = 123, state = State(id, "Done", projectId)))
         }
     }
 
@@ -366,7 +366,7 @@ fun `should return list of Tasks when add task without any issue`() {
         val input = 1234
         every { tasksRepository.getAllTasks() } returns tasks
 
-        val expected = Task(taskID = 1234, taskTitle = "Videos1")
+        val expected = Task(id = 1234, title = "Videos1")
 
         // When
         val result = tasksUseCase.getTaskById(input)

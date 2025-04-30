@@ -12,9 +12,9 @@ fun createTaskHelper(
     state: State? = null
 ): Task {
     return Task(
-        taskID = taskID,
-        taskTitle = taskTitle,
-        taskDescription = taskDescription,
+        id = taskID,
+        title = taskTitle,
+        description = taskDescription,
         project = project,
         state = state,
     )

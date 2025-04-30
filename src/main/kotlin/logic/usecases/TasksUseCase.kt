@@ -10,7 +10,7 @@ class TasksUseCase(
 ) {
     fun addTask(task: Task): List<Task> {
         val allTasks = tasksRepository.getAllTasks().toMutableList()
-        if (task.taskTitle == null || task.taskID == null || task.state == null) {
+        if (task.title == null || task.id == null || task.state == null) {
             throw Exception()
         }
         allTasks.add(task)
@@ -19,14 +19,14 @@ class TasksUseCase(
 
     fun editTask(task: Task): Task {
         val allTasks = tasksRepository.getAllTasks().toMutableList()
-        val taskID = task.taskID
-        val taskTitle = task.taskTitle ?: throw Exception()
+        val taskID = task.id
+        val taskTitle = task.title ?: throw Exception()
         val newTask = allTasks
-            .find { currentTask -> currentTask.taskID == taskID } ?: throw Exception()
+            .find { currentTask -> currentTask.id == taskID } ?: throw Exception()
 
-        newTask.taskTitle = taskTitle
+        newTask.title = taskTitle
         newTask.state = task.state
-        newTask.taskDescription = task.taskDescription
+        newTask.description = task.description
 
         return newTask
     }
@@ -38,7 +38,7 @@ class TasksUseCase(
             throw Exception()
         }
         val isRemoved = allTasks.removeIf { currentTask ->
-            currentTask.taskID == id
+            currentTask.id == id
         }
         if (!isRemoved) {
             throw Exception()
@@ -49,9 +49,9 @@ class TasksUseCase(
 
     fun changeTaskState(task: Task): Task {
         val allTasks = tasksRepository.getAllTasks().toMutableList()
-        val taskId = task.taskID ?: throw Exception()
+        val taskId = task.id ?: throw Exception()
         val taskToEdit = allTasks.find { currentTask ->
-            currentTask.taskID == taskId
+            currentTask.id == taskId
         } ?: throw Exception()
 
 
@@ -71,6 +71,6 @@ class TasksUseCase(
 
     fun getTaskById(id: Int?): Task {
         val allTasks = tasksRepository.getAllTasks()
-        return allTasks.find { it.taskID == id } ?: throw Exception()
+        return allTasks.find { it.id == id } ?: throw Exception()
     }
 }
