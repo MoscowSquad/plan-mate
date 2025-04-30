@@ -1,9 +1,9 @@
-package logic.repositoies  // Fixed typo in package name
+package logic.repositoies
 
 import logic.models.User
 
 interface AuthenticationRepository {
-    val users: MutableList<User>  // Fixed "HutableList" to "MutableList"
-    fun addUser(user: User)  // Return type is Unit by default
+    val users: MutableList<User>
+    fun addUser(user: User)
     fun findByUsername(username: String): User?
 }
