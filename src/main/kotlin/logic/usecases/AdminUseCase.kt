@@ -18,7 +18,7 @@ class AdminUseCase(
         }
 
         val project = Project(
-            projectId = UUID.randomUUID(),
+            id = UUID.randomUUID(),
             name = projectName,
             states = mutableListOf(),
             tasks = mutableListOf()

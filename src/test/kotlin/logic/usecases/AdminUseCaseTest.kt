@@ -67,7 +67,7 @@ class AdminUseCaseTest {
     fun `admin should be able to edit a project`() {
         // Given
         val projectId = UUID.randomUUID()
-        val project = Project(projectId=projectId, name =  "Old Name", states = mutableListOf(), tasks =  mutableListOf())
+        val project = Project(id=projectId, name =  "Old Name", states = mutableListOf(), tasks =  mutableListOf())
         val newName = "Updated Project"
 
         every { projectsRepository.getProjectById(projectId) } returns project
@@ -98,7 +98,7 @@ class AdminUseCaseTest {
     fun `admin should be able to delete a project`() {
         // Given
         val projectId = UUID.randomUUID()
-        val project = Project(projectId=projectId, name =  "Test Project", states =  mutableListOf(), tasks =  mutableListOf())
+        val project = Project(id=projectId, name =  "Test Project", states =  mutableListOf(), tasks =  mutableListOf())
 
         every { projectsRepository.getProjectById(projectId) } returns project
         every { projectsRepository.deleteProject(projectId) } just runs
