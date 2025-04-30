@@ -23,14 +23,13 @@ class InMemoryAuditProjectRepository : AuditProjectRepository {
 
     override fun auditProjectExists(projectId: UUID, taskId: UUID, audit: AuditLog): Boolean {
         return projectAudits[projectId]?.any {
-            (it.id == audit.id) && (it.taskId == taskId)
+            (it.id == audit.id) && (it.id == taskId)
         } ?: false
     }
 }
 
-// Always passing validator for testing
-class AlwaysValidProjectValidator : ValidateProjectExists {
-    override fun validateProjectExists(projectId: UUID) {
-        // Always passes validation
-    }
-}
+//// Always passing validator for testing
+//class AlwaysValidProjectValidator : ValidateProjectExists {
+//    override fun validateProjectExists(projectId: UUID) {
+//        // Always passes validation
+//    } }
