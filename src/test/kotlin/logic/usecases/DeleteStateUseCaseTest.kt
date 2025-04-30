@@ -1,109 +1,77 @@
 package logic.usecases
 
-import logic.models.State
-import org.junit.jupiter.api.Assertions.*
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import logic.repositoies.ProjectsRepository
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
-import java.lang.reflect.Method
+import utilities.StateNotExistException
 import java.util.*
 import kotlin.test.Test
 
 class DeleteStateUseCaseTest {
 
+    private lateinit var projectsRepository: ProjectsRepository
     private lateinit var deleteStateUseCase: DeleteStateUseCase
 
     @BeforeEach
     fun setUp() {
-        deleteStateUseCase = DeleteStateUseCase()
+        projectsRepository = mockk(relaxed = false) // Use strict mocking
+        deleteStateUseCase = DeleteStateUseCase(projectsRepository)
     }
 
     @Test
-    fun `invoke should return true when correctly deleted`() {
+    fun `delete use case should return true when state is successfully deleted`() {
         // Given
-        val stateId = UUID.randomUUID()
-        val useCase = DeleteStateUseCase()
+        val projectId = UUID.fromString("00000000-0000-0000-0000-000000000001")
+        val stateId = UUID.fromString("00000000-0000-0000-0000-000000000002")
+
+        every { projectsRepository.deleteState(projectId, stateId) } returns true
 
         // When
-        val result = useCase(stateId)
+        val result = deleteStateUseCase(projectId, stateId)
 
         // Then
         assertTrue(result)
+        verify(exactly = 1) { projectsRepository.deleteState(projectId, stateId) }
     }
 
     @Test
-    fun `invoke should throw IllegalStateException when state does not exist`() {
+    fun `delete use case should throw StateNotExistException when state not found`() {
         // Given
-        val nonExistentStateId = UUID.randomUUID()
-        val useCase = DeleteStateUseCase()
+        val projectId = UUID.fromString("00000000-0000-0000-0000-000000000001")
+        val stateId = UUID.fromString("00000000-0000-0000-0000-000000000002")
 
-        // When
-        val exception = assertThrows<IllegalStateException> {
-            useCase(nonExistentStateId)
+        every { projectsRepository.deleteState(projectId, stateId) } returns false
+
+        // When/Then
+        val exception = assertThrows<StateNotExistException> {
+            deleteStateUseCase(projectId, stateId)
         }
-        // Then
-        assertEquals(
-            "State with ID $nonExistentStateId does not exist",
-            exception.message
-        )
+
+        assertEquals("State with ID $stateId does not exist", exception.message)
+        assertEquals(stateId, exception.message)
+        verify(exactly = 1) { projectsRepository.deleteState(projectId, stateId) }
     }
 
     @Test
-    fun `isStateExist should return false when state not exist in specific project`() {
-        val stateId = UUID.randomUUID()
-        val method = getPrivateMethod("isStateExist", UUID::class.java)
-        val result = method.invoke(deleteStateUseCase, stateId) as Boolean
-        assertFalse(result)
-    }
-
-    @Test
-    fun `getState should return State with matching ID`() {
-        val stateId = UUID.randomUUID()
-        val method = getPrivateMethod("getState", UUID::class.java)
-        val result = method.invoke(deleteStateUseCase, stateId) as State
-
-        assertEquals(stateId, result.id)
-    }
-
-    @Test
-    fun `getState should return State with title 'nre'`() {
+    fun `should propagate repository exceptions`() {
         // Given
-        val stateId = UUID.randomUUID()
-        val method = getPrivateMethod("getState", UUID::class.java)
+        val projectId = UUID.fromString("00000000-0000-0000-0000-000000000001")
+        val stateId = UUID.fromString("00000000-0000-0000-0000-000000000002")
+        val expectedError = IllegalStateException("Database error")
 
-        // When
-        val result = method.invoke(deleteStateUseCase, stateId) as State
+        every { projectsRepository.deleteState(projectId, stateId) } throws expectedError
 
-        // Then
-        assertEquals("nre", result.title)
-    }
+        // When/Then
+        val exception = assertThrows<IllegalStateException> {
+            deleteStateUseCase(projectId, stateId)
+        }
 
-    @Test
-    fun `getState should return State with non-null projectId`() {
-        // Given
-        val stateId = UUID.randomUUID()
-        val method = getPrivateMethod("getState", UUID::class.java)
-        // When
-        val result = method.invoke(deleteStateUseCase, stateId) as State
-        // Then
-        assertNotNull(result.projectId)
-    }
-
-    @Test
-    fun `getState should return State with random project ID`() {
-        // Give
-        val stateId = UUID.randomUUID()
-        val method = getPrivateMethod("getState", UUID::class.java)
-
-        // When
-        val result1 = method.invoke(deleteStateUseCase, stateId) as State
-        val result2 = method.invoke(deleteStateUseCase, stateId) as State
-        // Then
-        assertNotEquals(result1.projectId, result2.projectId)
-    }
-
-    private fun getPrivateMethod(methodName: String, vararg parameterTypes: Class<*>): Method {
-        val method = DeleteStateUseCase::class.java.getDeclaredMethod(methodName, *parameterTypes)
-        method.isAccessible = true
-        return method
+        assertEquals(expectedError, exception)
+        verify(exactly = 1) { projectsRepository.deleteState(projectId, stateId) }
     }
 }
