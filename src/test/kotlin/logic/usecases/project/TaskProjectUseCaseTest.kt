@@ -79,4 +79,86 @@ class TaskProjectUseCaseTest {
   verify { validateProjectExists.validateProjectExists(projectId) }
  }
 
+ @Test
+ fun `getSpecificTaskByProjectId should return task when both project and task exist`() {
+  // Given
+  val projectId = UUID.randomUUID()
+  val taskId = UUID.randomUUID()
+  val expectedTask = Task(
+      id = taskId, projectId = projectId, title = "Test Task",
+      description = "This task for adding new project",
+      stateId =UUID.fromString("00000000-0000-0000-0000-000000000009")
+  )
+
+  every { validateProjectExists.validateProjectExists(projectId) } returns Unit
+  every { validateTaskExists.validateTaskExists(projectId, taskId) } returns Unit
+  every { taskRepository.getSpecificTaskByProjectId(projectId, taskId) } returns expectedTask
+
+  // When
+  val result = taskUseCase.getSpecificTaskByProjectId(projectId, taskId)
+
+  // Then
+  assertEquals(expectedTask, result)
+  verify(exactly = 1) { validateProjectExists.validateProjectExists(projectId) }
+  verify(exactly = 1) { validateTaskExists.validateTaskExists(projectId, taskId) }
+  verify(exactly = 1) { taskRepository.getSpecificTaskByProjectId(projectId, taskId) }
+ }
+
+ @Test
+ fun `getSpecificTaskByProjectId should throw when project exists but task doesn't`() {
+  // Given
+  val projectId = UUID.randomUUID()
+  val taskId = UUID.randomUUID()
+
+  every { validateProjectExists.validateProjectExists(projectId) } returns Unit
+  every { validateTaskExists.validateTaskExists(projectId, taskId) } throws
+          ProjectException.TaskNotFoundException(taskId.toString())
+  every { taskRepository.getSpecificTaskByProjectId(projectId, taskId) } returns null
+
+  // When/Then
+  assertThrows<ProjectException.TaskNotFoundException> {
+   taskUseCase.getSpecificTaskByProjectId(projectId, taskId)
+  }
+  verify(exactly = 1) { validateProjectExists.validateProjectExists(projectId) }
+  verify(exactly = 1) { validateTaskExists.validateTaskExists(projectId, taskId) }
+  verify(exactly = 0) { taskRepository.getSpecificTaskByProjectId(projectId, taskId) }
+ }
+
+ @Test
+ fun `getSpecificTaskByProjectId should throw when project doesn't exist`() {
+  // Given
+  val projectId = UUID.randomUUID()
+  val taskId = UUID.randomUUID()
+
+  every { validateProjectExists.validateProjectExists(projectId) } throws
+          ProjectException.ProjectNotFoundException(projectId.toString())
+
+  // When/Then
+  assertThrows<ProjectException.ProjectNotFoundException> {
+   taskUseCase.getSpecificTaskByProjectId(projectId, taskId)
+  }
+  verify(exactly = 1) { validateProjectExists.validateProjectExists(projectId) }
+  verify(exactly = 0) { validateTaskExists.validateTaskExists(any(), any()) }
+  verify(exactly = 0) { taskRepository.getSpecificTaskByProjectId(any(), any()) }
+ }
+
+ @Test
+ fun `getSpecificTaskByProjectId should throw when repository returns null after validation`() {
+  // Given
+  val projectId = UUID.randomUUID()
+  val taskId = UUID.randomUUID()
+
+  every { validateProjectExists.validateProjectExists(projectId) } returns Unit
+  every { validateTaskExists.validateTaskExists(projectId, taskId) } returns Unit
+  every { taskRepository.getSpecificTaskByProjectId(projectId, taskId) } returns null
+
+  // When/Then
+  assertThrows<ProjectException.TaskNotFoundException> {
+   taskUseCase.getSpecificTaskByProjectId(projectId, taskId)
+  }
+  verify(exactly = 1) { validateProjectExists.validateProjectExists(projectId) }
+  verify(exactly = 1) { validateTaskExists.validateTaskExists(projectId, taskId) }
+  verify(exactly = 1) { taskRepository.getSpecificTaskByProjectId(projectId, taskId) }
+ }
+
 }
