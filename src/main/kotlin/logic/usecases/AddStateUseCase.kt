@@ -4,12 +4,12 @@ import logic.models.State
 import logic.repositoies.ProjectsRepository
 
 class AddStateUseCase(
-    private val repository: ProjectsRepository
+    private val projectRepository: ProjectsRepository
 ) {
 
     operator fun invoke(state: State): Boolean{
         isValidTitleState(state.title)
-        return repository.isExist(state.projectId) // fake
+        return projectRepository.isExist(state.projectId) // fake
     }
 
     private fun isValidTitleState(title: String): Boolean{
