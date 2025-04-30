@@ -8,6 +8,7 @@ class AddStateUseCase(
 ) {
 
     operator fun invoke(state: State): Boolean{
+        isValidTitleState(state.title)
         return repository.isProjectExist(state.projectId) // fake
     }
 
