@@ -1,102 +1,90 @@
 package logic.usecases
 
-import logic.models.Project
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import logic.models.State
+import logic.repositoies.ProjectsRepository
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import utilities.NoExistProjectException
 import java.util.*
 
-class AddStateUseCaseTest{
- private lateinit var addStateUseCase: AddStateUseCase
- @BeforeEach
- fun setup(){
-   addStateUseCase = AddStateUseCase()
- }
+class AddStateUseCaseTest {
+    private lateinit var projectsRepository: ProjectsRepository
+    private lateinit var addStateUseCase: AddStateUseCase
 
-  @Test
-  fun `should return true if state add correctly`(){
-   // Given
-   val newState = State(
-    id = UUID.randomUUID(),
-    title = "TODO",
-    projectId = UUID.randomUUID()
-   )
+    @BeforeEach
+    fun setup() {
+        projectsRepository = mockk<ProjectsRepository>()
+        addStateUseCase = AddStateUseCase(projectsRepository)
+    }
 
-   // When
-   val result = addStateUseCase.invoke(newState)
+    @Test
+    fun `should return true when project exists`() {
+        // Given
+        val validProjectId = UUID.fromString("00000000-0000-0000-0000-000000000001")
+        val state = State(UUID.randomUUID(), "TODO", validProjectId)
 
-   // Then
-   assertTrue(result)
+        every { projectsRepository.isProjectExist(validProjectId) } returns true
 
-  }
+        // When
+        val result = addStateUseCase(state)
 
- @Test
- fun `should be throw exception if project id is not exist`(){
-  // Given
-  val newState = State(
-   id = UUID.randomUUID(),
-   title = "TODO",
-   projectId = UUID.randomUUID() // suppose not exist id
-  )
+        // Then
+        assertTrue(result)
+        verify { projectsRepository.isProjectExist(validProjectId) }
+    }
 
-  // When && Then
-  val exception = assertThrows<IllegalArgumentException> {
-   addStateUseCase.invoke(newState)
-  }
-  assertEquals("the project id should be valid", exception.message)
- }
+    @Test
+    fun `should throw NoExistProjectException when project doesn't exist`() {
+        // Given
+        val projectId = UUID.fromString("00000000-0000-0000-0000-000000000000")
+        val state = State(UUID.randomUUID(), "TODO", projectId)
 
- @Test
- fun `should return false when invalid title`() {
-  // Given
-  val invalidState = State(
-   id = UUID.randomUUID(),
-   title = "", // Invalid empty title
-   projectId = UUID.randomUUID()
-  )
+        every { projectsRepository.isProjectExist(any()) } throws NoExistProjectException(projectId)
 
-  // When
-  val result = addStateUseCase.invoke(invalidState)
-  // Then
-  assertFalse(result)
+        // When & Then
+        assertThrows<NoExistProjectException> {
+            addStateUseCase(state)
+        }
+        verify { projectsRepository.isProjectExist(projectId) }
+    }
 
- }
+    @Test
+    fun `should verify repository call exactly once`() {
+        // Given
+        val projectId = UUID.fromString("00000000-0000-0000-0000-000000000003")
+        val stateId =  UUID.fromString("00000000-0000-0000-0000-000000000002")
+        val state = State(stateId, "TODO", projectId)
 
- @Test
- fun `isProjectExist should return false for project not exist`() {
+        every { projectsRepository.isProjectExist(any()) } returns true
 
-  val method = AddStateUseCase::class.java.getDeclaredMethod("isProjectExist", Project::class.java)
-  method.isAccessible = true
+        // When
+        addStateUseCase(state)
 
-  // Given
-  val testProject = Project(
-   name = "Plan-mate",
-   id = UUID.randomUUID()
-  )
+        // Then
+        verify(exactly = 1) { projectsRepository.isProjectExist(projectId) }
+    }
 
-  // When
-  val result = method.invoke(addStateUseCase, testProject) as Boolean
 
-  // Then
-  assertFalse(result)
- }
+    @Test
+    fun `should return false when state title is blank(empty)`() {
+        // Given
+        val projectId = UUID.randomUUID()
+        val inValidStates = listOf(
+            State(UUID.randomUUID(), "", projectId), State(UUID.randomUUID(), "   ", projectId)
+        )
 
- @Test
- fun `isValidTitleState should return false for title not valid`() {
+        every { projectsRepository.isProjectExist(any()) } returns true
 
-  val method = AddStateUseCase::class.java.getDeclaredMethod("isValidTitleState", String::class.java)
-  method.isAccessible = true
+        // When/Then
+        inValidStates.forEach { state ->
+            assertFalse(addStateUseCase(state))
+        }
+        verify(exactly = 0) { projectsRepository.isProjectExist(any()) }
+    }
 
-  // Given
-  val testTitle = "Test Title"
-
-  // When
-  val result = method.invoke(addStateUseCase, testTitle) as Boolean
-
-  // Then
-  assertFalse(result)
- }
 }
-
