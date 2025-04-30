@@ -8,4 +8,8 @@ class ProjectsRepositoryImpl: ProjectsRepository{
         TODO("Not yet implemented")
     }
 
+    override fun addState(state: String): Boolean {
+        TODO("Not yet implemented")
+    }
+
 }
