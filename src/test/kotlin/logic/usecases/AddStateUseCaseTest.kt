@@ -28,14 +28,14 @@ class AddStateUseCaseTest {
         val validProjectId = UUID.fromString("00000000-0000-0000-0000-000000000001")
         val state = State(UUID.randomUUID(), "TODO", validProjectId)
 
-        every { projectsRepository.isProjectExist(validProjectId) } returns true
+        every { projectsRepository.isExist(validProjectId) } returns true
 
         // When
         val result = addStateUseCase(state)
 
         // Then
         assertTrue(result)
-        verify { projectsRepository.isProjectExist(validProjectId) }
+        verify { projectsRepository.isExist(validProjectId) }
     }
 
     @Test
@@ -44,13 +44,13 @@ class AddStateUseCaseTest {
         val projectId = UUID.fromString("00000000-0000-0000-0000-000000000000")
         val state = State(UUID.randomUUID(), "TODO", projectId)
 
-        every { projectsRepository.isProjectExist(any()) } throws NoExistProjectException(projectId)
+        every { projectsRepository.isExist(any()) } throws NoExistProjectException(projectId)
 
         // When & Then
         assertThrows<NoExistProjectException> {
             addStateUseCase(state)
         }
-        verify { projectsRepository.isProjectExist(projectId) }
+        verify { projectsRepository.isExist(projectId) }
     }
 
     @Test
@@ -60,13 +60,13 @@ class AddStateUseCaseTest {
         val stateId =  UUID.fromString("00000000-0000-0000-0000-000000000002")
         val state = State(stateId, "TODO", projectId)
 
-        every { projectsRepository.isProjectExist(any()) } returns true
+        every { projectsRepository.isExist(any()) } returns true
 
         // When
         addStateUseCase(state)
 
         // Then
-        verify(exactly = 1) { projectsRepository.isProjectExist(projectId) }
+        verify(exactly = 1) { projectsRepository.isExist(projectId) }
     }
 
 
@@ -78,13 +78,13 @@ class AddStateUseCaseTest {
             State(UUID.randomUUID(), "", projectId), State(UUID.randomUUID(), "   ", projectId)
         )
 
-        every { projectsRepository.isProjectExist(any()) } returns true
+        every { projectsRepository.isExist(any()) } returns true
 
         // When/Then
         inValidStates.forEach { state ->
             assertFalse(addStateUseCase(state))
         }
-        verify(exactly = 0) { projectsRepository.isProjectExist(any()) }
+        verify(exactly = 0) { projectsRepository.isExist(any()) }
     }
 
 }

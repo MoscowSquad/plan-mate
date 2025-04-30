@@ -4,7 +4,7 @@ import logic.repositoies.ProjectsRepository
 import java.util.*
 
 class ProjectsRepositoryImpl: ProjectsRepository{
-    override fun isProjectExist(projectId: UUID): Boolean {
+    override fun isExist(projectId: UUID): Boolean {
         TODO("Not yet implemented")
     }
 
