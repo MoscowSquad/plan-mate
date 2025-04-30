@@ -1,5 +1,6 @@
 package utilities.exception
 
+import logic.models.AuditLog
 import java.util.*
 
 sealed class ProjectException(message: String) : Exception(message) {
@@ -20,4 +21,7 @@ sealed class ProjectException(message: String) : Exception(message) {
 
     class UserNotFoundException(userId: UUID) :
         ProjectException("User '$userId' doesn't exists")
+
+    class AuditProjectNotFoundException(auditLog: AuditLog) :
+        ProjectException("Audit for project '$auditLog' doesn't exists")
 }

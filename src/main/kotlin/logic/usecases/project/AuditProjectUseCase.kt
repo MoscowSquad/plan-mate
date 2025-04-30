@@ -19,9 +19,16 @@ class AuditProjectUseCase (
       fun getAllAuditByProject(projectID: UUID):List<AuditLog>{
           validateProjectExists.validateProjectExists(projectID)
         return auditRepository.getAllAuditByProject(projectID)
-     }
-    fun addAuditToProject(projectID: UUID, auditId: AuditLog){
+       }
+
+      fun addAuditToProject(projectID: UUID, auditId: AuditLog){
         validateProjectExists.validateProjectExists(projectID)
         auditRepository.addAuditToProject(projectID,auditId)
+       }
+
+    fun auditProjectExists(projectId: UUID, taskId: UUID, auditId: AuditLog): Boolean {
+        validateProjectExists.validateProjectExists(projectId)
+
+        return auditRepository.auditProjectExists(projectId, taskId, auditId)
     }
 }
