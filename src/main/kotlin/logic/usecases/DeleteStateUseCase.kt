@@ -1,12 +1,15 @@
 package logic.usecases
 
 import logic.models.State
+import logic.repositoies.ProjectsRepository
 import java.util.UUID
 
-class DeleteStateUseCase {
+class DeleteStateUseCase(
+    private val projectsRepository: ProjectsRepository
+) {
 
-    operator fun invoke(stateId: UUID): Boolean{
-        return false
+    operator fun invoke(stateId: UUID, projectId: UUID): Boolean{
+        return true
     }
 
     private fun isStateExist(stateId: UUID): Boolean{
