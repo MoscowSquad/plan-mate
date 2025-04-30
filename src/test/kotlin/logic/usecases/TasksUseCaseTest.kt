@@ -138,7 +138,7 @@ fun `should return list of Tasks when add task without any issue`() {
         }
     }
     @Test
-    fun `should Throw exception when there is no tasks found to edit `() {
+    fun `should Throw exception when there is no tasks found to edit`() {
         // Given
         val tasks: List<Task> = listOf(
             createTaskHelper(taskID = 1234, taskTitle = "Videos1"),
@@ -151,6 +151,7 @@ fun `should return list of Tasks when add task without any issue`() {
             tasksUseCase.addTask(Task(taskID = 456, taskTitle = "Videos3"))
         }
     }
+
 
     // Delete task test cases
     @Test
@@ -187,6 +188,21 @@ fun `should return list of Tasks when add task without any issue`() {
             tasksUseCase.deleteTask(input)
         }
     }
+
+    @Test
+    fun `should Throw exception when wanted Id not found `() {
+        // Given
+        val tasks: List<Task> = listOf(
+            createTaskHelper(taskID = 1234, taskTitle = "Videos1"),
+            createTaskHelper(taskID = 12345, taskTitle = "Videos2")
+        )
+        every { tasksRepository.getAllTasks() } returns tasks
+        val input = 456
+        // When & Then
+        assertThrows<Exception> {
+            tasksUseCase.deleteTask(input)
+        }
+    }
     @Test
     fun `should Throw exception when there is no tasks found to delete`() {
         // Given
@@ -195,6 +211,20 @@ fun `should return list of Tasks when add task without any issue`() {
         // When & Then
         assertThrows<Exception> {
             tasksUseCase.deleteTask(input)
+        }
+    }
+
+    @Test
+    fun `should Throw exception when no task is removed in deleteTask`() {
+        // Given
+        val tasks: List<Task> = listOf(
+            createTaskHelper(taskID = 1111, taskTitle = "Not matching")
+        )
+        every { tasksRepository.getAllTasks() } returns tasks
+
+        // When & Then
+        assertThrows<Exception> {
+            tasksUseCase.deleteTask(1234)
         }
     }
 
@@ -236,6 +266,23 @@ fun `should return list of Tasks when add task without any issue`() {
             tasksUseCase.changeTaskState(input)
         }
     }
+
+    @Test
+    fun `should Throw exception when wanted task is not found`() {
+        // Given
+        val id: UUID = mockk()
+        val projectId: UUID = mockk()
+        val tasks: List<Task> = listOf(
+            createTaskHelper(taskID = 1234, taskTitle = "Videos1", state = State(id, "TODO", projectId)),
+            createTaskHelper(taskID = 12345, taskTitle = "Videos2", state = State(id, "TODO", projectId))
+        )
+        every { tasksRepository.getAllTasks() } returns tasks
+        val input = Task(taskID = 123, taskTitle = "Videos1", state = State(id, "TODO", projectId))
+        // When & Then
+        assertThrows<Exception> {
+            tasksUseCase.changeTaskState(input)
+        }
+    }
     @Test
     fun `should Throw exception when there is no tasks found to change state`() {
         // Given
@@ -246,6 +293,22 @@ fun `should return list of Tasks when add task without any issue`() {
         // When & Then
         assertThrows<Exception> {
             tasksUseCase.changeTaskState(input)
+        }
+    }
+
+    @Test
+    fun `should Throw exception when taskToEdit has null ID`() {
+        // Given
+        val id: UUID = mockk()
+        val projectId: UUID = mockk()
+        val tasks: List<Task> = listOf(
+            createTaskHelper(taskID = null, taskTitle = "Videos1", state = State(id, "TODO", projectId))
+        )
+        every { tasksRepository.getAllTasks() } returns tasks
+
+        // When & Then
+        assertThrows<Exception> {
+            tasksUseCase.changeTaskState(Task(taskID = 123, state = State(id, "Done", projectId)))
         }
     }
 
