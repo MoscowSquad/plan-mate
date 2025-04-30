@@ -1,32 +1,20 @@
 package logic.usecases
 
 import logic.models.State
-import java.util.*
+import logic.repositoies.ProjectsRepository
 
-class EditStateUseCase {
+class EditStateUseCase(
+    private val projectsRepository: ProjectsRepository
+){
 
-    operator fun invoke(state: State): State{
-        return state
+    operator fun invoke(state: State, title: String): State {
+        return state.copy(title = title) // fake for now
     }
 
-    private fun isValidState(state: State) {
-        validateTitle(state.title)
-        validateProject(state.projectId)
-    }
-
-    private fun validateTitle(title: String) {
+    private fun isValidTitle(title: String) {
         if (title.isBlank()) {
             throw IllegalArgumentException("State title cannot be blank")
         }
     }
 
-    private fun validateProject(projectId: UUID) {
-        if (!isProjectExist(projectId)) {
-            throw IllegalArgumentException("State does not belong to a valid project")
-        }
-    }
-
-    private fun isProjectExist(projectId: UUID): Boolean{
-        return false
-    }
 }
