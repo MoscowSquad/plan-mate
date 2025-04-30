@@ -1,9 +1,12 @@
 package logic.repositoies.project
 
+import logic.models.Task
 import logic.models.User
 import java.util.UUID
 
 interface UserProjectRepository {
-    val userProjectRepository = UserProjectRepository
-    fun getUsersByProject(projectId: UUID): List<User>?
+    fun getUserByTaskId(projectId: UUID, taskId: UUID) : User?
+    fun getUsersByProjectId(projectId: UUID): List<User>?
+    fun userExists(projectId: UUID, taskId: UUID, userId: UUID): Boolean
+
 }

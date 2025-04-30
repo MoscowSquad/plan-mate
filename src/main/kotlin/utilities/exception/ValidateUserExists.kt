@@ -6,7 +6,7 @@ import java.util.*
 
 class ValidateUserExists(private val userProjectRepository: UserProjectRepository) {
     fun validateUserExists(projectId: UUID, taskId: UUID, userId: UUID) {
-        if (!userProjectRepository(projectId, taskId)) {
+        if (!userProjectRepository.userExists(projectId, taskId, userId)) {
             throw ProjectException.UserNotFoundException(userId)
         }
     }
