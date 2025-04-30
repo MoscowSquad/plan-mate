@@ -16,5 +16,8 @@ sealed class ProjectException(message: String) : Exception(message) {
         ProjectException("Project '$projectName' already exists")
 
     class TaskNotFoundException(tasktName: String) :
-        ProjectException("Task '$tasktName' already exists")
+        ProjectException("Task '$tasktName' doesn't exists")
+
+    class UserNotFoundException(userId: UUID) :
+        ProjectException("User '$userId' doesn't exists")
 }

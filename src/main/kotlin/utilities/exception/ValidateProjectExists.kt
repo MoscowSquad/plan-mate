@@ -4,9 +4,9 @@ import logic.repositoies.project.ProjectsRepository
 import utilities.exception.ProjectException.ProjectNotFoundException
 import java.util.*
 
-class ValidateProjectExists(private val projectsRepository: ProjectsRepository) {
+open class ValidateProjectExists(private val projectsRepository: ProjectsRepository) {
 
-    fun validateProjectExists(projectId: UUID) {
+    open fun validateProjectExists(projectId: UUID) {
         if (!projectsRepository.projectExists(projectId)) {
             throw ProjectNotFoundException(projectId.toString())
         }
