@@ -9,7 +9,7 @@ class TasksUseCase(
     private val tasksRepository: TasksRepository
 ) {
     fun addTask(task: Task): List<Task> {
-        val allTasks = tasksRepository.getAllTasks().toMutableList()
+        val allTasks = tasksRepository.getAll().toMutableList()
         if (task.title == null || task.id == null || task.state == null) {
             throw Exception()
         }
@@ -18,7 +18,7 @@ class TasksUseCase(
     }
 
     fun editTask(task: Task): Task {
-        val allTasks = tasksRepository.getAllTasks().toMutableList()
+        val allTasks = tasksRepository.getAll().toMutableList()
         val taskID = task.id
         val taskTitle = task.title ?: throw Exception()
         val newTask = allTasks
@@ -33,7 +33,7 @@ class TasksUseCase(
 
 
     fun deleteTask(id: Int?): List<Task> {
-        val allTasks = tasksRepository.getAllTasks().toMutableList()
+        val allTasks = tasksRepository.getAll().toMutableList()
         if (allTasks.isEmpty()) {
             throw Exception()
         }
@@ -48,7 +48,7 @@ class TasksUseCase(
 
 
     fun changeTaskState(task: Task): Task {
-        val allTasks = tasksRepository.getAllTasks().toMutableList()
+        val allTasks = tasksRepository.getAll().toMutableList()
         val taskId = task.id ?: throw Exception()
         val taskToEdit = allTasks.find { currentTask ->
             currentTask.id == taskId
@@ -61,7 +61,7 @@ class TasksUseCase(
     }
 
     fun deleteAllTasks(isAdmin: Boolean): Boolean {
-        val allTasks = tasksRepository.getAllTasks().toMutableList()
+        val allTasks = tasksRepository.getAll().toMutableList()
         if (isAdmin && allTasks.isNotEmpty()) {
             allTasks.clear()
             return true
@@ -70,7 +70,7 @@ class TasksUseCase(
     }
 
     fun getTaskById(id: Int?): Task {
-        val allTasks = tasksRepository.getAllTasks()
+        val allTasks = tasksRepository.getAll()
         return allTasks.find { it.id == id } ?: throw Exception()
     }
 }
