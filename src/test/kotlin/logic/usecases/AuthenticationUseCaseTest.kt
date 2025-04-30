@@ -29,6 +29,13 @@ class UserAuthenticationTest {
         role = Role.ADMIN
     )
 
+    @BeforeEach
+    fun setUp() {
+        testRepository = AuthenticationRepositoryImpl()
+        useCase = AuthenticationUseCase(testRepository)
+        testRepository.users.clear() // Clear between tests
+    }
+
     @Test
     fun `validateUsername should throw for blank username`() {
         assertThrows<IllegalArgumentException> {
