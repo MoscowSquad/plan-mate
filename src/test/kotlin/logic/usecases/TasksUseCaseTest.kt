@@ -3,12 +3,14 @@ package logic.usecases
 
 import io.mockk.every
 import io.mockk.mockk
+import logic.models.State
 import logic.models.Task
 import logic.repositoies.TasksRepository
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import kotlin.test.assertEquals
 
 class TasksUseCaseTest{
     private lateinit var tasksUseCase: TasksUseCase
@@ -22,15 +24,15 @@ class TasksUseCaseTest{
 
 // Add task test cases
     @Test
-fun `should return task ID and Task state when add task without any issue`() {
+fun `should return list of Tasks when add task without any issue`() {
     // Given
-    val title = "Videos"
-    val stateId = 1234
-    val state = "TODO"
+    every { tasksRepository.getAllTasks() }returns listOf(Task(taskID =1234 , taskTitle ="Videos1"))
+    val task=Task(taskID =12345 , taskTitle ="Videos2")
+    val expected = listOf(Task(taskID =1234 , taskTitle ="Videos1"),task)
     // When
-    val result = tasksUseCase.addTask(Task(title = title, stateId = stateId, state = state))
+    val result = tasksUseCase.addTask(task)
     // Then
-    assertTrue(result)
+    assertEquals(result,expected)
 }
     @Test
     fun `should Throw exception when user title is null `() {
