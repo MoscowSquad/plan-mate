@@ -12,27 +12,25 @@ import test_helper.toCsvData
 import java.util.*
 
 class UserCsvParserTest {
-    private lateinit var csvReader: UserCsvReader
-    private lateinit var csvWriter: UserCsvWriter
+    private lateinit var csvHandler: UserCsvHandler
     private lateinit var parser: UserCsvParser
 
     @BeforeEach
     fun setUp() {
-        csvReader = mockk(relaxed = true)
-        csvWriter = mockk(relaxed = true)
-        parser = UserCsvParser(csvReader, csvWriter)
+        csvHandler = mockk(relaxed = true)
+        parser = UserCsvParser(csvHandler)
     }
 
     @Test
-    fun `should call UserCsvReader when parsing users data`() {
+    fun `should call UserCsvHandler when parsing users data`() {
         parser.parse()
-        verify { csvReader.getLines() }
+        verify { csvHandler.getLines() }
     }
 
     @Test
-    fun `should call UserCsvWriter when serialize users data`() {
+    fun `should call UserCsvHandler when serialize users data`() {
         parser.serialize(emptyList())
-        verify { csvWriter.write("") }
+        verify { csvHandler.write(emptyList()) }
     }
 
 
@@ -40,7 +38,7 @@ class UserCsvParserTest {
     fun `should return users when parse data from user file`() {
         // Given
         val csvLines = getCsvLines()
-        every { csvReader.getLines() } returns csvLines
+        every { csvHandler.getLines() } returns csvLines
 
         // When
         val result = parser.parse()
@@ -54,7 +52,7 @@ class UserCsvParserTest {
     fun `should return empty list when parse data from empty user file`() {
         // Given
         val csvLines = listOf<String>()
-        every { csvReader.getLines() } returns csvLines
+        every { csvHandler.getLines() } returns csvLines
 
         // When
         val result = parser.parse()
@@ -70,7 +68,7 @@ class UserCsvParserTest {
         val csvLines = listOf(
             "id,username,hashedPassword,role",
         )
-        every { csvReader.getLines() } returns csvLines
+        every { csvHandler.getLines() } returns csvLines
 
         // When
         val result = parser.parse()

@@ -11,27 +11,25 @@ import test_helper.toCsvData
 import java.util.*
 
 class TaskCsvParserTest {
-    private lateinit var csvReader: TaskCsvReader
-    private lateinit var csvWriter: TaskCsvWriter
+    private lateinit var csvHandler: TaskCsvHandler
     private lateinit var parser: TaskCsvParser
 
     @BeforeEach
     fun setUp() {
-        csvReader = mockk(relaxed = true)
-        csvWriter = mockk(relaxed = true)
-        parser = TaskCsvParser(csvReader, csvWriter)
+        csvHandler = mockk(relaxed = true)
+        parser = TaskCsvParser(csvHandler)
     }
 
     @Test
-    fun `should call TaskCsvReader when parsing tasks data`() {
+    fun `should call TaskCsvHandler when parsing tasks data`() {
         parser.parse()
-        verify { csvReader.getLines() }
+        verify { csvHandler.getLines() }
     }
 
     @Test
-    fun `should call TaskCsvWriter when serialize tasks data`() {
+    fun `should call TaskCsvHandler when serialize tasks data`() {
         parser.serialize(emptyList())
-        verify { csvWriter.write("") }
+        verify { csvHandler.write(emptyList()) }
     }
 
 
@@ -39,7 +37,7 @@ class TaskCsvParserTest {
     fun `should return tasks when parse data from task file`() {
         // Given
         val csvLines = getCsvLines()
-        every { csvReader.getLines() } returns csvLines
+        every { csvHandler.getLines() } returns csvLines
 
         // When
         val result = parser.parse()
@@ -53,7 +51,7 @@ class TaskCsvParserTest {
     fun `should return empty list when parse data from empty task file`() {
         // Given
         val csvLines = listOf<String>()
-        every { csvReader.getLines() } returns csvLines
+        every { csvHandler.getLines() } returns csvLines
 
         // When
         val result = parser.parse()
@@ -69,7 +67,7 @@ class TaskCsvParserTest {
         val csvLines = listOf(
             "id,title,projectId",
         )
-        every { csvReader.getLines() } returns csvLines
+        every { csvHandler.getLines() } returns csvLines
 
         // When
         val result = parser.parse()

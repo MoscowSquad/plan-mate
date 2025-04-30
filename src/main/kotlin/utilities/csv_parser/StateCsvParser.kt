@@ -3,8 +3,7 @@ package utilities.csv_parser
 import logic.models.State
 
 class StateCsvParser(
-    private val csvReader: StateCsvReader,
-    private val csvWriter: StateCsvWriter,
+    private val csvHandler: StateCsvHandler,
 ) : CsvParser<State> {
     override fun parse(): List<State> {
         return emptyList()

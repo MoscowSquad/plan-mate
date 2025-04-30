@@ -14,27 +14,25 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 class AuditLogCsvParserTest {
-    private lateinit var csvReader: AuditLogCsvReader
-    private lateinit var csvWriter: AuditLogCsvWriter
+    private lateinit var csvHandler: AuditLogCsvHandler
     private lateinit var parser: AuditLogCsvParser
 
     @BeforeEach
     fun setUp() {
-        csvReader = mockk(relaxed = true)
-        csvWriter = mockk(relaxed = true)
-        parser = AuditLogCsvParser(csvReader, csvWriter)
+        csvHandler = mockk(relaxed = true)
+        parser = AuditLogCsvParser(csvHandler)
     }
 
     @Test
-    fun `should call AuditLogCsvReader when parsing audit-logs data`() {
+    fun `should call AuditLogCsvHandler when parsing audit-logs data`() {
         parser.parse()
-        verify { csvReader.getLines() }
+        verify { csvHandler.getLines() }
     }
 
     @Test
-    fun `should call AuditLogCsvWriter when serialize audit-logs data`() {
+    fun `should call AuditLogCsvHandler when serialize audit-logs data`() {
         parser.serialize(emptyList())
-        verify { csvWriter.write("") }
+        verify { csvHandler.write(emptyList()) }
     }
 
 
@@ -43,7 +41,7 @@ class AuditLogCsvParserTest {
         // Given
         val timestamp = "2025-04-29T07:26:51.781688100"
         val csvLines = getCsvLines(timestamp)
-        every { csvReader.getLines() } returns csvLines
+        every { csvHandler.getLines() } returns csvLines
 
         // When
         val result = parser.parse()
@@ -57,7 +55,7 @@ class AuditLogCsvParserTest {
     fun `should return empty list when parse data from empty audit-log file`() {
         // Given
         val csvLines = listOf<String>()
-        every { csvReader.getLines() } returns csvLines
+        every { csvHandler.getLines() } returns csvLines
 
         // When
         val result = parser.parse()
@@ -73,7 +71,7 @@ class AuditLogCsvParserTest {
         val csvLines = listOf(
             "id,entityType,action,timestamp,entityId,userId",
         )
-        every { csvReader.getLines() } returns csvLines
+        every { csvHandler.getLines() } returns csvLines
 
         // When
         val result = parser.parse()

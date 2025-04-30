@@ -3,8 +3,7 @@ package utilities.csv_parser
 import logic.models.AuditLog
 
 class AuditLogCsvParser(
-    private val csvReader: AuditLogCsvReader,
-    private val csvWriter: AuditLogCsvWriter,
+    private val csvHandler: AuditLogCsvHandler,
 ) : CsvParser<AuditLog> {
     override fun parse(): List<AuditLog> {
         return emptyList()
