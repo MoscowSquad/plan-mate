@@ -1,11 +1,11 @@
 package logic.usecases.project
 
 import logic.models.User
-import logic.repositoies.project.UserProjectRepository
+import logic.repositoies.adminSpecificProjectManagmanetRepository.UserProjectRepository
 import utilities.exception.ProjectException.UnauthorizedProjectAccessException
-import utilities.exception.ValidateProjectExists
-import utilities.exception.ValidateTaskProjectExists
-import utilities.exception.ValidateUserExists
+import utilities.ValidatorForASPM.ValidateProjectExists
+import utilities.ValidatorForASPM.ValidateTaskProjectExists
+import utilities.ValidatorForASPM.ValidateUserExists
 import java.util.*
 
 class UserProjectUseCase(

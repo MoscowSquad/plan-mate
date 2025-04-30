@@ -5,13 +5,13 @@ import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifyOrder
 import logic.models.Project
-import logic.repositoies.project.ProjectsRepository
+import logic.repositoies.adminSpecificProjectManagmanetRepository.ProjectsRepository
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import utilities.exception.ProjectException
-import utilities.exception.ValidateProjectExists
+import utilities.ValidatorForASPM.ValidateProjectExists
 import java.util.*
 
 class ProjectUseCaseTest {

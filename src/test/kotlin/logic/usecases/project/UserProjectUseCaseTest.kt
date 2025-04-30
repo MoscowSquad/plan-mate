@@ -5,15 +5,15 @@ import io.mockk.mockk
 import io.mockk.verify
 import logic.models.Role
 import logic.models.User
-import logic.repositoies.project.UserProjectRepository
+import logic.repositoies.adminSpecificProjectManagmanetRepository.UserProjectRepository
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import utilities.exception.ProjectException
-import utilities.exception.ValidateProjectExists
-import utilities.exception.ValidateTaskProjectExists
-import utilities.exception.ValidateUserExists
+import utilities.ValidatorForASPM.ValidateProjectExists
+import utilities.ValidatorForASPM.ValidateTaskProjectExists
+import utilities.ValidatorForASPM.ValidateUserExists
 import java.util.*
 
 class UserProjectUseCaseTest {

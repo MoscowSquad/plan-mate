@@ -3,12 +3,12 @@ package logic.usecases.project
 import io.mockk.mockk
 import logic.models.AuditLog
 import logic.models.EntityType
-import logic.repositoies.project.InMemoryAuditProjectRepository
+import logic.repositoies.adminSpecificProjectManagmanetRepository.InMemoryAuditProjectRepository
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import utilities.exception.ValidateProjectExists
+import utilities.ValidatorForASPM.ValidateProjectExists
 import java.util.*
 
 class AuditProjectUseCaseTest {

@@ -1,4 +1,4 @@
-package logic.repositoies.project
+package logic.repositoies.adminSpecificProjectManagmanetRepository
 
 import logic.models.Task
 import java.util.UUID

@@ -1,6 +1,6 @@
-package utilities.exception
+package utilities.ValidatorForASPM
 
-import logic.repositoies.project.ProjectsRepository
+import logic.repositoies.adminSpecificProjectManagmanetRepository.ProjectsRepository
 import utilities.exception.ProjectException.ProjectNotFoundException
 import java.util.*
 

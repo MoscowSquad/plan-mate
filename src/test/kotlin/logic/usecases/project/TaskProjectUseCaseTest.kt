@@ -4,14 +4,14 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.models.Task
-import logic.repositoies.project.TaskProjectRepository
+import logic.repositoies.adminSpecificProjectManagmanetRepository.TaskProjectRepository
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import utilities.exception.ProjectException
-import utilities.exception.ValidateProjectExists
-import utilities.exception.ValidateTaskProjectExists
+import utilities.ValidatorForASPM.ValidateProjectExists
+import utilities.ValidatorForASPM.ValidateTaskProjectExists
 import java.util.*
 
 class TaskProjectUseCaseTest {

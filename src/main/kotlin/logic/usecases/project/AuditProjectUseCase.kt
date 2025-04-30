@@ -1,8 +1,8 @@
 package logic.usecases.project
 
 import logic.models.AuditLog
-import logic.repositoies.project.AuditProjectRepository
-import utilities.exception.ValidateProjectExists
+import logic.repositoies.adminSpecificProjectManagmanetRepository.AuditProjectRepository
+import utilities.ValidatorForASPM.ValidateProjectExists
 
 import java.util.*
 

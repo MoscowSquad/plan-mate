@@ -1,9 +1,9 @@
 package logic.usecases.project
 
 import logic.models.Project
-import logic.repositoies.project.ProjectsRepository
+import logic.repositoies.adminSpecificProjectManagmanetRepository.ProjectsRepository
 import utilities.exception.ProjectException.ProjectNotFoundException
-import utilities.exception.ValidateProjectExists
+import utilities.ValidatorForASPM.ValidateProjectExists
 import java.util.*
 
 class ProjectUseCase(
