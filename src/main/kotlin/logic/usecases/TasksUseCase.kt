@@ -8,8 +8,8 @@ import logic.repositoies.TasksRepository
 class TasksUseCase(
     private val tasksRepository: TasksRepository
 ) {
-    fun addTask(task: Task): List<Task>{
-        val allTasks= tasksRepository.getAllTasks().toMutableList()
+    fun addTask(task: Task): List<Task> {
+        val allTasks = tasksRepository.getAllTasks().toMutableList()
         if (task.taskTitle == null || task.taskID == null || task.state == null) {
             throw Exception()
         }
@@ -17,15 +17,14 @@ class TasksUseCase(
         return allTasks
     }
 
-    fun editTask(task: Task): Task{
+    fun editTask(task: Task): Task {
         val allTasks = tasksRepository.getAllTasks().toMutableList()
-        val taskID = task.taskID?:throw Exception()
+        val taskID = task.taskID
         val taskTitle = task.taskTitle ?: throw Exception()
         val newTask = allTasks
-            .find { currentTask -> currentTask.taskID == taskID }
-            ?:throw Exception()
+            .find { currentTask -> currentTask.taskID == taskID } ?: throw Exception()
 
-        newTask.taskTitle = task.taskTitle
+        newTask.taskTitle = taskTitle
         newTask.state = task.state
         newTask.taskDescription = task.taskDescription
 
@@ -33,26 +32,28 @@ class TasksUseCase(
     }
 
 
-
-    fun deleteTask(id: Int?): List<Task>{
+    fun deleteTask(id: Int?): List<Task> {
         val allTasks = tasksRepository.getAllTasks().toMutableList()
         if (allTasks.isEmpty()) {
             throw Exception()
         }
-        val taskID=id?:throw Exception()
-        allTasks.removeIf { currentTask->
-            currentTask.taskID == taskID
+        val isRemoved = allTasks.removeIf { currentTask ->
+            currentTask.taskID == id
+        }
+        if (!isRemoved) {
+            throw Exception()
         }
         return allTasks
     }
 
 
-    fun changeTaskState(task:Task): Task{
+    fun changeTaskState(task: Task): Task {
         val allTasks = tasksRepository.getAllTasks().toMutableList()
-        val taskID = task.taskID?:throw Exception()
-        val taskToEdit = allTasks.find { currentTask->
-            currentTask.taskID == taskID
-        }?: throw Exception()
+        val taskId = task.taskID ?: throw Exception()
+        val taskToEdit = allTasks.find { currentTask ->
+            currentTask.taskID == taskId
+        } ?: throw Exception()
+
 
         taskToEdit.state = task.state
 
@@ -69,7 +70,7 @@ class TasksUseCase(
     }
 
     fun getTaskById(id: Int?): Task {
-        val allTasks= tasksRepository.getAllTasks()
+        val allTasks = tasksRepository.getAllTasks()
         return allTasks.find { it.taskID == id } ?: throw Exception()
     }
 }
