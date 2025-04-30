@@ -6,11 +6,11 @@ import java.util.*
 
 class ProjectsRepositoryImpl: ProjectsRepository{
     override fun isExist(projectId: UUID): Boolean {
-        TODO("Not yet implemented")
+        return false
     }
 
     override fun addState(state: State): Boolean {
-        TODO("Not yet implemented")
+        return false
     }
 
 }
