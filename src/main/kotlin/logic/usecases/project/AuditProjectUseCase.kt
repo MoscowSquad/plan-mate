@@ -12,16 +12,16 @@ class AuditProjectUseCase (
     ) {
 
         fun getSpecificAuditByProject(projectID: UUID,auditId:UUID):AuditLog{
-            validateProjectExists.isValidById(projectID)
+            validateProjectExists.validateProjectExists(projectID)
             return auditRepository.getSpecificAuditByProject(projectID,auditId)
         }
 
       fun getAllAuditByProject(projectID: UUID):List<AuditLog>{
-          validateProjectExists.isValidById(projectID)
+          validateProjectExists.validateProjectExists(projectID)
         return auditRepository.getAllAuditByProject(projectID)
      }
     fun addAuditToProject(projectID: UUID, auditId: AuditLog){
-        validateProjectExists.isValidById(projectID)
+        validateProjectExists.validateProjectExists(projectID)
         auditRepository.addAuditToProject(projectID,auditId)
     }
 }

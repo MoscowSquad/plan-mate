@@ -1,83 +1,82 @@
 package logic.usecases.project
 
-import logic.models.Project
-import logic.models.Task
-import logic.repositoies.project.ProjectsRepository
-import logic.repositoies.project.TaskProjectRepository
-import org.junit.jupiter.api.Assertions.assertEquals
-import kotlin.test.Test
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.jupiter.api.BeforeEach
-import java.util.*
+import logic.models.Task
+import logic.repositoies.project.TaskProjectRepository
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import utilities.exception.ProjectException
 import utilities.exception.ValidateProjectExists
+import utilities.exception.ValidateTaskProjectExists
+import java.util.*
 
- class TaskProjectUseCaseTest {
+class TaskProjectUseCaseTest {
+ private lateinit var taskRepository: TaskProjectRepository
+ private lateinit var validateProjectExists: ValidateProjectExists
+ private lateinit var validateTaskExists: ValidateTaskProjectExists
+ private lateinit var taskUseCase: TaskProjectUseCase
 
-  private lateinit var projectsRepository: ProjectsRepository
-  private lateinit var tasksRepository: TaskProjectRepository
-  private lateinit var adminProjectManagement: ProjectUseCase
+ private val projectId = UUID.randomUUID()
+ private val testTask = Task(
+  id = UUID.randomUUID(),
+  projectId = projectId,
+  title = "Test Task",
+  description = "Test Description",
+  stateId = UUID.randomUUID()
+ )
 
-  @BeforeEach
-  fun setUp() {
-   tasksRepository = mockk()
-   projectsRepository = mockk()
-   var usersRepository = mockk<Project>()
-   var auditRepository = mockk<Project>()
+ @BeforeEach
+ fun setUp() {
+  taskRepository = mockk<TaskProjectRepository>()
+  validateProjectExists = mockk()
+  validateTaskExists = mockk<ValidateTaskProjectExists>()
+  taskUseCase = TaskProjectUseCase(
+   taskRepository,
+   validateProjectExists,
+   validateTaskExists
+  )
 
-   adminProjectManagement = ProjectUseCase(
-       projectRepository = projectsRepository,
-       validateProjectExists = ValidateProjectExists(projectsRepository)
-   )
+  every { validateProjectExists.validateProjectExists(projectId) } returns Unit
+  every { validateTaskExists.validateTaskExists(projectId, any()) } returns Unit
+ }
+
+ @Test
+ fun `getTaskById should return task when exists`() {
+  every { taskRepository.getSpecificTaskByProjectId(projectId, testTask.id) } returns testTask
+
+  val result = taskUseCase.getSpecificTaskByProjectId(projectId, testTask.id)
+
+  assertEquals(testTask, result)
+  verify {
+   validateProjectExists.validateProjectExists(projectId)
+   validateTaskExists.validateTaskExists(projectId, testTask.id)
   }
+ }
 
-//  @Test
-//  fun `getTasksByProjectId should return tasks for given project`() {
-//   // Given
-//   val projectId = UUID.fromString("00000000-0000-0000-0000-000000000001")
-//   val expectedTasks = listOf(
-//    Task(
-//     id = UUID.fromString("00000000-0000-0000-0000-000000000002"),
-//     projectId = projectId,
-//     title = "Task 1",
-//     description = "Description 1",
-//     stateId = UUID.fromString("00000000-0000-0000-0000-000000000003")
-//    ),
-//    Task(
-//     id = UUID.fromString("00000000-0000-0000-0000-000000000004"),
-//     projectId = projectId,
-//     title = "Task 2",
-//     description = "Description 2",
-//     stateId = UUID.fromString("00000000-0000-0000-0000-000000000005")
-//    )
-//   )
-//
-//   // Mock the correct repository method
-//   every { tasksRepository.getAllTasksByProjectId(projectId) } returns expectedTasks
-//
-//   // When - Call the correct method
-//   val result = adminProjectManagement.getProjectById(projectId)
-//
-//   // Then
-//   assertEquals(expectedTasks, result)
-//   verify { tasksRepository.getAllTasksByProjectId(projectId) }
-//  }
+ @Test
+ fun `getTaskById should throw when task not found`() {
+  every { taskRepository.getSpecificTaskByProjectId(projectId, testTask.id) } returns null
+  every { validateTaskExists.validateTaskExists(projectId, testTask.id) } throws
+          ProjectException.TaskNotFoundException(testTask.id.toString())
 
-//  @Test
-//  fun `getTasksByProjectId should return empty list when no tasks exist for project`() {
-//   // Given
-//   val projectId = UUID.fromString("00000000-0000-0000-0000-000000000006")
-//   every { projectsRepository.getAllProjects() } returns listOf(
-//    Project(id = projectId, name = "Test Project")
-//    every { tasksRepository.getAllTasksByProjectId(projectId) } returns emptyList()
-//
-//   // When
-//   val result = projectsRepository.getProjectById(projectId)
-//
-//   // Then
-//   assertEquals(emptyList<Task>(), result)
-//   verify { tasksRepository.getAllTasksByProjectId(projectId) }
-//  }
+  assertThrows<ProjectException.TaskNotFoundException> {
+   taskUseCase.getSpecificTaskByProjectId(projectId, testTask.id)
+  }
+ }
+
+ @Test
+ fun `getAllTasksByProjectId should return tasks`() {
+  val expectedTasks = listOf(testTask)
+  every { taskRepository.getAllTasksByProjectId(projectId) } returns expectedTasks
+
+  val result = taskUseCase.getAllTasksByProjectId(projectId)
+
+  assertEquals(expectedTasks, result)
+  verify { validateProjectExists.validateProjectExists(projectId) }
+ }
+
 }
