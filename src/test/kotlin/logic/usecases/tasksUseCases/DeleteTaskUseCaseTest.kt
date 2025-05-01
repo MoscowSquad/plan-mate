@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import utilities.TaskIsNotFoundException
 
 class DeleteTaskUseCaseTest {
     private lateinit var deleteTaskUseCase: DeleteTaskUseCase
@@ -56,7 +57,7 @@ class DeleteTaskUseCaseTest {
     }
 
     @Test
-    fun `should Throw exception when wanted Id not found `() {
+    fun `should Throw TaskIsNotFoundException when wanted Id not found `() {
         // Given
         val tasks: List<Task> = listOf(
             Task(id = 1234, title = "Videos1"),
@@ -65,24 +66,24 @@ class DeleteTaskUseCaseTest {
         every { tasksRepository.getAll() } returns tasks
         val input = 456
         // When & Then
-        assertThrows<Exception> {
+        assertThrows<TaskIsNotFoundException> {
             deleteTaskUseCase.deleteTask(input)
         }
     }
 
     @Test
-    fun `should Throw exception when there is no tasks found to delete`() {
+    fun `should Throw TaskIsNotFoundException when there is no tasks found to delete`() {
         // Given
         every { tasksRepository.getAll() } returns emptyList()
         val input = 1234
         // When & Then
-        assertThrows<Exception> {
+        assertThrows<TaskIsNotFoundException> {
             deleteTaskUseCase.deleteTask(input)
         }
     }
 
     @Test
-    fun `should Throw exception when no task is removed in deleteTask`() {
+    fun `should Throw TaskIsNotFoundException when no task is removed in deleteTask`() {
         // Given
         val tasks: List<Task> = listOf(
             Task(id = 1111, title = "Not matching")
@@ -90,7 +91,7 @@ class DeleteTaskUseCaseTest {
         every { tasksRepository.getAll() } returns tasks
 
         // When & Then
-        assertThrows<Exception> {
+        assertThrows<TaskIsNotFoundException> {
             deleteTaskUseCase.deleteTask(1234)
         }
     }
