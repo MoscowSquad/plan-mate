@@ -1,24 +1,25 @@
 import com.google.common.truth.Truth.assertThat
-import io.mockk.*
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import logic.models.State
-import logic.repositoies.ProjectsRepository
+import logic.repositoies.StateRepository
 import logic.usecases.EditStateUseCase
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import utilities.IllegalTitle
+import utilities.IllegalStateTitle
 import java.util.*
 
 
 class EditStateUseCaseTest {
     private lateinit var editStateUseCase: EditStateUseCase
-    private lateinit var projectsRepository: ProjectsRepository
+    private lateinit var stateRepository: StateRepository
 
     @BeforeEach
     fun setup() {
-        projectsRepository = mockk()
-        editStateUseCase = EditStateUseCase(projectsRepository)
+        stateRepository = mockk()
+        editStateUseCase = EditStateUseCase(stateRepository)
     }
 
     @Test
@@ -31,7 +32,7 @@ class EditStateUseCaseTest {
         )
         val newTitle = "Updated State"
 
-        every { projectsRepository.updateStateTitleForSpecificProjectById(any(), any()) }
+        every { stateRepository.updateStateTitle(any() ,any(), any()) } returns true
 
         // When
         val result = editStateUseCase(originalState, newTitle)
@@ -46,9 +47,10 @@ class EditStateUseCaseTest {
         )
 
         verify {
-            projectsRepository.updateStateTitleForSpecificProjectById(
+            stateRepository.updateStateTitle(
                 projectId = originalState.projectId,
-                stateId = originalState.id
+                stateId = originalState.id,
+                newTitle
             )
         }
     }
@@ -63,10 +65,10 @@ class EditStateUseCaseTest {
         )
 
         // When & Then
-        val exception = assertThrows<IllegalTitle> {
+        val exception = assertThrows<IllegalStateTitle> {
             editStateUseCase(invalidState, invalidState.title)
         }
-        assertEquals("State title cannot be blank", exception.message)
+        assertThat("State title cannot be blank").isEqualTo(exception)
 
     }
 
