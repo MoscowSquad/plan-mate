@@ -116,9 +116,9 @@ class UserCsvParserTest {
     private fun getCsvLines(): List<String> {
         return listOf(
             "id,username,hashedPassword,role",
-            "82e16049-a9fb-4f69-b6f7-3336b68f2ae4,Video 101 to 120,,w09w98we-d23d-4f69-b6f7-3336b68f2ae4,w09w98we-d23d-4f69-b6f7-3336b68f2ae4",
-            "045e2ef6-a9f8-43d9-9c33-da8cf3a0ff2f,Video 201 to 220,Don't watch video N0.203,8223k433-3l3l-23j0-b6f7-3336b68f2ae4,lk342l33-3l3l-0923-23l0-23k0i32k3303",
-            "07f641d4-077e-4f08-978d-3b6c9587f4bf,Video 301 to 320,,9283h32p-o320-lk30-b6f7-3336b68f2ae4,ki33h32p-3ij3-lk30-k303-k3i03j39j030",
+            "82e16049-a9fb-4f69-b6f7-3336b68f2ae4,Aiman,3336b68f2ae4,Admin",
+            "045e2ef6-a9f8-43d9-9c33-da8cf3a0ff2f,Zeyad,09sd23od3skd,Admin",
+            "07f641d4-077e-4f08-978d-3b6c9587f4bf,Yaser,wk5dr98sd6dd,Mate",
         )
     }
 
@@ -126,11 +126,11 @@ class UserCsvParserTest {
         id: String,
         userName: String,
         hashedPassword: String,
-        roleCode: Int,
+        roleCode: String,
     ): User {
         val role = when (roleCode) {
-            1 -> Role.ADMIN
-            2 -> Role.MATE
+            "Admin" -> Role.ADMIN
+            "Mate" -> Role.MATE
             else -> throw Exception("There is no role with this code{$roleCode}")
         }
         return User(UUID.fromString(id), userName, hashedPassword, role)

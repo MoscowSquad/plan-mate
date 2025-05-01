@@ -11,7 +11,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import test_helper.toCsvData
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 class AuditLogCsvParserTest {
     private lateinit var csvHandler: CsvHandler
@@ -167,16 +167,16 @@ class AuditLogCsvParserTest {
 
     private fun createAuditLog(
         id: String,
-        entityType: Int,
+        auditType: String,
         action: String,
         timestamp: String,
         entityId: String,
         userId: String
     ): AuditLog {
-        val type = when (entityType) {
-            1 -> PROJECT
-            2 -> TASK
-            else -> throw Exception("There in no entity with this type $entityType")
+        val type = when (auditType) {
+            "Project" -> PROJECT
+            "Task" -> TASK
+            else -> throw Exception("There in no entity with this type $auditType")
         }
         return AuditLog(
             UUID.fromString(id), type, action, LocalDateTime.parse(timestamp),

@@ -1,5 +1,5 @@
 package logic.models
 
-enum class Role(val value: Int) {
-    ADMIN(1), MATE(2)
+enum class Role(val value: String) {
+    ADMIN("Admin"), MATE("Mate")
 }
