@@ -2,6 +2,8 @@ package logic.usecases.tasksUseCases
 
 import logic.models.Task
 import logic.repositoies.TasksRepository
+import utilities.PropertyNullException
+import utilities.TaskIsNotFoundException
 
 class DeleteTaskUseCase(
     private val tasksRepository: TasksRepository
@@ -9,14 +11,15 @@ class DeleteTaskUseCase(
 
     fun deleteTask(id: Int?): List<Task> {
         val allTasks = tasksRepository.getAll().toMutableList()
+        val taskId = id?:throw  PropertyNullException()
         if (allTasks.isEmpty()) {
-            throw Exception()
+            throw TaskIsNotFoundException(taskId)
         }
         val isRemoved = allTasks.removeIf { currentTask ->
             currentTask.id == id
         }
         if (!isRemoved) {
-            throw Exception()
+            throw TaskIsNotFoundException(taskId)
         }
         return allTasks
     }
