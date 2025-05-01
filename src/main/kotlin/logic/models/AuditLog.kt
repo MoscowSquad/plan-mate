@@ -1,12 +1,12 @@
 package logic.models
 
-import java.time.LocalDateTime
+import kotlinx.datetime.LocalDateTime
 import java.util.*
 
 data class AuditLog(
     val id: UUID,
-    val entityType: EntityType,
     val action: String,
+    val auditType: AuditType,
     val timestamp: LocalDateTime,
     val entityId: UUID,
     val userId: UUID,

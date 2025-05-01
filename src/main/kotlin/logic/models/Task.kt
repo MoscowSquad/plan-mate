@@ -7,5 +7,5 @@ data class Task(
     val title: String,
     val description: String,
     val projectId: UUID,
-    val stateId: UUID,
+    val stateId: UUID
 )

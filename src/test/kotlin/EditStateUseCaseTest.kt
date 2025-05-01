@@ -1,8 +1,9 @@
+import com.google.common.truth.Truth
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.models.State
+import logic.models.TaskState
 import logic.repositoies.StateRepository
 import logic.usecases.EditStateUseCase
 import org.junit.jupiter.api.BeforeEach
@@ -23,14 +24,14 @@ class EditStateUseCaseTest {
     }
 
     @Test
-    fun `when valid title should return updated state `() {
+    fun `when valid title should return updated TaskState `() {
         // Given
-        val originalState = State(
+        val originalState = TaskState(
             id = UUID.fromString("00000000-0000-0000-0000-000000000002"),
             projectId = UUID.fromString("00000000-0000-0000-0000-000000000001"),
-            title = "Old State"
+            title = "Old TaskState"
         )
-        val newTitle = "Updated State"
+        val newTitle = "Updated TaskState"
 
         every { stateRepository.updateStateTitle(any() ,any(), any()) } returns true
 
@@ -38,8 +39,8 @@ class EditStateUseCaseTest {
         val result = editStateUseCase(originalState, newTitle)
 
         // Then
-        assertThat(result).isEqualTo(
-            State(
+        Truth.assertThat(result).isEqualTo(
+            TaskState(
                 id = originalState.id,
                 projectId = originalState.projectId,
                 title = newTitle
@@ -58,7 +59,7 @@ class EditStateUseCaseTest {
     @Test
     fun `when title is blank should throw IllegalStateTitle`() {
         // Given
-        val invalidState = State(
+        val invalidState = TaskState(
             id = UUID.randomUUID(),
             title = "",
             projectId = UUID.randomUUID()
@@ -68,7 +69,7 @@ class EditStateUseCaseTest {
         val exception = assertThrows<IllegalStateTitle> {
             editStateUseCase(invalidState, invalidState.title)
         }
-        assertThat("State title cannot be blank").isEqualTo(exception)
+        assertThat("TaskState title cannot be blank").isEqualTo(exception)
 
     }
 

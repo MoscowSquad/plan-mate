@@ -1,19 +1,19 @@
 package data.repositories
 
-import logic.models.State
+import logic.models.TaskState
 import logic.repositoies.StateRepository
 import java.util.*
 
 class StateRepositoryImp: StateRepository {
-    override fun getStateById(id: UUID): State? {
-        return State(UUID.randomUUID(),"name", UUID.randomUUID()) // fake to TDD
+    override fun getStateById(id: UUID): TaskState? {
+        return TaskState(UUID.randomUUID(),"name", UUID.randomUUID()) // fake to TDD
     }
 
-    override fun getStates(): List<State> {
+    override fun getStates(): List<TaskState> {
         return emptyList() // fake to TDD
     }
 
-    override fun getStatesByProject(projectId: UUID): List<State> {
+    override fun getStatesByProject(projectId: UUID): List<TaskState> {
         return emptyList()
     }
 
