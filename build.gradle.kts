@@ -15,6 +15,8 @@ dependencies {
     implementation("io.arrow-kt:arrow-core:2.0.1")
     implementation("io.arrow-kt:arrow-fx-coroutines:2.0.1")
     implementation("com.github.doyaaaaaken:kotlin-csv-jvm:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.6.2")
+
 
     testImplementation(kotlin("test"))
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.12.0-M1")
