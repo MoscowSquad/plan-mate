@@ -1,8 +1,8 @@
 package logic.usecases
 
-import logic.models.State
+import logic.models.TaskState
 import logic.repositoies.ProjectsRepository
-import java.util.UUID
+import java.util.*
 
 class DeleteStateUseCase(
     private val stateRepository: ProjectsRepository
@@ -16,8 +16,8 @@ class DeleteStateUseCase(
         return false
     }
 
-    private fun getState(stateId: UUID): State {
-        return State(id = stateId, title = "nre", projectId = UUID.randomUUID()) // fake return
+    private fun getState(stateId: UUID): TaskState {
+        return TaskState(id = stateId, title = "nre", projectId = UUID.randomUUID()) // fake return
     }
 
 }

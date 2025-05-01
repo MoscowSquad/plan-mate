@@ -4,7 +4,8 @@ import java.util.*
 
 data class User(
     val id: UUID,
-    val username: String,
+    val name: String,
     val hashedPassword: String,
-    val role: Role
+    val role: UserRole,
+    val projectIds: List<UUID>
 )

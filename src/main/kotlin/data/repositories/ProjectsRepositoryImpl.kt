@@ -1,6 +1,6 @@
 package data.repositories
 
-import logic.models.State
+import logic.models.TaskState
 import logic.repositoies.ProjectsRepository
 import java.util.*
 
@@ -13,8 +13,8 @@ class ProjectsRepositoryImpl: ProjectsRepository {
         return false
     }
 
-    override fun getStateById(stateId: UUID): State {
-        TODO("Not yet implemented")
+    override fun getStateById(stateId: UUID): TaskState {
+        return TaskState(UUID.randomUUID(), "State", UUID.randomUUID())
     }
 
 
