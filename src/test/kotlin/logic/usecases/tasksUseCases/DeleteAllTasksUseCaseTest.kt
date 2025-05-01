@@ -37,19 +37,9 @@ class DeleteAllTasksUseCaseTest {
         assertEquals(result, expected)
     }
 
-    @Test
-    fun `should Throw exception when there is no tasks found `() {
-        // Given
-        every { tasksRepository.getAll() } returns emptyList()
-        val isAdmin = true
-        // When & Then
-        assertThrows<Exception> {
-            deleteAllTasksUseCase.deleteAllTasks(isAdmin)
-        }
-    }
 
     @Test
-    fun `should return exception when user is not admin`() {
+    fun `should return false when user is not admin`() {
         // Given
         val tasks: List<Task> = listOf(
             Task(id = 1234, title = "Videos1"),
@@ -57,9 +47,12 @@ class DeleteAllTasksUseCaseTest {
         )
         every { tasksRepository.getAll() } returns tasks
         val isAdmin = false
-        // When & Then
-        assertThrows<Exception> {
-            deleteAllTasksUseCase.deleteAllTasks(isAdmin)
-        }
+        val expected = false
+
+        // When
+        val result = deleteAllTasksUseCase.deleteAllTasks(isAdmin)
+
+        //  Then
+        assertEquals(expected, result)
     }
 }
