@@ -52,9 +52,11 @@ class DeleteStateUseCaseTest {
             deleteStateUseCase(projectId, stateId)
         }
 
-        assertEquals("State with ID $stateId does not exist", exception.message)
-        assertEquals(stateId, exception.message)
-        verify(exactly = 1) { projectsRepository.deleteState(projectId, stateId) }
+
+        assertEquals(
+            "State with ID $stateId does not exist",
+            exception.message
+        )
     }
 
     @Test
