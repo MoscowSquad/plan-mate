@@ -1,10 +1,11 @@
 package logic.usecases
 
 import logic.models.State
-import logic.repositoies.ProjectsRepository
+import logic.repositoies.StateRepository
+import utilities.IllegalStateTitle
 
 class EditStateUseCase(
-    private val projectsRepository: ProjectsRepository
+    private val stateRepository: StateRepository
 ){
 
     operator fun invoke(state: State, title: String): State {
@@ -13,7 +14,7 @@ class EditStateUseCase(
 
     private fun isValidTitle(title: String) {
         if (title.isBlank()) {
-            throw IllegalArgumentException("State title cannot be blank")
+            throw IllegalStateTitle("State title cannot be blank")
         }
     }
 
