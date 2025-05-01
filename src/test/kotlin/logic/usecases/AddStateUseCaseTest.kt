@@ -5,7 +5,6 @@ import io.mockk.mockk
 import io.mockk.verify
 import logic.models.State
 import logic.repositoies.ProjectsRepository
-import logic.repositoies.StateRepository
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -15,13 +14,11 @@ import java.util.*
 
 class AddStateUseCaseTest {
     private lateinit var projectsRepository: ProjectsRepository
-    private lateinit var stateRepository: StateRepository
     private lateinit var addStateUseCase: AddStateUseCase
 
     @BeforeEach
     fun setup() {
         projectsRepository = mockk<ProjectsRepository>()
-        stateRepository = mockk<StateRepository>()
         addStateUseCase = AddStateUseCase(projectsRepository)
     }
 
