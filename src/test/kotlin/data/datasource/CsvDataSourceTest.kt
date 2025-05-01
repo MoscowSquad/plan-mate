@@ -169,10 +169,10 @@ class CsvDataSourceTest {
         val taskId = UUID.randomUUID()
         val timestamp = LocalDateTime.now()
         val auditLogs = listOf(
-            AuditLog(UUID.randomUUID(), EntityType.PROJECT, "Add", timestamp, projectId, userId),
-            AuditLog(UUID.randomUUID(), EntityType.PROJECT, "Edit", timestamp, projectId, userId),
-            AuditLog(UUID.randomUUID(), EntityType.PROJECT, "Delete", timestamp, projectId, userId),
-            AuditLog(UUID.randomUUID(), EntityType.TASK, "Change State", timestamp, taskId, userId),
+            AuditLog(UUID.randomUUID(), AuditType.PROJECT, "Add", timestamp, projectId, userId),
+            AuditLog(UUID.randomUUID(), AuditType.PROJECT, "Edit", timestamp, projectId, userId),
+            AuditLog(UUID.randomUUID(), AuditType.PROJECT, "Delete", timestamp, projectId, userId),
+            AuditLog(UUID.randomUUID(), AuditType.TASK, "Change State", timestamp, taskId, userId),
         )
         every { auditLogCsvParser.parse() } returns auditLogs
 

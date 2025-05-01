@@ -5,7 +5,7 @@ import java.util.*
 
 data class AuditLog(
     val id: UUID,
-    val entityType: EntityType,
+    val auditType: AuditType,
     val action: String,
     val timestamp: LocalDateTime,
     val entityId: UUID,

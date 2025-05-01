@@ -5,8 +5,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.models.AuditLog
-import logic.models.EntityType.PROJECT
-import logic.models.EntityType.TASK
+import logic.models.AuditType.PROJECT
+import logic.models.AuditType.TASK
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import test_helper.toCsvData
