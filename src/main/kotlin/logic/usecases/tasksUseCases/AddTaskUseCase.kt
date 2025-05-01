@@ -2,6 +2,7 @@ package logic.usecases.tasksUseCases
 
 import logic.models.Task
 import logic.repositoies.TasksRepository
+import utilities.PropertyNullException
 
 class AddTaskUseCase(
     private val tasksRepository: TasksRepository
@@ -9,7 +10,7 @@ class AddTaskUseCase(
     fun addTask(task: Task): List<Task> {
         val allTasks = tasksRepository.getAll().toMutableList()
         if (task.title == null || task.id == null || task.state == null) {
-            throw Exception()
+            throw PropertyNullException()
         }
         allTasks.add(task)
         return allTasks
