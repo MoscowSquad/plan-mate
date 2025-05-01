@@ -19,8 +19,8 @@ sealed class ProjectException(message: String) : Exception(message) {
     class TaskNotFoundException(tasktName: String) :
         ProjectException("Task '$tasktName' doesn't exists")
 
-    class UserNotFoundException(userId: UUID) :
-        ProjectException("User '$userId' doesn't exists")
+    class UserNotFoundException() :
+        ProjectException("User doesn't exists")
 
     class AuditProjectNotFoundException(auditLog: AuditLog) :
         ProjectException("Audit for project '$auditLog' doesn't exists")
