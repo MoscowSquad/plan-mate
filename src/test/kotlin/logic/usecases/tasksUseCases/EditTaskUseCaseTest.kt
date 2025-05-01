@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import utilities.PropertyNullException
+import utilities.TaskIsNotFoundException
 
 class EditTaskUseCaseTest{
     private lateinit var editTaskUseCase: EditTaskUseCase
@@ -37,7 +39,7 @@ class EditTaskUseCaseTest{
         assertEquals(result, expected)
     }
     @Test
-    fun `should Throw exception when user title is null during editing`() {
+    fun `should Throw PropertyNullException when user title is null during editing`() {
         // Given
         val tasks: List<Task> = listOf(
             Task(id = 1234, title = "Videos1"),
@@ -46,12 +48,12 @@ class EditTaskUseCaseTest{
         every { tasksRepository.getAll() } returns tasks
 
         // When & Then
-        assertThrows<Exception> {
+        assertThrows<PropertyNullException> {
             editTaskUseCase.editTask(Task(id = 12345, title = null))
         }
     }
     @Test
-    fun `should Throw exception when task ID is null during editing `() {
+    fun `should Throw PropertyNullException when task ID is null during editing `() {
         // Given
         val tasks: List<Task> = listOf(
             Task(id = 1234, title = "Videos1"),
@@ -60,21 +62,21 @@ class EditTaskUseCaseTest{
         every { tasksRepository.getAll() } returns tasks
 
         // When & Then
-        assertThrows<Exception> {
+        assertThrows<PropertyNullException> {
             editTaskUseCase.editTask(Task(id = null, title = "Videos3"))
         }
     }
     @Test
-    fun `should Throw exception when there is no tasks found to edit`() {
+    fun `should Throw TaskIsNotFoundException when there is no tasks found to edit`() {
         // Given
         val tasks: List<Task> = listOf(
-            Task(id = 1234, title = "Videos1"),
+            Task(id = null, title = "Videos1"),
             Task(id = 12345, title = "Videos2")
         )
         every { tasksRepository.getAll() } returns tasks
 
         // When & Then
-        assertThrows<Exception> {
+        assertThrows<TaskIsNotFoundException> {
             editTaskUseCase.editTask(Task(id = 456, title = "Videos3"))
         }
     }
