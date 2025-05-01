@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import utilities.PropertyNullException
 import java.util.*
 
 class AddTaskUseCaseTest {
@@ -47,7 +48,7 @@ class AddTaskUseCaseTest {
     }
 
     @Test
-    fun `should Throw exception when user title is null`() {
+    fun `should Throw PropertyNullException when user title is null`() {
         // Given
         val tasks: List<Task> = listOf(
             Task(id = 1234, title = "Videos1"),
@@ -56,13 +57,13 @@ class AddTaskUseCaseTest {
         every { tasksRepository.getAll() } returns tasks
 
         // When & Then
-        assertThrows<Exception> {
+        assertThrows<PropertyNullException> {
             addTaskUseCase.addTask(Task(id = 12345, title = null))
         }
     }
 
     @Test
-    fun `should Throw exception when state ID is null `() {
+    fun `should Throw PropertyNullException when state ID is null `() {
         // Given
         val tasks: List<Task> = listOf(
             Task(id = 1234, title = "Videos1"),
@@ -71,13 +72,13 @@ class AddTaskUseCaseTest {
         every { tasksRepository.getAll() } returns tasks
 
         // When & Then
-        assertThrows<Exception> {
+        assertThrows<PropertyNullException> {
             addTaskUseCase.addTask(Task(id = null, title = "Videos3"))
         }
     }
 
     @Test
-    fun `should Throw exception when user state is null `() {
+    fun `should Throw PropertyNullException when user state is null `() {
         // Given
         val tasks: List<Task> = listOf(
             Task(id = 1234, title = "Videos1"),
@@ -86,7 +87,7 @@ class AddTaskUseCaseTest {
         every { tasksRepository.getAll() } returns tasks
 
         // When & Then
-        assertThrows<Exception> {
+        assertThrows<PropertyNullException> {
             addTaskUseCase.addTask(Task(id = 12345, title = "Videos3", state = null))
         }
     }
