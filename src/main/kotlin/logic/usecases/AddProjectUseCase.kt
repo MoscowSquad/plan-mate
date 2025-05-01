@@ -5,9 +5,9 @@ import logic.repositoies.ProjectsRepository
 import java.util.UUID
 
 class AddProjectUseCase(private val projectRepository: ProjectsRepository) {
-    operator fun invoke(name: String): Project {
+    operator fun invoke(name: String, id: UUID): Project {
         val project = Project(
-            id = UUID.randomUUID(),
+            id = id,
             name = name
         )
         return projectRepository.save(project)

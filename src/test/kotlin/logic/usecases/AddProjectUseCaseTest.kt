@@ -22,21 +22,22 @@ class AddProjectUseCaseTest {
     }
 
     @Test
-    fun `should create project with given name and random UUID`() {
+    fun `should create project with given name and id`() {
         // Given
         val projectName = "Test Project"
+        val projectId = UUID.randomUUID()
         val projectSlot = slot<Project>()
-        val savedProject = Project(UUID.randomUUID(), projectName)
+        val savedProject = Project(projectId, projectName)
 
         every { projectRepository.save(capture(projectSlot)) } returns savedProject
 
         // When
-        val result = addProjectUseCase(projectName)
+        val result = addProjectUseCase(projectName, projectId)
 
         // Then
         verify(exactly = 1) { projectRepository.save(any()) }
         assertThat(projectSlot.captured.name).isEqualTo(projectName)
-        assertThat(projectSlot.captured.id).isNotNull()
+        assertThat(projectSlot.captured.id).isEqualTo(projectId)
         assertThat(result).isEqualTo(savedProject)
     }
 
@@ -44,12 +45,13 @@ class AddProjectUseCaseTest {
     fun `should return project returned by repository`() {
         // Given
         val projectName = "Test Project"
-        val savedProject = Project(UUID.randomUUID(), projectName)
+        val projectId = UUID.randomUUID()
+        val savedProject = Project(projectId, projectName)
 
         every { projectRepository.save(any()) } returns savedProject
 
         // When
-        val result = addProjectUseCase(projectName)
+        val result = addProjectUseCase(projectName, projectId)
 
         // Then
         assertThat(result).isEqualTo(savedProject)
@@ -59,38 +61,58 @@ class AddProjectUseCaseTest {
     fun `should pass created project to repository`() {
         // Given
         val projectName = "Test Project"
+        val projectId = UUID.randomUUID()
         val projectSlot = slot<Project>()
 
-        every { projectRepository.save(capture(projectSlot)) } returns Project(UUID.randomUUID(), projectName)
+        every { projectRepository.save(capture(projectSlot)) } returns Project(projectId, projectName)
 
         // When
-        addProjectUseCase(projectName)
+        addProjectUseCase(projectName, projectId)
 
         // Then
         verify(exactly = 1) { projectRepository.save(any()) }
         with(projectSlot.captured) {
             assertThat(name).isEqualTo(projectName)
-            assertThat(id).isNotNull()
+            assertThat(id).isEqualTo(projectId)
         }
     }
 
     @Test
-    fun `should generate different IDs for different projects`() {
+    fun `should create project with correct properties`() {
         // Given
+        val projectName = "Test Project"
+        val projectId = UUID.randomUUID()
+        val projectSlot = slot<Project>()
+
+        every { projectRepository.save(capture(projectSlot)) } returns Project(projectId, projectName)
+
+        // When
+        addProjectUseCase(projectName, projectId)
+
+        // Then
+        assertThat(projectSlot.captured.id).isEqualTo(projectId)
+        assertThat(projectSlot.captured.name).isEqualTo(projectName)
+    }
+
+    @Test
+    fun `should handle different project names`() {
+        // Given
+        val projectId1 = UUID.randomUUID()
+        val projectId2 = UUID.randomUUID()
         val projectSlot1 = slot<Project>()
         val projectSlot2 = slot<Project>()
 
-        every { projectRepository.save(capture(projectSlot1)) } returns Project(UUID.randomUUID(), "Project 1")
+        every { projectRepository.save(capture(projectSlot1)) } returns Project(projectId1, "Project 1")
 
         // When
-        addProjectUseCase("Project 1")
+        addProjectUseCase("Project 1", projectId1)
 
+        every { projectRepository.save(capture(projectSlot2)) } returns Project(projectId2, "Project 2")
 
-        every { projectRepository.save(capture(projectSlot2)) } returns Project(UUID.randomUUID(), "Project 2")
-
-        addProjectUseCase("Project 2")
+        addProjectUseCase("Project 2", projectId2)
 
         // Then
-        assertThat(projectSlot1.captured.id).isNotEqualTo(projectSlot2.captured.id)
+        assertThat(projectSlot1.captured.name).isEqualTo("Project 1")
+        assertThat(projectSlot2.captured.name).isEqualTo("Project 2")
     }
 }
