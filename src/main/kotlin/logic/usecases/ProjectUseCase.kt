@@ -10,11 +10,11 @@ class ProjectUseCase(
     private val projectRepository: ProjectsRepository,
     private val projectExistenceValidator: ProjectExistenceValidator
 ) {
-    fun getAllProjects(): List<Project> {
+    fun getAll(): List<Project> {
         return projectRepository.getAll() ?: throw ProjectException.UserNotFoundException()
     }
 
-    fun getProjectById(projectId: UUID): Project {
+    fun getById(projectId: UUID): Project {
         projectExistenceValidator.isExist(projectId)
         return projectRepository.getById(projectId)
             ?: throw ProjectNotFoundException(projectId.toString())

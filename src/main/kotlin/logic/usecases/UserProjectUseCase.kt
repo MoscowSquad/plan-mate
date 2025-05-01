@@ -9,14 +9,14 @@ class UserProjectUseCase(
     private val userProjectRepository: UserProjectRepository,
     private val projectExistenceValidator: ProjectExistenceValidator,
 ) {
-    fun getUserProjectById(userId: UUID, projectId: UUID, taskId: UUID): List<User>? {
+    fun getById(userId: UUID, projectId: UUID, taskId: UUID): List<User>? {
         projectExistenceValidator.isExist(projectId)
         return userProjectRepository.getByProjectId(projectId)
             ?: throw ProjectException.UserNotFoundException()
 
     }
 
-    fun getUserByTaskId(projectId: UUID, taskId: UUID): User? {
+    fun getByTaskId(projectId: UUID, taskId: UUID): User? {
         projectExistenceValidator.isExist(projectId)
 
         return userProjectRepository.getByTaskId(projectId,taskId)

@@ -11,13 +11,13 @@ class AuditProjectUseCase (
     private val projectExistenceValidator: ProjectExistenceValidator
     ) {
 
-        fun getSpecificAuditByProject(projectID: UUID,auditId:UUID):AuditLog{
+        fun getByProjectId(projectID: UUID, auditId:UUID):AuditLog{
             projectExistenceValidator.isExist(projectID)
             return auditRepository.getByProjectId(projectID,auditId)
                 ?: throw ProjectException.UserNotFoundException()
         }
 
-      fun getAllAuditByProject(projectID: UUID):List<AuditLog>{
+      fun getAllByProjectId(projectID: UUID):List<AuditLog>{
           projectExistenceValidator.isExist(projectID)
           return auditRepository.getAll(projectID)
               ?: throw ProjectException.UserNotFoundException()
