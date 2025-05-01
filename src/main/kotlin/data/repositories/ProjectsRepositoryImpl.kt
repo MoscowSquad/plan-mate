@@ -1,22 +1,14 @@
 package data.repositories
 
-import logic.models.State
 import logic.models.Project
+import logic.models.State
 import logic.repositoies.ProjectsRepository
 import java.util.*
 
-class ProjectsRepositoryImpl: ProjectsRepository{
-    private val projectUserAssignments = mutableMapOf<UUID, MutableSet<UUID>>()
+class ProjectsRepositoryImpl : ProjectsRepository {
     private val projects = mutableMapOf<UUID, Project>()
-    override fun isExist(projectId: UUID): Boolean {
-        return false
-    }
+    private val projectUserAssignments = mutableMapOf<UUID, MutableSet<UUID>>()
 
-    override fun addState(state: State): Boolean {
-        return false
-    }
-
-}
     override fun save(project: Project): Project {
         projects[project.id] = project
         return project
@@ -43,5 +35,13 @@ class ProjectsRepositoryImpl: ProjectsRepository{
 
         val userSet = projectUserAssignments.getOrPut(projectId) { mutableSetOf() }
         return userSet.add(userId)
+    }
+
+    override fun isExist(projectId: UUID): Boolean {
+        return false
+    }
+
+    override fun addState(state: State): Boolean {
+        return false
     }
 }
