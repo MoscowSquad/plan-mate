@@ -12,6 +12,6 @@ class DeleteAllTasksUseCase(
             allTasks.clear()
             return true
         }
-        return throw Exception()
+        return false
     }
 }
