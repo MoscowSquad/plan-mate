@@ -14,7 +14,7 @@ import java.time.LocalDateTime
 import java.util.UUID
 
 class AuditLogCsvParserTest {
-    private lateinit var csvHandler: AuditLogCsvHandler
+    private lateinit var csvHandler: CsvHandler
     private lateinit var parser: AuditLogCsvParser
 
     @BeforeEach

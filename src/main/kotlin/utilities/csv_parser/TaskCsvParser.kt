@@ -3,7 +3,7 @@ package utilities.csv_parser
 import logic.models.Task
 
 class TaskCsvParser(
-    private val csvHandler: TaskCsvHandler,
+    private val csvHandler: CsvHandler,
 ) : CsvParser<Task> {
     override fun parse(): List<Task> {
         return emptyList()

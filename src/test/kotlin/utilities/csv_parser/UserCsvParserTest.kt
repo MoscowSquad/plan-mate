@@ -12,7 +12,7 @@ import test_helper.toCsvData
 import java.util.*
 
 class UserCsvParserTest {
-    private lateinit var csvHandler: UserCsvHandler
+    private lateinit var csvHandler: CsvHandler
     private lateinit var parser: UserCsvParser
 
     @BeforeEach

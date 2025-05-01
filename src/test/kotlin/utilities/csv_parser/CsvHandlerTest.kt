@@ -1,37 +1,26 @@
 package utilities.csv_parser
 
 import com.google.common.truth.Truth
-import fake.FakeCsvHandler
-import fake.TestFileGetter
-import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import util.TEST_FILE
+import java.io.File
 
 class CsvHandlerTest {
-    private lateinit var fileGetter: TestFileGetter
+    private lateinit var file: File
     private lateinit var csvHandler: CsvHandler
 
     @BeforeEach
     fun setup() {
-        fileGetter = TestFileGetter()
-        csvHandler = FakeCsvHandler(fileGetter)
-    }
-
-    @Test
-    fun `should call FileGetter when get file`() {
-        // When
-        csvHandler.getLines()
-
-        // Then
-        verify { fileGetter.getFile(TEST_FILE) }
+        file = File(requireNotNull(javaClass.classLoader.getResource(TEST_FILE)).toURI())
+        csvHandler = CsvHandler(file)
     }
 
     @Test
     fun `should return a list of lines when get file content`() {
         // Given
         val fileContent = getTestText()
-        fileGetter.getFile(TEST_FILE).writeText(fileContent)
+        file.writeText(fileContent)
 
         // When
         val result = csvHandler.getLines()
@@ -45,7 +34,7 @@ class CsvHandlerTest {
     fun `should return a list of lines without the empty lines when get file content`() {
         // Given
         val fileContent = "\n\n\n\n" + getTestText() + "\n\n\n\n"
-        fileGetter.getFile(TEST_FILE).writeText(fileContent)
+        file.writeText(fileContent)
 
         // When
         val result = csvHandler.getLines()
@@ -59,7 +48,7 @@ class CsvHandlerTest {
     fun `should return a list of lines without the blank lines when get file content`() {
         // Given
         val fileContent = "\n   \n  \n \t\n" + getTestText() + " \n\t\n \n      \n"
-        fileGetter.getFile(TEST_FILE).writeText(fileContent)
+        file.writeText(fileContent)
 
         // When
         val result = csvHandler.getLines()
@@ -78,7 +67,7 @@ class CsvHandlerTest {
         csvHandler.write(content)
 
         // Then
-        val fileContent = fileGetter.getFile(TEST_FILE).readText()
+        val fileContent = file.readText()
         val expectedContent = "Test1\nTest2\nTest3\nTest4\n"
         Truth.assertThat(fileContent).isEqualTo(expectedContent)
     }
@@ -92,7 +81,7 @@ class CsvHandlerTest {
         csvHandler.write(content)
 
         // Then
-        val fileContent = fileGetter.getFile(TEST_FILE).readText()
+        val fileContent = file.readText()
         val expectedContent = "Test1\nTest2\nTest3\nTest4\n"
         Truth.assertThat(fileContent).isEqualTo(expectedContent)
     }
@@ -106,7 +95,7 @@ class CsvHandlerTest {
         csvHandler.write(content)
 
         // Then
-        val fileContent = fileGetter.getFile(TEST_FILE).readText()
+        val fileContent = file.readText()
         val expectedContent = "Test1\nTest2\nTest3\nTest4\n"
         Truth.assertThat(fileContent).isEqualTo(expectedContent)
     }
@@ -120,7 +109,7 @@ class CsvHandlerTest {
         csvHandler.write(content)
 
         // Then
-        val fileContent = fileGetter.getFile(TEST_FILE).readText()
+        val fileContent = file.readText()
         val expectedContent = "Test1\nTest2\nTest3\nTest4\n"
         Truth.assertThat(fileContent).isEqualTo(expectedContent)
     }

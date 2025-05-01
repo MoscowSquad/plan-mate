@@ -11,7 +11,7 @@ import test_helper.toCsvData
 import java.util.*
 
 class StateCsvParserTest {
-    private lateinit var csvHandler: StateCsvHandler
+    private lateinit var csvHandler: CsvHandler
     private lateinit var parser: StateCsvParser
 
     @BeforeEach
