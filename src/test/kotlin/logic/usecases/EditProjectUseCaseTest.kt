@@ -83,7 +83,7 @@ class EditProjectUseCaseTest {
         val projectId = UUID.randomUUID()
         val originalName = "Original Project"
         val updatedName = "Updated Project"
-        // Assuming Project class has additional properties that should be preserved
+
         val existingProject = createProject(id = projectId, name = originalName)
         val updatedProject = existingProject.copy(name = updatedName)
 
@@ -97,10 +97,10 @@ class EditProjectUseCaseTest {
         assertNotNull(result)
         assertEquals(updatedName, result?.name)
         assertEquals(projectId, result?.id)
-        // Add assertions for any other properties that should be preserved
+
     }
 
-    // Helper method - adjust based on your actual Project class properties
+
     private fun createProject(
         id: UUID,
         name: String

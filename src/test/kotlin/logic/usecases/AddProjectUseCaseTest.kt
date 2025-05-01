@@ -85,7 +85,7 @@ class AddProjectUseCaseTest {
         // When
         addProjectUseCase("Project 1")
 
-        // Reset slot to capture second project
+
         every { projectRepository.save(capture(projectSlot2)) } returns Project(UUID.randomUUID(), "Project 2")
 
         addProjectUseCase("Project 2")

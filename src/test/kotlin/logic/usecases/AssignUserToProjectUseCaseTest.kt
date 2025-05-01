@@ -19,7 +19,7 @@ class AssignUserToProjectUseCaseTest {
         projectRepository = mockk(relaxed = true)
         assignUserToProjectUseCase = AssignUserToProjectUseCase(projectRepository)
     }
-    
+
     @Test
     fun `should successfully assign user to project`() {
         // Given
