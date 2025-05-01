@@ -8,7 +8,7 @@ class DeleteAllTasksUseCase(
 
     fun deleteAllTasks(isAdmin: Boolean): Boolean {
         val allTasks = tasksRepository.getAll().toMutableList()
-        if (isAdmin && allTasks.isNotEmpty()) {
+        if (isAdmin) {
             allTasks.clear()
             return true
         }
