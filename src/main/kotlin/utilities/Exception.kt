@@ -1,3 +1,3 @@
 package utilities
 
-class IllegalTitle(message: String): Exception(message)
+class IllegalStateTitle(message: String): Exception(message)
