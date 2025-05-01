@@ -1,13 +1,13 @@
 package logic.usecases
 
-import logic.models.State
+import logic.models.TaskState
 import logic.repositoies.ProjectsRepository
 
 class AddStateUseCase(
     private val projectRepository: ProjectsRepository,
 ) {
 
-    operator fun invoke(state: State): Boolean{
+    operator fun invoke(state: TaskState): Boolean{
         isValidTitleState(state.title)
         return projectRepository.isExist(state.projectId) // fake
     }
