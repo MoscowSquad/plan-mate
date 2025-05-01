@@ -5,7 +5,7 @@ import logic.repositoies.ProjectsRepository
 import java.util.UUID
 
 class DeleteStateUseCase(
-    private val projectsRepository: ProjectsRepository
+    private val stateRepository: ProjectsRepository
 ) {
 
     operator fun invoke(stateId: UUID, projectId: UUID): Boolean{
