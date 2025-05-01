@@ -1,19 +1,15 @@
 package logic.usecases
-/*
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifyOrder
 import logic.models.Project
 import logic.repositoies.ProjectsRepository
-import logic.usecases.ProjectExistenceValidator
-import logic.usecases.ProjectUseCase
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import utilities.exception.ProjectException
-import utilities.Validator.ProjectExistenceValidator
 import java.util.*
 
 class ProjectUseCaseTest {
@@ -32,39 +28,40 @@ class ProjectUseCaseTest {
   projectExistenceValidator = mockk()
   projectUseCase = ProjectUseCase(projectsRepository, projectExistenceValidator)
 
-  every { projectExistenceValidator.validateProjectExists(any()) } returns Unit
-  every { projectExistenceValidator.validateProjectsExist() } returns Unit
+  every { projectExistenceValidator.isExist(any()) } returns true
  }
 
  @Test
  fun `getAllProjects should return all projects`() {
   val expectedProjects = listOf(testProject)
+  every { projectExistenceValidator.isExist(any()) } returns true
   every { projectsRepository.getAll() } returns expectedProjects
 
-  val result = projectUseCase.getAllProjects()
+  val result = projectUseCase.getAll()
 
   assertEquals(expectedProjects, result)
-  verify { projectExistenceValidator.validateProjectsExist() }
  }
 
  @Test
  fun `getProjectById should return project when exists`() {
+  every { projectExistenceValidator.isExist(any()) } returns true
   every { projectsRepository.getById(testProject.id) } returns testProject
 
-  val result = projectUseCase.getProjectById(testProject.id)
+  val result = projectUseCase.getById(testProject.id)
 
   assertEquals(testProject, result)
-  verify { projectExistenceValidator.validateProjectExists(testProject.id) }
+  verify { projectExistenceValidator.isExist(testProject.id) }
  }
 
  @Test
  fun `getProjectById should throw when project not found`() {
+  every { projectExistenceValidator.isExist(any()) } returns true
   every { projectsRepository.getById(testProject.id) } returns null
-  every { projectExistenceValidator.validateProjectExists(testProject.id) } throws
+  every { projectExistenceValidator.isExist(testProject.id) } throws
           ProjectException.ProjectNotFoundException(testProject.id.toString())
 
   assertThrows<ProjectException.ProjectNotFoundException> {
-   projectUseCase.getProjectById(testProject.id)
+   projectUseCase.getById(testProject.id)
   }
  }
 
@@ -73,15 +70,16 @@ class ProjectUseCaseTest {
   val projectId = UUID.fromString("00000000-0000-0000-0000-000000000010")
   val expectedMessage = "Project with ID $projectId was not found"
 
-  every { projectExistenceValidator.validateProjectExists(projectId) } throws
+  every { projectExistenceValidator.isExist(any()) } returns true
+  every { projectExistenceValidator.isExist(projectId) } throws
           ProjectException.ProjectNotFoundException(projectId.toString())
 
   val exception = assertThrows<ProjectException.ProjectNotFoundException> {
-   projectUseCase.getProjectById(projectId)
+   projectUseCase.getById(projectId)
   }
 
   assertEquals(expectedMessage, exception.message)
-  verify(exactly = 1) { projectExistenceValidator.validateProjectExists(projectId) }
+  verify(exactly = 1) { projectExistenceValidator.isExist(projectId) }
   verify(exactly = 0) { projectsRepository.getById(any()) }
  }
 
@@ -90,15 +88,15 @@ class ProjectUseCaseTest {
   val projectId = UUID.fromString("00000000-0000-0000-0000-000000000011")
   val expectedMessage = "Project with ID $projectId was not found"
 
-  every { projectExistenceValidator.validateProjectExists(projectId) } returns Unit
+  every { projectExistenceValidator.isExist(projectId) } returns true
   every { projectsRepository.getById(projectId) } returns null
 
   val exception = assertThrows<ProjectException.ProjectNotFoundException> {
-   projectUseCase.getProjectById(projectId)
+   projectUseCase.getById(projectId)
   }
 
   assertEquals(expectedMessage, exception.message)
-  verify { projectExistenceValidator.validateProjectExists(projectId) }
+  verify { projectExistenceValidator.isExist(projectId) }
   verify { projectsRepository.getById(projectId) }
  }
 
@@ -107,15 +105,15 @@ class ProjectUseCaseTest {
   val projectId = UUID.fromString("00000000-0000-0000-0000-000000000012")
   val expectedException = RuntimeException("Database error")
 
-  every { projectExistenceValidator.validateProjectExists(projectId) } returns Unit
+  every { projectExistenceValidator.isExist(projectId) } returns true
   every { projectsRepository.getById(projectId) } throws expectedException
 
   val exception = assertThrows<RuntimeException> {
-   projectUseCase.getProjectById(projectId)
+   projectUseCase.getById(projectId)
   }
 
   assertEquals(expectedException, exception)
-  verify { projectExistenceValidator.validateProjectExists(projectId) }
+  verify { projectExistenceValidator.isExist(projectId) }
   verify { projectsRepository.getById(projectId) }
  }
 
@@ -133,11 +131,11 @@ class ProjectUseCaseTest {
  fun `getProjectById should reject zero UUID`() {
   val zeroId = UUID(0, 0)
 
-  every { projectExistenceValidator.validateProjectExists(zeroId) } throws
+  every { projectExistenceValidator.isExist(zeroId) } throws
           ProjectException.ProjectValidationException("Invalid project ID")
 
   assertThrows<ProjectException.ProjectValidationException> {
-   projectUseCase.getProjectById(zeroId)
+   projectUseCase.getById(zeroId)
   }
  }
 
@@ -146,16 +144,42 @@ class ProjectUseCaseTest {
   val projectId = UUID.randomUUID()
   val expectedProject = Project(projectId, "Test Project")
 
-  every { projectExistenceValidator.validateProjectExists(projectId) } returns Unit
+  every { projectExistenceValidator.isExist(projectId) } returns true
   every { projectsRepository.getById(projectId) } returns expectedProject
 
-  projectUseCase.getProjectById(projectId)
+  projectUseCase.getById(projectId)
 
   verifyOrder {
-   projectExistenceValidator.validateProjectExists(projectId)
+   projectExistenceValidator.isExist(projectId)
    projectsRepository.getById(projectId)
   }
  }
-}
 
- */
+ @Test
+ fun `getAll should return empty list when repository returns empty list`() {
+  every { projectsRepository.getAll() } returns emptyList()
+
+  val result = projectUseCase.getAll()
+
+  assertTrue(result.isEmpty())
+ }
+
+ @Test
+ fun `getAll should throw UserNotFoundException when repository returns null`() {
+  every { projectsRepository.getAll() } returns null
+
+  assertThrows<ProjectException.UserNotFoundException> {
+   projectUseCase.getAll()
+  }
+ }
+
+ @Test
+ fun `getAll should call repository getAll exactly once`() {
+  every { projectsRepository.getAll() } returns listOf(testProject)
+
+  projectUseCase.getAll()
+
+  verify(exactly = 1) { projectsRepository.getAll() }
+ }
+
+}
