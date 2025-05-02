@@ -1,38 +1,65 @@
 package data.repositories
 
 import logic.models.User
-import logic.models.UserRole
 import logic.repositoies.UserRepository
 import java.util.*
 
 class UserRepositoryImpl : UserRepository {
+
+    private val users = mutableListOf<User>()
+
     override fun add(user: User): Boolean {
-        return false
+        if (users.any { it.id == user.id }) {
+            throw IllegalArgumentException("User with id ${user.id} already exists")
+        }
+        users.add(user)
+        return true
     }
 
     override fun delete(id: UUID): Boolean {
-        return false
+        val removed = users.removeIf { it.id == id }
+        if (!removed) {
+            throw NoSuchElementException("Cannot delete: User with id $id not found")
+        }
+        return true
     }
 
     override fun assignToProject(projectId: UUID, userId: UUID): Boolean {
-        return false
+        val index = users.indexOfFirst { it.id == userId }
+        if (index == -1) {
+            throw NoSuchElementException("User with id $userId not found")
+        }
+
+        val user = users[index]
+        if (projectId in user.projectIds) {
+            throw IllegalStateException("Project $projectId is already assigned to user $userId")
+        }
+
+        users[index] = user.copy(projectIds = user.projectIds + projectId)
+        return true
     }
 
     override fun revokeFromProject(projectId: UUID, userId: UUID): Boolean {
-        return false
+        val index = users.indexOfFirst { it.id == userId }
+        if (index == -1) {
+            throw NoSuchElementException("User with id $userId not found")
+        }
+
+        val user = users[index]
+        if (projectId !in user.projectIds) {
+            throw IllegalStateException("Project $projectId is not assigned to user $userId")
+        }
+
+        users[index] = user.copy(projectIds = user.projectIds - projectId)
+        return true
     }
 
     override fun getById(id: UUID): User {
-        return User(
-            id = UUID.randomUUID(),
-            name = "",
-            hashedPassword = "",
-            role = UserRole.MATE,
-            projectIds = listOf()
-        )
+        return users.find { it.id == id }
+            ?: throw NoSuchElementException("User with id $id not found")
     }
 
     override fun getAll(): List<User> {
-        return listOf()
+        return users.toList()
     }
 }
