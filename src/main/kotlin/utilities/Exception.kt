@@ -1,8 +1,6 @@
 package utilities
-
-class UnauthorizedAccessException(message: String) : Exception(message)
 import java.util.UUID
-
+class UnauthorizedAccessException(message: String) : Exception(message)
 class NoExistProjectException(projectId: UUID) : Exception("Project '$projectId' does not exist")
 class NotAdminException(message: String) : Exception(message)
 class InvalidProjectNameException(message: String) : Exception(message)
