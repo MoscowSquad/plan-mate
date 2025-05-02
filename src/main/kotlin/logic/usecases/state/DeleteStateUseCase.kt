@@ -1,4 +1,4 @@
-package logic.usecases
+package logic.usecases.state
 
 import logic.models.TaskState
 import logic.repositoies.StateRepository

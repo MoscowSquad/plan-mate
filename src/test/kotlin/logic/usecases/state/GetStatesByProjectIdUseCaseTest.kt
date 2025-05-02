@@ -1,4 +1,4 @@
-package logic.usecases
+package logic.usecases.state
 
 import io.mockk.every
 import io.mockk.mockk

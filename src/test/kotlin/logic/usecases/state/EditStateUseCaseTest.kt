@@ -1,4 +1,4 @@
-package logic.usecases
+package logic.usecases.state
 
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every

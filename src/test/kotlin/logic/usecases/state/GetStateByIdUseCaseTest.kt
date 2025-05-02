@@ -1,4 +1,4 @@
-package logic.usecases
+package logic.usecases.state
 
 import org.junit.jupiter.api.Assertions.*
 import io.mockk.every

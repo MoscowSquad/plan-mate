@@ -1,4 +1,4 @@
-package logic.usecase
+package logic.usecases.project
 
 import logic.repositoies.ProjectsRepository
 import utilities.NoExistProjectException
