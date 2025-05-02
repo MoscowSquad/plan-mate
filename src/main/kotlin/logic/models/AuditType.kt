@@ -1,6 +1,6 @@
 package logic.models
 
-enum class AuditType {
-    PROJECT,
-    TASK
+enum class AuditType(val value: String) {
+    PROJECT("Project"),
+    TASK("Task")
 }
