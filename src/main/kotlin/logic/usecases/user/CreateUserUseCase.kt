@@ -1,11 +1,12 @@
 package logic.usecases.user
 
+import logic.models.User
+import logic.models.UserRole
 import logic.repositoies.UserRepository
+import utilities.UnauthorizedAccessException
 
-class CreateUserUseCase(
-    private val userRepository: UserRepository
-) {
-    operator fun invoke(){
-
+class CreateUserUseCase(private val userRepository: UserRepository) {
+    operator fun invoke(role: UserRole, user: User): Boolean {
+        return false
     }
 }
