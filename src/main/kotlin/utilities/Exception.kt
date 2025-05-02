@@ -1,5 +1,6 @@
 package utilities
 
+class UnauthorizedAccessException(message: String) : Exception(message)
 import java.util.UUID
 
 class NoExistProjectException(projectId: UUID) : Exception("Project '$projectId' does not exist")
