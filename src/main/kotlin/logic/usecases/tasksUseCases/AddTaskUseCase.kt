@@ -7,7 +7,6 @@ class AddTaskUseCase(
     private val tasksRepository: TasksRepository
 ) {
     fun addTask(task: Task): Boolean {
-        val allTasks = tasksRepository.getAll().toMutableList()
-        return allTasks.add(task)
+        return tasksRepository.addTask(task)
     }
 }

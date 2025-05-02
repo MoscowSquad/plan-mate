@@ -8,8 +8,6 @@ class GetTaskByProjectIdUseCase(
     private val tasksRepository: TasksRepository
 ) {
     fun getTaskByProjectId(id: UUID): List<Task> {
-        return tasksRepository.getAll().filter { currentTask ->
-            currentTask.projectId == id
-        }
+        return tasksRepository.getTaskByProjectId(id)
     }
 }
