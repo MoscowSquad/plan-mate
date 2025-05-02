@@ -10,10 +10,13 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import utilities.PropertyNullException
 import utilities.TaskIsNotFoundException
+import java.util.*
 
 class EditTaskUseCaseTest{
     private lateinit var editTaskUseCase: EditTaskUseCase
     private lateinit var tasksRepository: TasksRepository
+    val id = UUID.fromString("00000000-0000-0000-0000-000000000001")
+    val id2 = UUID.fromString("00000000-0000-0000-0000-000000000002")
 
     @BeforeEach
     fun setup(){
@@ -24,60 +27,59 @@ class EditTaskUseCaseTest{
     fun `should return list of Tasks when edit title without any issue`() {
         // Given
         val tasks: List<Task> = listOf(
-            Task(id = 1234, title = "Videos1"),
-            Task(id = 12345, title = "Videos2")
+            Task(id=id, title = "Videos",projectId=id,stateId = id),
+            Task(id=id2, title = "Videos2",projectId=id2,stateId = id2),
         )
-        val inputTask = Task(id = 1234, title = "Book")
+        val inputTask =  Task(id=id2, title = "Book",projectId=id2,stateId = id2)
         every { tasksRepository.getAll() } returns tasks
-
-        val expected = Task(id = 1234, title = "Book")
 
         // When
         val result = editTaskUseCase.editTask(inputTask)
 
         // Then
-        assertEquals(result, expected)
+        assertEquals(result, inputTask)
     }
     @Test
     fun `should Throw PropertyNullException when user title is null during editing`() {
         // Given
         val tasks: List<Task> = listOf(
-            Task(id = 1234, title = "Videos1"),
-            Task(id = 12345, title = "Videos2")
+            Task(id=id, title = "Videos",projectId=id,stateId = id),
+            Task(id=id2, title = "Videos2",projectId=id2,stateId = id2),
         )
         every { tasksRepository.getAll() } returns tasks
 
         // When & Then
         assertThrows<PropertyNullException> {
-            editTaskUseCase.editTask(Task(id = 12345, title = null))
+            editTaskUseCase.editTask(Task(id=id2, title = null,projectId=id2,stateId = id2),)
         }
     }
     @Test
     fun `should Throw PropertyNullException when task ID is null during editing `() {
         // Given
         val tasks: List<Task> = listOf(
-            Task(id = 1234, title = "Videos1"),
-            Task(id = 12345, title = "Videos2")
+            Task(id=id, title = "Videos",projectId=id,stateId = id),
+            Task(id=id2, title = "Videos2",projectId=id2,stateId = id2),
         )
         every { tasksRepository.getAll() } returns tasks
 
         // When & Then
         assertThrows<PropertyNullException> {
-            editTaskUseCase.editTask(Task(id = null, title = "Videos3"))
+            editTaskUseCase.editTask(Task(id=null, title = "Videos2",projectId=id2,stateId = id2),)
         }
     }
     @Test
     fun `should Throw TaskIsNotFoundException when there is no tasks found to edit`() {
         // Given
         val tasks: List<Task> = listOf(
-            Task(id = null, title = "Videos1"),
-            Task(id = 12345, title = "Videos2")
+
+            Task(id=id, title = "Videos",projectId=id,stateId = id),
+            Task(id=id2, title = "Videos2",projectId=id2,stateId = id2),
         )
         every { tasksRepository.getAll() } returns tasks
 
         // When & Then
         assertThrows<TaskIsNotFoundException> {
-            editTaskUseCase.editTask(Task(id = 456, title = "Videos3"))
+            editTaskUseCase.editTask(Task(id=UUID.fromString("00000000-0000-0000-0000-000000000003"), title = "Videos2",projectId=id2,stateId = id2),)
         }
     }
 }
