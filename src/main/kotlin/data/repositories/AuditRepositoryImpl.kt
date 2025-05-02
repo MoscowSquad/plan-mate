@@ -1,13 +1,14 @@
 package data.repositories
 
-import kotlinx.datetime.LocalDateTime
+import data.csv_parser.AuditLogCsvParser
 import logic.models.AuditLog
 import logic.models.AuditType
 import logic.repositoies.AuditRepository
 import java.io.File
 import java.util.*
 
-class AuditRepositoryImpl(private val csvFile: File) : AuditRepository {
+class AuditRepositoryImpl(private val csvFile: File,
+private val csvParser: AuditLogCsvParser) : AuditRepository {
 
     init {
         if (!csvFile.exists()) {
@@ -35,28 +36,7 @@ class AuditRepositoryImpl(private val csvFile: File) : AuditRepository {
         return getAllLogs().filter { it.auditType == AuditType.PROJECT && it.entityId == projectId }
     }
 
-    //
     private fun getAllLogs(): List<AuditLog> {
-        return csvFile.readLines()
-            .drop(1)
-            .mapNotNull { line ->
-                val parts = line.split(',')
-                if (parts.size == 6) {
-                    try {
-                        AuditLog(
-                            id = UUID.fromString(parts[0]),
-                            auditType = AuditType.valueOf(parts[1]),
-                            action = parts[2],
-                            timestamp = LocalDateTime.parse(parts[3]),
-                            entityId = UUID.fromString(parts[4]),
-                            userId = UUID.fromString(parts[5])
-                        )
-                    } catch (e: Exception) {
-                        null
-                    }
-                } else {
-                    null
-                }
-            }
+        return csvParser.parse(csvFile.readLines())
     }
 }
