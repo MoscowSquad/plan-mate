@@ -8,11 +8,18 @@ import java.util.UUID
 
 class ProjectsRepositoryImpl(
     private val projectDataSource: ProjectDataSource
-): ProjectsRepository {
+) : ProjectsRepository {
+
     private val projects = mutableListOf<Project>()
 
+    init {
+        projects.addAll(projectDataSource.fetch())
+    }
+
     override fun add(project: Project): Boolean {
-        return projects.add(project)
+        val added = projects.add(project)
+        if (added) projectDataSource.save(projects)
+        return added
     }
 
     override fun update(project: Project): Boolean {
@@ -20,13 +27,14 @@ class ProjectsRepositoryImpl(
         if (index == -1) return false
 
         projects[index] = project
+        projectDataSource.save(projects)
         return true
     }
 
     override fun delete(id: UUID): Boolean {
-        val initialSize = projects.size
-        projects.removeIf { it.id == id }
-        return projects.size < initialSize
+        val removed = projects.removeIf { it.id == id }
+        if (removed) projectDataSource.save(projects)
+        return removed
     }
 
     override fun getAll(): List<Project> {

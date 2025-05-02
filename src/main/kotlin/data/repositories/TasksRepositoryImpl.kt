@@ -13,34 +13,33 @@ class TasksRepositoryImpl(
 
     private val tasks = mutableListOf<Task>()
 
-    override fun getAll(): List<Task> = tasks
+    init {
+        tasks.addAll(taskDataSource.fetch())
+    }
+
+    override fun getAll(): List<Task> = tasks.toList()
 
     override fun add(task: Task): Boolean {
-        val index = tasks.indexOfFirst { it.id == task.id }
-        if (index == -1) {
-            tasks.add(task)
-            return true
-        } else {
-            throw TaskIsExist(task.id)
-        }
+        if (tasks.any { it.id == task.id }) throw TaskIsExist(task.id)
+        tasks.add(task)
+        taskDataSource.save(tasks)
+        return true
     }
 
     override fun edit(updatedTask: Task): Boolean {
         val index = tasks.indexOfFirst { it.id == updatedTask.id }
-        return if (index != -1) {
-            tasks[index] = updatedTask
-            true
-        } else
-            throw TaskIsNotFoundException(updatedTask.id)
+        if (index == -1) throw TaskIsNotFoundException(updatedTask.id)
 
+        tasks[index] = updatedTask
+        taskDataSource.save(tasks)
+        return true
     }
 
     override fun delete(taskId: UUID): Boolean {
-        val index = tasks.indexOfFirst { it.id == taskId }
-        if (index == -1) {
-            throw TaskIsNotFoundException(taskId)
-        }
-        tasks.removeIf { it.id == taskId }
+        val removed = tasks.removeIf { it.id == taskId }
+        if (!removed) throw TaskIsNotFoundException(taskId)
+
+        taskDataSource.save(tasks)
         return true
     }
 
@@ -49,13 +48,6 @@ class TasksRepositoryImpl(
     }
 
     override fun getByProjectId(taskId: UUID): List<Task> {
-        val index = tasks.indexOfFirst { it.id == taskId }
-        if (index == -1) {
-            throw TaskIsNotFoundException(taskId)
-        }
-        return tasks.filter { currentTask ->
-            currentTask.projectId == taskId
-        }
+        return tasks.filter { it.projectId == taskId }
     }
-
 }
