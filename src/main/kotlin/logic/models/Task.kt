@@ -3,9 +3,9 @@ package logic.models
 import java.util.*
 
 data class Task(
-    val id: UUID?,
-    var title: String?,
-    var description: String="",
+    val id: UUID,
+    val title: String,
+    val description: String,
     val projectId: UUID,
-    var stateId: UUID?,
+    val stateId: UUID,
 )
