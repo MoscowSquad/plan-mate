@@ -1,4 +1,4 @@
-package logic.usecases
+package logic.usecases.auth
 
 import logic.models.User
 import logic.models.UserRole

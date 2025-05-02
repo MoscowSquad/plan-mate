@@ -1,4 +1,4 @@
-package logic.usecases
+package logic.usecases.auth
 
 import logic.repositoies.AuthenticationRepository
 import utilities.toMD5Hash

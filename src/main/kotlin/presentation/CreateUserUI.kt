@@ -4,6 +4,7 @@ import logic.usecases.user.CreateUserUseCase
 import presentation.io.ConsoleIO
 import utilities.toMD5Hash
 import utilities.isValidPasswordFormat
+import java.util.*
 
 class CreateUserUI(
     private val createUserUseCase: CreateUserUseCase,
@@ -30,8 +31,13 @@ class CreateUserUI(
                 return
             }
 
-        val hashedPassword = password.toMD5Hash()
-        val newUser = User(username, hashedPassword, newUserRole)
+        val newUser = User(
+            id = UUID.randomUUID(),
+            role = newUserRole,
+            name = username,
+            hashedPassword = password.toMD5Hash(),
+            projectIds = listOf()
+        )
 
             val success = createUserUseCase(currentUserRole, newUser)
 

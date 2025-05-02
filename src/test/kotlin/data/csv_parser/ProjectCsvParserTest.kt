@@ -98,7 +98,7 @@ class ProjectCsvParserTest {
     }
 
     private fun createProject(id: String, name: String): Project {
-        return Project(UUID.fromString(id), name)
+        return Project(UUID.fromString(id), name, listOf())
     }
 
     private fun getCsvLines(): List<String> {
