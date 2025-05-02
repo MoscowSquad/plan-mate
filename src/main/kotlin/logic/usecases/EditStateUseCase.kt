@@ -8,8 +8,8 @@ class EditStateUseCase(
     private val stateRepository: StateRepository
 ){
 
-    operator fun invoke(state: TaskState, title: String): TaskState {
-        return state.copy(title = title) // fake for now
+    operator fun invoke(state: TaskState): TaskState {
+        return state.copy(title = state.title) // fake for now
     }
 
     private fun isValidTitle(title: String) {

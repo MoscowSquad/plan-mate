@@ -1,11 +1,11 @@
-import com.google.common.truth.Truth
+package logic.usecases
+
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.models.TaskState
 import logic.repositoies.StateRepository
-import logic.usecases.EditStateUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -31,29 +31,19 @@ class EditStateUseCaseTest {
             projectId = UUID.fromString("00000000-0000-0000-0000-000000000001"),
             title = "Old TaskState"
         )
-        val newTitle = "Updated TaskState"
+        val newTask = TaskState(originalState.id, "Updated TaskState", originalState.projectId)
 
-        every { stateRepository.updateStateTitle(any() ,any(), any()) } returns true
+        every { stateRepository.update(any()) } returns true
 
         // When
-        val result = editStateUseCase(originalState, newTitle)
+        val result = editStateUseCase(originalState)
 
         // Then
-        Truth.assertThat(result).isEqualTo(
-            TaskState(
-                id = originalState.id,
-                projectId = originalState.projectId,
-                title = newTitle
-            )
+        assertThat(result).isEqualTo(
+            newTask
         )
 
-        verify {
-            stateRepository.updateStateTitle(
-                projectId = originalState.projectId,
-                stateId = originalState.id,
-                newTitle
-            )
-        }
+        verify { stateRepository.update(newTask) }
     }
 
     @Test
@@ -67,12 +57,11 @@ class EditStateUseCaseTest {
 
         // When & Then
         val exception = assertThrows<IllegalStateTitle> {
-            editStateUseCase(invalidState, invalidState.title)
+            editStateUseCase(invalidState)
         }
         assertThat("TaskState title cannot be blank").isEqualTo(exception)
 
     }
-
 
 
 }
