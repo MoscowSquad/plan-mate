@@ -37,8 +37,8 @@ class UserDataSourceTest {
     fun `fetch() should return parsed users when there is users returned by user csv-parser`() {
         val users = listOf(
             User(UUID.randomUUID(), "Aiman", "123456", UserRole.ADMIN, emptyList()),
-            User(UUID.randomUUID(), "Muhammed", "123456", UserRole.MATE, emptyList()),
-            User(UUID.randomUUID(), "Zeyad", "123456", UserRole.MATE, emptyList()),
+            User(UUID.randomUUID(), "Muhammed", "123456", UserRole.MATE, listOf(UUID.randomUUID())),
+            User(UUID.randomUUID(), "Zeyad", "123456", UserRole.MATE, listOf(UUID.randomUUID(), UUID.randomUUID())),
             User(UUID.randomUUID(), "Yaser", "123456", UserRole.MATE, emptyList()),
         )
         every { userCsvParser.parse(any()) } returns users

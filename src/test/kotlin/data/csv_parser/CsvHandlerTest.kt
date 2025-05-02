@@ -87,6 +87,33 @@ class CsvHandlerTest {
     }
 
     @Test
+    fun `should create file if not exist when write file data`() {
+        // Given
+        val content = listOf("Test1", "Test2", "Test3", "Test4")
+        if (file.exists())
+            file.delete()
+
+        // When
+        csvHandler.write(content)
+
+        // Then
+        Truth.assertThat(file.exists()).isTrue()
+    }
+
+    @Test
+    fun `should create file if not exist when get data as lines`() {
+        // Given
+        if (file.exists())
+            file.delete()
+
+        // When
+        csvHandler.getLines()
+
+        // Then
+        Truth.assertThat(file.exists()).isTrue()
+    }
+
+    @Test
     fun `should write content to file when a list of non-blank strings is provided`() {
         // Given
         val content = listOf("Test1", "    ", "Test2", "    ", "Test3", "Test4", "     ")

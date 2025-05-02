@@ -32,9 +32,7 @@ class UserCsvParser : CsvParser<User> {
             .split(",")
             .takeIf { it.isNotEmpty() }
             ?.filter { it.isNotBlank() }
-            ?.map {
-                UUID.fromString(it.trim())
-            }
+            ?.map { UUID.fromString(it.trim()) }
             ?: return emptyList()
     }
 
