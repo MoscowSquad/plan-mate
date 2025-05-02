@@ -10,10 +10,13 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import utilities.PropertyNullException
 import utilities.TaskIsNotFoundException
+import java.util.*
 
 class GetTaskByIdUseCaseTest {
     private lateinit var getTaskByIdUseCase: GetTaskByIdUseCase
     private lateinit var tasksRepository: TasksRepository
+    val id = UUID.fromString("00000000-0000-0000-0000-000000000001")
+    val id2 = UUID.fromString("00000000-0000-0000-0000-000000000002")
 
     @BeforeEach
     fun setup() {
@@ -25,13 +28,13 @@ class GetTaskByIdUseCaseTest {
     fun `should return task model when found task successfully `() {
         // Given
         val tasks: List<Task> = listOf(
-            Task(id = 1234, title = "Videos1"),
-            Task(id = 12345, title = "Videos2")
+            Task(id=id, title = "Videos",projectId=id,stateId = id),
+            Task(id=id2, title = "Videos2",projectId=id2,stateId = id2),
         )
-        val input = 1234
+        val input = id
         every { tasksRepository.getAll() } returns tasks
 
-        val expected = Task(id = 1234, title = "Videos1")
+        val expected = Task(id=id, title = "Videos",projectId=id,stateId = id)
 
         // When
         val result = getTaskByIdUseCase.getTaskById(input)
@@ -44,11 +47,11 @@ class GetTaskByIdUseCaseTest {
     fun `should Throw TaskIsNotFoundException when wanted task not found`() {
         // Given
         val tasks: List<Task> = listOf(
-            Task(id = 1234, title = "Videos1"),
-            Task(id = 12345, title = "Videos2")
+            Task(id=id, title = "Videos",projectId=id,stateId = id),
+            Task(id=id2, title = "Videos2",projectId=id2,stateId = id2),
         )
         every { tasksRepository.getAll() } returns tasks
-        val input = 456
+        val input =  UUID.fromString("00000000-0000-0000-0000-000000000003")
 
         // When & Then
         assertThrows<TaskIsNotFoundException> {
@@ -60,8 +63,8 @@ class GetTaskByIdUseCaseTest {
     fun `should Throw PropertyNullException when ID is null`() {
         // Given
         val tasks: List<Task> = listOf(
-            Task(id = 1234, title = "Videos1"),
-            Task(id = 12345, title = "Videos2")
+            Task(id=id, title = "Videos",projectId=id,stateId = id),
+            Task(id=id2, title = "Videos2",projectId=id2,stateId = id2),
         )
         every { tasksRepository.getAll() } returns tasks
         val input = null
@@ -76,7 +79,7 @@ class GetTaskByIdUseCaseTest {
     fun `should Throw TaskIsNotFoundException when there is no tasks`() {
         // Given
         every { tasksRepository.getAll() } returns emptyList()
-        val input = 456
+        val input =  UUID.fromString("00000000-0000-0000-0000-000000000002")
 
         // When & Then
         assertThrows<TaskIsNotFoundException> {
