@@ -1,11 +1,9 @@
-package logic.usecases.AddTaskUseCases
+package logic.usecases.tasksUseCases
 
 import io.mockk.every
 import io.mockk.mockk
-import logic.models.State
 import logic.models.Task
 import logic.repositoies.TasksRepository
-import logic.usecases.tasksUseCases.AddTaskUseCase
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -16,29 +14,32 @@ import java.util.*
 class AddTaskUseCaseTest {
     private lateinit var addTaskUseCase: AddTaskUseCase
     private lateinit var tasksRepository: TasksRepository
+    val id = UUID.fromString("00000000-0000-0000-0000-000000000001")
+    val id2: UUID = UUID.fromString("00000000-0000-0000-0000-000000000002")
 
     @BeforeEach
     fun setup() {
         tasksRepository = mockk(relaxed = true)
         addTaskUseCase = AddTaskUseCase(tasksRepository)
     }
-
+//UUID.fromString("00000000-0000-0000-0000-000000000002")
     @Test
     fun `should return list of Tasks when add task without any issue`() {
         // Given
-        val id: UUID = mockk()
         val projectId: UUID = mockk()
         val tasks: List<Task> = listOf(
-            Task(id = 1234, title = "Videos1", state = State(id, "TODO", projectId)),
-            Task(id = 12345, title = "Videos2", state = State(id, "TODO", projectId))
-        )
-        val task = Task(id = 123456, title = "Videos3", state = State(id, "TODO", projectId))
+            Task(id=id, title = "Videos",projectId=id,stateId = id),
+            Task(id=id2, title = "Videos2",projectId=id2,stateId = id2),
+            )
+        val task = Task(id = UUID.fromString("00000000-0000-0000-0000-000000000003")
+            , title = "Videos3"  ,projectId=id2,stateId = id2)
+
         every { tasksRepository.getAll() } returns tasks
 
         val expected = listOf(
-            Task(id = 1234, title = "Videos1", state = State(id, "TODO", projectId)),
-            Task(id = 12345, title = "Videos2", state = State(id, "TODO", projectId)),
-            Task(id = 123456, title = "Videos3", state = State(id, "TODO", projectId))
+            Task(id=id, title = "Videos",projectId=id,stateId = id),
+            Task(id=id2, title = "Videos2",projectId=id2,stateId = id2),
+            task,
         )
 
         // When
@@ -46,19 +47,34 @@ class AddTaskUseCaseTest {
         // Then
         assertEquals(result, expected)
     }
-
     @Test
-    fun `should Throw PropertyNullException when user title is null`() {
+    fun `should Throw PropertyNullException when  ID is null `() {
         // Given
         val tasks: List<Task> = listOf(
-            Task(id = 1234, title = "Videos1"),
-            Task(id = 12345, title = "Videos2")
+            Task(id=null, title = "Videos",projectId=id,stateId = id),
+            Task(id=id2, title = "Videos2",projectId=id2,stateId = id2),
         )
         every { tasksRepository.getAll() } returns tasks
 
         // When & Then
         assertThrows<PropertyNullException> {
-            addTaskUseCase.addTask(Task(id = 12345, title = null))
+            addTaskUseCase.addTask(Task(id = null
+                , title = "Videos3"  ,projectId= UUID.fromString("00000000-0000-0000-0000-000000000003"),stateId = UUID.fromString("00000000-0000-0000-0000-000000000003")))
+        }
+    }
+    @Test
+    fun `should Throw PropertyNullException when user title is null`() {
+        // Given
+        val tasks: List<Task> = listOf(
+            Task(id=id, title = "Videos",projectId=id,stateId = id),
+            Task(id=id2, title = "Videos2",projectId=id2,stateId = id2),
+        )
+        every { tasksRepository.getAll() } returns tasks
+
+        // When & Then
+        assertThrows<PropertyNullException> {
+            addTaskUseCase.addTask(Task(id = UUID.fromString("00000000-0000-0000-0000-000000000003")
+                , title = null  ,projectId=id2,stateId = id2))
         }
     }
 
@@ -66,29 +82,16 @@ class AddTaskUseCaseTest {
     fun `should Throw PropertyNullException when state ID is null `() {
         // Given
         val tasks: List<Task> = listOf(
-            Task(id = 1234, title = "Videos1"),
-            Task(id = 12345, title = "Videos2")
+            Task(id=id, title = "Videos",projectId=id,stateId = null),
+            Task(id=id2, title = "Videos2",projectId=id2,stateId = id2),
         )
         every { tasksRepository.getAll() } returns tasks
 
         // When & Then
         assertThrows<PropertyNullException> {
-            addTaskUseCase.addTask(Task(id = null, title = "Videos3"))
+            addTaskUseCase.addTask(Task(id = UUID.fromString("00000000-0000-0000-0000-000000000003")
+                , title = "Videos3"  ,projectId= UUID.fromString("00000000-0000-0000-0000-000000000003"),stateId = null))
         }
     }
 
-    @Test
-    fun `should Throw PropertyNullException when user state is null `() {
-        // Given
-        val tasks: List<Task> = listOf(
-            Task(id = 1234, title = "Videos1"),
-            Task(id = 12345, title = "Videos2")
-        )
-        every { tasksRepository.getAll() } returns tasks
-
-        // When & Then
-        assertThrows<PropertyNullException> {
-            addTaskUseCase.addTask(Task(id = 12345, title = "Videos3", state = null))
-        }
-    }
 }
