@@ -7,3 +7,5 @@ class TaskIsNotFoundException(taskId:UUID) : Exception("Task '$taskId' does not 
 class PropertyNullException() : Exception("your input has null value")
 class TaskIsExist(taskId: UUID) : Exception("Task '$taskId' is exist")
 
+
+class UnauthorizedAccessException(message: String) : Exception(message)
