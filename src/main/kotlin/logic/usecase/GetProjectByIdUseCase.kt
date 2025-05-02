@@ -8,7 +8,7 @@ class GetProjectByIdUseCase(
     private val projectsRepository: ProjectsRepository
 ) {
 
-    fun invoke(id: UUID): Project {
+    operator fun invoke(id: UUID): Project {
         return projectsRepository.getById(id)
     }
 }
