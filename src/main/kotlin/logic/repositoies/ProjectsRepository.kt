@@ -8,5 +8,5 @@ interface ProjectsRepository {
     fun update(project: Project): Boolean
     fun delete(id: UUID): Boolean
     fun getAll(): List<Project>
-    fun getById(id: UUID)
+    fun getById(id: UUID): Project
 }
