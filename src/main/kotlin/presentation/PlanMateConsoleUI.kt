@@ -6,4 +6,6 @@ class PlanMateConsoleUI(
     consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
 
+    fun loginScreen(){}
+
 }
