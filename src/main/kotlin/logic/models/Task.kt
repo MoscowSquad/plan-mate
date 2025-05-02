@@ -1,10 +1,11 @@
 package logic.models
 
+import java.util.*
 
 data class Task(
-    val id: Int? = null,
-    var title: String? = null,
-    var description: String? = "",
-    val project: Project?=null,
-    var state: State? = null,
+    val id: UUID,
+    val title: String,
+    val description: String,
+    val projectId: UUID,
+    val stateId: UUID
 )
