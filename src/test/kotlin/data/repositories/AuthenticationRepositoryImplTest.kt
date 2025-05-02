@@ -43,25 +43,17 @@ class AuthenticationRepositoryImplTest {
     }
     @Test
     fun `should not modify users list when admin exists`() {
-        // Create initial admin
         repository.createDefaultAdmin()
         val initialUsers = repository.users.toList()
-
-        // Call again when admin exists
         repository.createDefaultAdmin()
-
-        // Verify no changes were made
         assertEquals(initialUsers, repository.users)
     }
 
 
     @Test
     fun `should not create admin when one already exists`() {
-        // Create first admin
         repository.createDefaultAdmin()
         val initialCount = repository.users.size
-
-        // Try to create again
         repository.createDefaultAdmin()
         assertTrue(repository.users.size == initialCount)
     }

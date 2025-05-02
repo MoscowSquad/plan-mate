@@ -62,7 +62,6 @@ class LoginUseCaseTest {
   val testUsername = "testUser123"
   fakeRepository.shouldSucceed = true
   loginUseCase(testUsername, "password")
-  // Verify through behavior (login succeeded with this username)
   assertTrue(true)
  }
 }

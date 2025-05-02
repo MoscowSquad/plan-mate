@@ -184,7 +184,7 @@ class RegisterUseCaseTest {
     fun `should store empty project list when none provided`() {
         registerUseCase(
             name = "noprojects",
-            plainPassword = "test12345",  // Changed to 8 characters
+            plainPassword = "test12345",
             role = UserRole.MATE
         )
         assertTrue { fakeRepository.registeredUsers[0].projectIds.isEmpty() }
@@ -195,7 +195,7 @@ class RegisterUseCaseTest {
         val exception = assertThrows<IllegalArgumentException> {
             registerUseCase(
                 name = "testuser",
-                plainPassword = "",  // Blank password
+                plainPassword = "",
                 role = UserRole.MATE
             )
         }
@@ -207,7 +207,7 @@ class RegisterUseCaseTest {
         val exception = assertThrows<IllegalArgumentException> {
             registerUseCase(
                 name = "testuser",
-                plainPassword = "short",  // 5 characters
+                plainPassword = "short",
                 role = UserRole.MATE
             )
         }
