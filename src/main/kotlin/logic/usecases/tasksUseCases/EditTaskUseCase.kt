@@ -16,7 +16,7 @@ class EditTaskUseCase(
             .find { currentTask -> currentTask.id == taskID } ?: throw TaskIsNotFoundException(taskID)
 
         newTask.title = taskTitle
-        newTask.state = task.state
+        newTask.stateId = task.stateId
         newTask.description = task.description
 
         return newTask
