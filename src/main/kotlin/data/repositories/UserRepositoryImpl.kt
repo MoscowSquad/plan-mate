@@ -12,8 +12,7 @@ class UserRepositoryImpl : UserRepository {
         if (users.any { it.id == user.id }) {
             throw IllegalArgumentException("User with id ${user.id} already exists")
         }
-        users.add(user)
-        return true
+        return users.add(user)
     }
 
     override fun delete(id: UUID): Boolean {
@@ -39,7 +38,7 @@ class UserRepositoryImpl : UserRepository {
         return true
     }
 
-    override fun revokeFromProject(projectId: UUID, userId: UUID): Boolean {
+    override fun removeFromProject(projectId: UUID, userId: UUID): Boolean {
         val index = users.indexOfFirst { it.id == userId }
         if (index == -1) {
             throw NoSuchElementException("User with id $userId not found")

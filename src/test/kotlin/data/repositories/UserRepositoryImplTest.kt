@@ -91,7 +91,7 @@ class UserRepositoryImplTest {
         val projectId = UUID.randomUUID()
         repository.add(user)
         repository.assignToProject(projectId, user.id)
-        val result = repository.revokeFromProject(projectId, user.id)
+        val result = repository.removeFromProject(projectId, user.id)
         assertTrue(result)
         assertFalse(repository.getById(user.id).projectIds.contains(projectId))
     }
@@ -101,7 +101,7 @@ class UserRepositoryImplTest {
         val projectId = UUID.randomUUID()
         repository.add(user)
         val exception = assertThrows<IllegalStateException> {
-            repository.revokeFromProject(projectId, user.id)
+            repository.removeFromProject(projectId, user.id)
         }
         assertEquals("Project $projectId is not assigned to user ${user.id}", exception.message)
     }
@@ -111,7 +111,7 @@ class UserRepositoryImplTest {
         val fakeId = UUID.randomUUID()
         val projectId = UUID.randomUUID()
         val exception = assertThrows<NoSuchElementException> {
-            repository.revokeFromProject(projectId, fakeId)
+            repository.removeFromProject(projectId, fakeId)
         }
         assertEquals("User with id $fakeId not found", exception.message)
     }

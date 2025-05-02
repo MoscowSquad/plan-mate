@@ -13,10 +13,10 @@ import org.junit.jupiter.api.assertThrows
 import utilities.UnauthorizedAccessException
 import java.util.*
 
-class RevokeProjectFromUserUseCaseTest {
+class RemoveFromProjectUserUseCaseTest {
 
     private lateinit var userRepository: UserRepository
-    private lateinit var revokeProjectFromUserUseCase: RevokeProjectFromUserUseCase
+    private lateinit var removeFromProjectUserUseCase: RemoveFromProjectUserUseCase
 
     private val adminRole = UserRole.ADMIN
     private val mateRole = UserRole.MATE
@@ -26,7 +26,7 @@ class RevokeProjectFromUserUseCaseTest {
     @BeforeEach
     fun setup() {
         userRepository = mockk()
-        revokeProjectFromUserUseCase = RevokeProjectFromUserUseCase(userRepository)
+        removeFromProjectUserUseCase = RemoveFromProjectUserUseCase(userRepository)
     }
 
     @Test
@@ -36,7 +36,7 @@ class RevokeProjectFromUserUseCaseTest {
 
         // When & Then
         val exception = assertThrows<UnauthorizedAccessException> {
-            revokeProjectFromUserUseCase(mateRole, projectId, user.id)
+            removeFromProjectUserUseCase(mateRole, projectId, user.id)
         }
         assertEquals("Only admins can revoke projects from users", exception.message)
     }
@@ -45,13 +45,13 @@ class RevokeProjectFromUserUseCaseTest {
     fun `should revoke project for mates when user is admin`() {
         // Given
         every { userRepository.add(user) } returns true
-        every { userRepository.revokeFromProject(projectId, user.id) } returns true
+        every { userRepository.removeFromProject(projectId, user.id) } returns true
 
         // When
-        val result = revokeProjectFromUserUseCase(adminRole, projectId, user.id)
+        val result = removeFromProjectUserUseCase(adminRole, projectId, user.id)
 
         // Then
         assertTrue(result)
-        verify(exactly = 1) { userRepository.revokeFromProject(projectId, user.id) }
+        verify(exactly = 1) { userRepository.removeFromProject(projectId, user.id) }
     }
 }
