@@ -9,37 +9,38 @@ const val TEST_FILE = "test.csv"
 
 
 object UserIndex {
-    val ID: Int = 0
-    val NAME: Int = 1
-    val HASHED_PASSWORD: Int = 2
-    val ROLE: Int = 3
-    val PROJECT_IDS: Int = 4
+    const val ID: Int = 0
+    const val NAME: Int = 1
+    const val HASHED_PASSWORD: Int = 2
+    const val ROLE: Int = 3
+    const val PROJECT_IDS: Int = 4
 }
 
 object AuditLogIndex {
-    val ID: Int = 0
-    val ACTION: Int = 1
-    val AUDITTYPE: Int = 2
-    val TIMESTAMP: Int = 3
-    val ENTITY_ID: Int = 4
-    val USER_ID: Int = 5
+    const val ID: Int = 0
+    const val ACTION: Int = 1
+    const val AUDIT_TYPE: Int = 2
+    const val TIMESTAMP: Int = 3
+    const val ENTITY_ID: Int = 4
+    const val USER_ID: Int = 5
 }
 
 object ProjectIndex {
-    val ID: Int = 0
-    val NAME: Int = 1
+    const val ID: Int = 0
+    const val NAME: Int = 1
+    const val USER_IDS: Int = 2
 }
 
 object TaskIndex {
-    val ID: Int = 0
-    val TITLE: Int = 1
-    val DESCRIPTION: Int = 2
-    val PROJECT_ID: Int = 3
-    val STATE_ID: Int = 4
+    const val ID: Int = 0
+    const val TITLE: Int = 1
+    const val DESCRIPTION: Int = 2
+    const val PROJECT_ID: Int = 3
+    const val STATE_ID: Int = 4
 }
 
 object TaskStateIndex {
-    val ID: Int = 0
-    val TITLE: Int = 1
-    val PROJECT_ID: Int = 2
+    const val ID: Int = 0
+    const val TITLE: Int = 1
+    const val PROJECT_ID: Int = 2
 }

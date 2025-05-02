@@ -11,7 +11,7 @@ class AuditLogCsvParser : CsvParser<AuditLog> {
             AuditLog(
                 id = it[AuditLogIndex.ID].toUUID(),
                 action = it[AuditLogIndex.ACTION],
-                auditType = it[AuditLogIndex.AUDITTYPE].toAuditType(),
+                auditType = it[AuditLogIndex.AUDIT_TYPE].toAuditType(),
                 timestamp = it[AuditLogIndex.TIMESTAMP].toTimeStamp(),
                 entityId = it[AuditLogIndex.ENTITY_ID].toUUID(),
                 userId = it[AuditLogIndex.USER_ID].toUUID(),
