@@ -1,10 +1,12 @@
 package logic.usecases.user
 
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.models.User
 import logic.models.UserRole
 import logic.repositoies.UserRepository
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -13,19 +15,24 @@ import java.util.*
 
 class AssignProjectToUserUseCaseTest {
 
-    private val userRepository: UserRepository = mockk()
-    private val assignProjectToUserUseCase = AssignProjectToUserUseCase(userRepository)
+    private lateinit var userRepository: UserRepository
+    private lateinit var assignProjectToUserUseCase: AssignProjectToUserUseCase
 
     private val adminRole = UserRole.ADMIN
     private val mateRole = UserRole.MATE
     private val user = User(UUID.randomUUID(), "User1", "", UserRole.MATE, listOf())
     private val projectId = UUID.randomUUID()
 
+    @BeforeEach
+    fun setup() {
+        userRepository = mockk()
+        assignProjectToUserUseCase = AssignProjectToUserUseCase(userRepository)
+    }
 
     @Test
-    fun `assignProjectToUserUseCase throws UnauthorizedAccessException for mates`() {
+    fun `should throw UnauthorizedAccessException for mates try to assign project`() {
         // Given
-        userRepository.add(user)
+        every { userRepository.add(user) } returns true
 
         // When & Then
         val exception = assertThrows<UnauthorizedAccessException> {
@@ -36,9 +43,10 @@ class AssignProjectToUserUseCaseTest {
 
 
     @Test
-    fun `assignProjectToUserUseCase assigns project for admins`() {
+    fun `should assign project for users when admins try to assign`() {
         // Given
-        userRepository.add(user)
+        every { userRepository.add(user) } returns true
+        every { userRepository.assignToProject(projectId, user.id) } returns true
 
         // When
         val result = assignProjectToUserUseCase(adminRole, projectId, user.id)

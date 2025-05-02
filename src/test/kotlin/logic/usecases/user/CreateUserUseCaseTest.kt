@@ -1,11 +1,13 @@
 package logic.usecases.user
 
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.models.User
 import logic.models.UserRole
 import logic.repositoies.UserRepository
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import utilities.UnauthorizedAccessException
@@ -13,17 +15,23 @@ import java.util.*
 
 class CreateUserUseCaseTest {
 
-    private val userRepository: UserRepository = mockk()
-    private val createUserUseCase = CreateUserUseCase(userRepository)
+    private lateinit var userRepository: UserRepository
+    private lateinit var createUserUseCase: CreateUserUseCase
 
     private val adminRole = UserRole.ADMIN
     private val mateRole = UserRole.MATE
-    private val user = User(UUID.randomUUID(), "User1", "", UserRole.MATE, listOf())
+
+    @BeforeEach
+    fun setup() {
+        userRepository = mockk()
+        createUserUseCase = CreateUserUseCase(userRepository)
+    }
 
     @Test
-    fun `createUserUseCase throws UnauthorizedAccessException for mates`() {
+    fun `should throw UnauthorizedAccessException for mates`() {
         // Given
         val newUser = User(UUID.randomUUID(), "User2", "", UserRole.MATE, listOf())
+        every { userRepository.add(newUser) } returns true
 
         // When & Then
         val exception = assertThrows<UnauthorizedAccessException> {
@@ -33,9 +41,10 @@ class CreateUserUseCaseTest {
     }
 
     @Test
-    fun `createUserUseCase creates user for admins`() {
+    fun `should create user for admins`() {
         // Given
         val newUser = User(UUID.randomUUID(), "User2", "", UserRole.MATE, listOf())
+        every { userRepository.add(newUser) } returns true
 
         // When
         val result = createUserUseCase(adminRole, newUser)

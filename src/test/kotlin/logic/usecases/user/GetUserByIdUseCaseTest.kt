@@ -1,26 +1,34 @@
 package logic.usecases.user
 
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.models.User
 import logic.models.UserRole
 import logic.repositoies.UserRepository
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.util.*
 
 class GetUserByIdUseCaseTest {
 
-    private val userRepository: UserRepository = mockk()
-    private val getUserByIdUseCase = GetUserByIdUseCase(userRepository)
+    private lateinit var userRepository: UserRepository
+    private lateinit var getUserByIdUseCase: GetUserByIdUseCase
 
     private val user = User(UUID.randomUUID(), "User1", "", UserRole.MATE, listOf())
 
+    @BeforeEach
+    fun setup() {
+        userRepository = mockk()
+        getUserByIdUseCase = GetUserByIdUseCase(userRepository)
+    }
+
     @Test
-    fun `getUserByIdUseCase returns user by id`() {
+    fun `should return user by id when user exists`() {
         // Given
-        userRepository.add(user)
+        every { userRepository.getById(user.id) } returns user
 
         // When
         val result = getUserByIdUseCase(user.id)
@@ -31,9 +39,10 @@ class GetUserByIdUseCaseTest {
     }
 
     @Test
-    fun `getUserByIdUseCase throws NoSuchElementException when user not found`() {
+    fun `should throw NoSuchElementException when user not found`() {
         // Given
         val nonExistentUserId = UUID.randomUUID()
+        every { userRepository.getById(nonExistentUserId) } throws NoSuchElementException("User with id $nonExistentUserId not found")
 
         // When & Then
         val exception = assertThrows<NoSuchElementException> {

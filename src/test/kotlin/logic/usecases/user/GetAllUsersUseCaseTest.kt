@@ -1,11 +1,13 @@
 package logic.usecases.user
 
+import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.models.User
 import logic.models.UserRole
 import logic.repositoies.UserRepository
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import utilities.UnauthorizedAccessException
@@ -13,17 +15,23 @@ import java.util.*
 
 class GetAllUsersUseCaseTest {
 
-    private val userRepository: UserRepository = mockk()
-    private val getAllUsersUseCase = GetAllUsersUseCase(userRepository)
+    private lateinit var userRepository: UserRepository
+    private lateinit var getAllUsersUseCase: GetAllUsersUseCase
 
     private val adminRole = UserRole.ADMIN
     private val mateRole = UserRole.MATE
     private val user = User(UUID.randomUUID(), "User1", "", UserRole.MATE, listOf())
 
+    @BeforeEach
+    fun setup() {
+        userRepository = mockk()
+        getAllUsersUseCase = GetAllUsersUseCase(userRepository)
+    }
+
     @Test
-    fun `getAllUsersUseCase throws UnauthorizedAccessException for mates`() {
+    fun `should throw UnauthorizedAccessException for mates`() {
         // Given
-        userRepository.add(user)
+        every { userRepository.add(user) } returns true
 
         // When & Then
         val exception = assertThrows<UnauthorizedAccessException> {
@@ -33,9 +41,10 @@ class GetAllUsersUseCaseTest {
     }
 
     @Test
-    fun `getAllUsersUseCase returns all users for admins`() {
+    fun `should return all users for admins`() {
         // Given
-        userRepository.add(user)
+        every { userRepository.add(user) } returns true
+        every { userRepository.getAll() } returns listOf(user)
 
         // When
         val result = getAllUsersUseCase(adminRole)
