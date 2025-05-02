@@ -1,4 +1,4 @@
-package utilities.csv_parser
+package data.csv_parser
 
 import com.google.common.truth.Truth
 import io.mockk.every
@@ -8,6 +8,7 @@ import logic.models.Task
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import test_helper.toCsvData
+import utilities.TASKS_FILE
 import java.util.*
 
 class TaskCsvParserTest {
@@ -17,19 +18,19 @@ class TaskCsvParserTest {
     @BeforeEach
     fun setUp() {
         csvHandler = mockk(relaxed = true)
-        parser = TaskCsvParser(csvHandler)
+        parser = TaskCsvParser()
     }
 
     @Test
     fun `should call TaskCsvHandler when parsing tasks data`() {
-        parser.parse()
-        verify { csvHandler.getLines() }
+        parser.parse(emptyList())
+        verify { csvHandler.getLines(TASKS_FILE) }
     }
 
     @Test
     fun `should call TaskCsvHandler when serialize tasks data`() {
         parser.serialize(emptyList())
-        verify { csvHandler.write(emptyList()) }
+        verify { csvHandler.write(TASKS_FILE, emptyList()) }
     }
 
 
@@ -37,10 +38,10 @@ class TaskCsvParserTest {
     fun `should return tasks when parse data from task file`() {
         // Given
         val csvLines = getCsvLines()
-        every { csvHandler.getLines() } returns csvLines
+        every { csvHandler.getLines(TASKS_FILE) } returns csvLines
 
         // When
-        val result = parser.parse()
+        val result = parser.parse(csvLines)
 
         // Then
         val tasks = getTasks()
@@ -51,10 +52,10 @@ class TaskCsvParserTest {
     fun `should return empty list when parse data from empty task file`() {
         // Given
         val csvLines = listOf<String>()
-        every { csvHandler.getLines() } returns csvLines
+        every { csvHandler.getLines(TASKS_FILE) } returns csvLines
 
         // When
-        val result = parser.parse()
+        val result = parser.parse(csvLines)
 
         // Then
         val tasks = emptyList<Task>()
@@ -67,10 +68,10 @@ class TaskCsvParserTest {
         val csvLines = listOf(
             "id,title,projectId",
         )
-        every { csvHandler.getLines() } returns csvLines
+        every { csvHandler.getLines(TASKS_FILE) } returns csvLines
 
         // When
-        val result = parser.parse()
+        val result = parser.parse(csvLines)
 
         // Then
         val tasks = emptyList<Task>()

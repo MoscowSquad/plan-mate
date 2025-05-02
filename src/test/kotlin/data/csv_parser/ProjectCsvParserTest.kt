@@ -1,13 +1,13 @@
-package utilities.csv_parser
+package data.csv_parser
 
 import com.google.common.truth.Truth
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import logic.models.Project
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import test_helper.toCsvData
+import utilities.PROJECTS_FILE
 import java.util.*
 
 class ProjectCsvParserTest {
@@ -17,30 +17,17 @@ class ProjectCsvParserTest {
     @BeforeEach
     fun setUp() {
         csvHandler = mockk(relaxed = true)
-        parser = ProjectCsvParser(csvHandler)
+        parser = ProjectCsvParser()
     }
-
-    @Test
-    fun `should call ProjectCsvHandler when parsing projects data`() {
-        parser.parse()
-        verify { csvHandler.getLines() }
-    }
-
-    @Test
-    fun `should call ProjectCsvHandler when serialize projects data`() {
-        parser.serialize(emptyList())
-        verify { csvHandler.write(emptyList()) }
-    }
-
 
     @Test
     fun `should return projects when parse data from project file`() {
         // Given
         val csvLines = getCsvLines()
-        every { csvHandler.getLines() } returns csvLines
+        every { csvHandler.getLines(PROJECTS_FILE) } returns csvLines
 
         // When
-        val result = parser.parse()
+        val result = parser.parse(csvLines)
 
         // Then
         val projects = getProjects()
@@ -51,10 +38,10 @@ class ProjectCsvParserTest {
     fun `should return empty list when parse data from empty project file`() {
         // Given
         val csvLines = listOf<String>()
-        every { csvHandler.getLines() } returns csvLines
+        every { csvHandler.getLines(PROJECTS_FILE) } returns csvLines
 
         // When
-        val result = parser.parse()
+        val result = parser.parse(csvLines)
 
         // Then
         val projects = emptyList<Project>()
@@ -67,10 +54,10 @@ class ProjectCsvParserTest {
         val csvLines = listOf(
             "id,name",
         )
-        every { csvHandler.getLines() } returns csvLines
+        every { csvHandler.getLines(PROJECTS_FILE) } returns csvLines
 
         // When
-        val result = parser.parse()
+        val result = parser.parse(csvLines)
 
         // Then
         val projects = emptyList<Project>()

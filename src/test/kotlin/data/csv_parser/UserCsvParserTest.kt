@@ -1,14 +1,14 @@
-package utilities.csv_parser
+package data.csv_parser
 
 import com.google.common.truth.Truth
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import logic.models.Role
 import logic.models.User
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import test_helper.toCsvData
+import utilities.USERS_FILE
 import java.util.*
 
 class UserCsvParserTest {
@@ -18,30 +18,17 @@ class UserCsvParserTest {
     @BeforeEach
     fun setUp() {
         csvHandler = mockk(relaxed = true)
-        parser = UserCsvParser(csvHandler)
+        parser = UserCsvParser()
     }
-
-    @Test
-    fun `should call UserCsvHandler when parsing users data`() {
-        parser.parse()
-        verify { csvHandler.getLines() }
-    }
-
-    @Test
-    fun `should call UserCsvHandler when serialize users data`() {
-        parser.serialize(emptyList())
-        verify { csvHandler.write(emptyList()) }
-    }
-
 
     @Test
     fun `should return users when parse data from user file`() {
         // Given
         val csvLines = getCsvLines()
-        every { csvHandler.getLines() } returns csvLines
+        every { csvHandler.getLines(USERS_FILE) } returns csvLines
 
         // When
-        val result = parser.parse()
+        val result = parser.parse(csvLines)
 
         // Then
         val users = getUsers()
@@ -52,10 +39,10 @@ class UserCsvParserTest {
     fun `should return empty list when parse data from empty user file`() {
         // Given
         val csvLines = listOf<String>()
-        every { csvHandler.getLines() } returns csvLines
+        every { csvHandler.getLines(USERS_FILE) } returns csvLines
 
         // When
-        val result = parser.parse()
+        val result = parser.parse(csvLines)
 
         // Then
         val users = emptyList<User>()
@@ -68,10 +55,10 @@ class UserCsvParserTest {
         val csvLines = listOf(
             "id,username,hashedPassword,role",
         )
-        every { csvHandler.getLines() } returns csvLines
+        every { csvHandler.getLines(USERS_FILE) } returns csvLines
 
         // When
-        val result = parser.parse()
+        val result = parser.parse(csvLines)
 
         // Then
         val users = emptyList<User>()

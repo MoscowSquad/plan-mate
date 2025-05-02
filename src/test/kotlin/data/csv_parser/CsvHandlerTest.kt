@@ -1,4 +1,4 @@
-package utilities.csv_parser
+package data.csv_parser
 
 import com.google.common.truth.Truth
 import org.junit.jupiter.api.BeforeEach
@@ -13,7 +13,7 @@ class CsvHandlerTest {
     @BeforeEach
     fun setup() {
         file = File(requireNotNull(javaClass.classLoader.getResource(TEST_FILE)).toURI())
-        csvHandler = CsvHandler(file)
+        csvHandler = CsvHandler()
     }
 
     @Test
@@ -23,7 +23,7 @@ class CsvHandlerTest {
         file.writeText(fileContent)
 
         // When
-        val result = csvHandler.getLines()
+        val result = csvHandler.getLines(TEST_FILE)
 
         // Then
         val lines = getTestLines()
@@ -37,7 +37,7 @@ class CsvHandlerTest {
         file.writeText(fileContent)
 
         // When
-        val result = csvHandler.getLines()
+        val result = csvHandler.getLines(TEST_FILE)
 
         // Then
         val expectedLines = getTestLines()
@@ -51,7 +51,7 @@ class CsvHandlerTest {
         file.writeText(fileContent)
 
         // When
-        val result = csvHandler.getLines()
+        val result = csvHandler.getLines(TEST_FILE)
 
         // Then
         val expectedLines = getTestLines()
@@ -64,7 +64,7 @@ class CsvHandlerTest {
         val content = listOf("Test1", "Test2", "Test3", "Test4")
 
         // When
-        csvHandler.write(content)
+        csvHandler.write(TEST_FILE, content)
 
         // Then
         val fileContent = file.readText()
@@ -78,7 +78,7 @@ class CsvHandlerTest {
         val content = listOf("Test1", "Test2", "", "Test3", "Test4", "", "")
 
         // When
-        csvHandler.write(content)
+        csvHandler.write(TEST_FILE, content)
 
         // Then
         val fileContent = file.readText()
@@ -92,7 +92,7 @@ class CsvHandlerTest {
         val content = listOf("Test1", "    ", "Test2", "    ", "Test3", "Test4", "     ")
 
         // When
-        csvHandler.write(content)
+        csvHandler.write(TEST_FILE, content)
 
         // Then
         val fileContent = file.readText()
@@ -106,7 +106,7 @@ class CsvHandlerTest {
         val content = listOf("Test1", "\n", "Test2", "\t", "Test3", "Test4", "\n")
 
         // When
-        csvHandler.write(content)
+        csvHandler.write(TEST_FILE, content)
 
         // Then
         val fileContent = file.readText()
