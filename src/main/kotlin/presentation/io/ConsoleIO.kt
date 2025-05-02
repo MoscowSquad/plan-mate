@@ -5,3 +5,4 @@ interface ConsoleIO {
     fun write(message: String?)
     fun showError(message: String?)
 }
+
