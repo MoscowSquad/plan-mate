@@ -7,7 +7,7 @@ class GetAllProjectsUseCase(
     private val projectsRepository: ProjectsRepository
 ) {
 
-    fun invoke(): List<Project> {
+    operator fun invoke(): List<Project> {
         return projectsRepository.getAll()
     }
 }
