@@ -3,6 +3,7 @@ import di.presentationModule
 import di.useCaseModule
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
+import java.util.*
 
 
 fun main() {
@@ -13,4 +14,6 @@ fun main() {
     // Call the UI
 
     stopKoin()
+
+    println(UUID.randomUUID())
 }
