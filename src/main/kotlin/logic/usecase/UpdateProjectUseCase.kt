@@ -11,7 +11,7 @@ class UpdateProjectUseCase(
     private val projectsRepository: ProjectsRepository
 ) {
 
-    fun invoke(id: UUID, name: String, userIds: List<UUID>, isAdmin: Boolean): Boolean {
+    operator fun invoke(id: UUID, name: String, userIds: List<UUID>, isAdmin: Boolean): Boolean {
         if (!isAdmin) {
             throw NotAdminException("Only administrators can update projects")
         }
