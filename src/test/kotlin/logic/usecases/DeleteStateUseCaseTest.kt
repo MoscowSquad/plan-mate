@@ -3,7 +3,7 @@ package logic.usecases
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.repositoies.ProjectsRepository
+import logic.repositoies.StatesRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -14,13 +14,13 @@ import kotlin.test.Test
 
 class DeleteStateUseCaseTest {
 
-    private lateinit var projectsRepository: ProjectsRepository
+    private lateinit var stateRepository: StatesRepository
     private lateinit var deleteStateUseCase: DeleteStateUseCase
 
     @BeforeEach
     fun setUp() {
-        projectsRepository = mockk(relaxed = false) // Use strict mocking
-        deleteStateUseCase = DeleteStateUseCase(projectsRepository)
+        stateRepository = mockk(relaxed = false) // Use strict mocking
+        deleteStateUseCase = DeleteStateUseCase(stateRepository)
     }
 
     @Test
@@ -29,14 +29,14 @@ class DeleteStateUseCaseTest {
         val projectId = UUID.fromString("00000000-0000-0000-0000-000000000001")
         val stateId = UUID.fromString("00000000-0000-0000-0000-000000000002")
 
-        every { projectsRepository.deleteState(projectId, stateId) } returns true
+        every { stateRepository.deleteState(projectId, stateId) } returns true
 
         // When
         val result = deleteStateUseCase(projectId, stateId)
 
         // Then
         assertTrue(result)
-        verify(exactly = 1) { projectsRepository.deleteState(projectId, stateId) }
+        verify(exactly = 1) { stateRepository.deleteState(projectId, stateId) }
     }
 
     @Test
@@ -45,7 +45,7 @@ class DeleteStateUseCaseTest {
         val projectId = UUID.fromString("00000000-0000-0000-0000-000000000001")
         val stateId = UUID.fromString("00000000-0000-0000-0000-000000000002")
 
-        every { projectsRepository.deleteState(projectId, stateId) } returns false
+        every { stateRepository.deleteState(projectId, stateId) } returns false
 
         // When/Then
         val exception = assertThrows<StateNotExistException> {
@@ -66,7 +66,7 @@ class DeleteStateUseCaseTest {
         val stateId = UUID.fromString("00000000-0000-0000-0000-000000000002")
         val expectedError = IllegalStateException("Database error")
 
-        every { projectsRepository.deleteState(projectId, stateId) } throws expectedError
+        every { stateRepository.deleteState(projectId, stateId) } throws expectedError
 
         // When/Then
         val exception = assertThrows<IllegalStateException> {
@@ -74,6 +74,6 @@ class DeleteStateUseCaseTest {
         }
 
         assertEquals(expectedError, exception)
-        verify(exactly = 1) { projectsRepository.deleteState(projectId, stateId) }
+        verify(exactly = 1) { stateRepository.deleteState(projectId, stateId) }
     }
 }
