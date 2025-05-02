@@ -20,7 +20,7 @@ class AuditLogCsvParserTest {
     @BeforeEach
     fun setUp() {
         csvHandler = mockk(relaxed = true)
-        parser = AuditLogCsvParser()
+        parser = AuditLogCsvParser(csvHandler)
     }
 
     @Test
@@ -28,7 +28,7 @@ class AuditLogCsvParserTest {
         // Given
         val timestamp = "2025-04-29T07:26:51.781688100"
         val csvLines = getCsvLines(timestamp)
-        every { csvHandler.getLines(AUDIT_LOG_FILE) } returns csvLines
+        every { csvHandler.getLines() } returns csvLines
 
         // When
         val result = parser.parse(csvLines)
@@ -42,7 +42,7 @@ class AuditLogCsvParserTest {
     fun `should return empty list when parse data from empty audit-log file`() {
         // Given
         val csvLines = listOf<String>()
-        every { csvHandler.getLines(AUDIT_LOG_FILE) } returns csvLines
+        every { csvHandler.getLines() } returns csvLines
 
         // When
         val result = parser.parse(csvLines)
@@ -58,7 +58,7 @@ class AuditLogCsvParserTest {
         val csvLines = listOf(
             "id,entityType,action,timestamp,entityId,userId",
         )
-        every { csvHandler.getLines(AUDIT_LOG_FILE) } returns csvLines
+        every { csvHandler.getLines() } returns csvLines
 
         // When
         val result = parser.parse(csvLines)

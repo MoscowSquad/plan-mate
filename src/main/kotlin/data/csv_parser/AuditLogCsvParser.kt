@@ -2,7 +2,9 @@ package data.csv_parser
 
 import logic.models.AuditLog
 
-class AuditLogCsvParser : CsvParser<AuditLog> {
+class AuditLogCsvParser(
+    private val csvHandler: CsvHandler,
+) : CsvParser<AuditLog> {
     override fun parse(data: List<CsvData>): List<AuditLog> {
         TODO("Not yet implemented")
     }

@@ -5,7 +5,6 @@ import data.csv_parser.AuditLogCsvParser
 import data.csv_parser.CsvHandler
 
 class AuditLogDataSource(
-    private val csvHandler: CsvHandler,
     private val csvParser: AuditLogCsvParser,
 ) : DataSource<AuditLog> {
     override fun fetch(): List<AuditLog> {

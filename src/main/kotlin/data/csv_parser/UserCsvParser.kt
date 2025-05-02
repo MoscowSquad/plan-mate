@@ -2,7 +2,9 @@ package data.csv_parser
 
 import logic.models.User
 
-class UserCsvParser : CsvParser<User> {
+class UserCsvParser(
+    private val csvHandler: CsvHandler,
+) : CsvParser<User> {
     override fun parse(data: List<CsvData>): List<User> {
         TODO("Not yet implemented")
     }

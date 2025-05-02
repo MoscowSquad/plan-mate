@@ -17,14 +17,14 @@ class TaskStateCsvParserTest {
     @BeforeEach
     fun setUp() {
         csvHandler = mockk(relaxed = true)
-        parser = TaskStateCsvParser()
+        parser = TaskStateCsvParser(csvHandler)
     }
 
     @Test
     fun `should return states when parse data from state file`() {
         // Given
         val csvLines = getCsvLines()
-        every { csvHandler.getLines(STATES_FILE) } returns csvLines
+        every { csvHandler.getLines() } returns csvLines
 
         // When
         val result = parser.parse(csvLines)
@@ -38,7 +38,7 @@ class TaskStateCsvParserTest {
     fun `should return empty list when parse data from empty state file`() {
         // Given
         val csvLines = listOf<String>()
-        every { csvHandler.getLines(STATES_FILE) } returns csvLines
+        every { csvHandler.getLines() } returns csvLines
 
         // When
         val result = parser.parse(csvLines)
@@ -54,7 +54,7 @@ class TaskStateCsvParserTest {
         val csvLines = listOf(
             "id,title,projectId",
         )
-        every { csvHandler.getLines(STATES_FILE) } returns csvLines
+        every { csvHandler.getLines() } returns csvLines
 
         // When
         val result = parser.parse(csvLines)

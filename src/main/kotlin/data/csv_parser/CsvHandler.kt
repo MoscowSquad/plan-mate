@@ -1,10 +1,12 @@
 package data.csv_parser
 
-class CsvHandler {
-    fun getLines(fileName: String): List<String> {
+import java.io.File
+
+class CsvHandler(val file: File) {
+    fun getLines(): List<String> {
         TODO("Not yet implemented")
     }
 
-    fun write(fileName: String, lines: List<String>) {
+    fun write(lines: List<String>) {
     }
 }

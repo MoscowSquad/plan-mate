@@ -17,14 +17,14 @@ class ProjectCsvParserTest {
     @BeforeEach
     fun setUp() {
         csvHandler = mockk(relaxed = true)
-        parser = ProjectCsvParser()
+        parser = ProjectCsvParser(csvHandler)
     }
 
     @Test
     fun `should return projects when parse data from project file`() {
         // Given
         val csvLines = getCsvLines()
-        every { csvHandler.getLines(PROJECTS_FILE) } returns csvLines
+        every { csvHandler.getLines() } returns csvLines
 
         // When
         val result = parser.parse(csvLines)
@@ -38,7 +38,7 @@ class ProjectCsvParserTest {
     fun `should return empty list when parse data from empty project file`() {
         // Given
         val csvLines = listOf<String>()
-        every { csvHandler.getLines(PROJECTS_FILE) } returns csvLines
+        every { csvHandler.getLines() } returns csvLines
 
         // When
         val result = parser.parse(csvLines)
@@ -54,7 +54,7 @@ class ProjectCsvParserTest {
         val csvLines = listOf(
             "id,name",
         )
-        every { csvHandler.getLines(PROJECTS_FILE) } returns csvLines
+        every { csvHandler.getLines() } returns csvLines
 
         // When
         val result = parser.parse(csvLines)

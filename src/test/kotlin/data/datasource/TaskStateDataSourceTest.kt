@@ -21,7 +21,7 @@ class TaskStateDataSourceTest {
     fun setUp() {
         csvHandler = mockk(relaxed = true)
         stateCsvParser = mockk(relaxed = true)
-        dataSource = TaskStateDataSource(csvHandler, stateCsvParser)
+        dataSource = TaskStateDataSource(stateCsvParser)
     }
 
     @Test
@@ -56,6 +56,6 @@ class TaskStateDataSourceTest {
     @Test
     fun `save() should call CsvHandler to parse when save tasks states data`() {
         dataSource.save(emptyList())
-        verify { csvHandler.write(any(), any()) }
+        verify { csvHandler.write(any()) }
     }
 }

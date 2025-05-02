@@ -18,14 +18,14 @@ class UserCsvParserTest {
     @BeforeEach
     fun setUp() {
         csvHandler = mockk(relaxed = true)
-        parser = UserCsvParser()
+        parser = UserCsvParser(csvHandler)
     }
 
     @Test
     fun `should return users when parse data from user file`() {
         // Given
         val csvLines = getCsvLines()
-        every { csvHandler.getLines(USERS_FILE) } returns csvLines
+        every { csvHandler.getLines() } returns csvLines
 
         // When
         val result = parser.parse(csvLines)
@@ -39,7 +39,7 @@ class UserCsvParserTest {
     fun `should return empty list when parse data from empty user file`() {
         // Given
         val csvLines = listOf<String>()
-        every { csvHandler.getLines(USERS_FILE) } returns csvLines
+        every { csvHandler.getLines() } returns csvLines
 
         // When
         val result = parser.parse(csvLines)
@@ -55,7 +55,7 @@ class UserCsvParserTest {
         val csvLines = listOf(
             "id,username,hashedPassword,role",
         )
-        every { csvHandler.getLines(USERS_FILE) } returns csvLines
+        every { csvHandler.getLines() } returns csvLines
 
         // When
         val result = parser.parse(csvLines)

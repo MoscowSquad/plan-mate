@@ -5,7 +5,6 @@ import data.csv_parser.CsvHandler
 import data.csv_parser.UserCsvParser
 
 class UserDataSource(
-    private val csvHandler: CsvHandler,
     private val csvParser: UserCsvParser,
 ) : DataSource<User> {
     override fun fetch(): List<User> {

@@ -25,7 +25,7 @@ class AuditLogDataSourceTest {
         csvHandler = mockk(relaxed = true)
         auditLogCsvParser = mockk(relaxed = true)
 
-        dataSource = AuditLogDataSource(csvHandler, auditLogCsvParser)
+        dataSource = AuditLogDataSource(auditLogCsvParser)
     }
 
     @Test
@@ -66,6 +66,6 @@ class AuditLogDataSourceTest {
     @Test
     fun `save() should call CsvHandler to parse when save audit-log data`() {
         dataSource.save(emptyList())
-        verify { csvHandler.write(any(), any()) }
+        verify { csvHandler.write(any()) }
     }
 }

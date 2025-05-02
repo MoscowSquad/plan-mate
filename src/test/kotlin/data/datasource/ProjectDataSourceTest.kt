@@ -21,7 +21,7 @@ class ProjectDataSourceTest {
     fun setUp() {
         csvHandler = mockk(relaxed = true)
         projectCsvParser = mockk(relaxed = true)
-        dataSource = ProjectDataSource(csvHandler, projectCsvParser)
+        dataSource = ProjectDataSource(projectCsvParser)
     }
 
     @Test
@@ -55,6 +55,6 @@ class ProjectDataSourceTest {
     @Test
     fun `save() should call CsvHandler to parse when save projects data`() {
         dataSource.save(emptyList())
-        verify { csvHandler.write(any(), any()) }
+        verify { csvHandler.write(any()) }
     }
 }

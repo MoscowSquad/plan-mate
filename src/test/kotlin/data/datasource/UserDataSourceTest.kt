@@ -23,7 +23,7 @@ class UserDataSourceTest {
         csvHandler = mockk(relaxed = true)
         userCsvParser = mockk(relaxed = true)
 
-        dataSource = UserDataSource(csvHandler, userCsvParser)
+        dataSource = UserDataSource(userCsvParser)
     }
 
 
@@ -59,6 +59,6 @@ class UserDataSourceTest {
     @Test
     fun `save() should call CsvHandler to parse when save users data`() {
         dataSource.save(emptyList())
-        verify { csvHandler.write(any(), any()) }
+        verify { csvHandler.write(any()) }
     }
 }
