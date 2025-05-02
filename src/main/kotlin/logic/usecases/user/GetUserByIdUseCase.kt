@@ -1,7 +1,7 @@
 package logic.usecases.user
 
 import logic.models.User
-import logic.repositoies.UserRepository
+import logic.repositories.UserRepository
 import java.util.*
 
 class GetUserByIdUseCase(private val userRepository: UserRepository) {

@@ -1,6 +1,6 @@
 package logic.usecases.auth
 
-import logic.repositoies.AuthenticationRepository
+import logic.repositories.AuthenticationRepository
 import utilities.toMD5Hash
 
 class LoginUseCase(

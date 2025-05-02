@@ -2,7 +2,7 @@ package logic.usecases.user
 
 import logic.models.User
 import logic.models.UserRole
-import logic.repositoies.UserRepository
+import logic.repositories.UserRepository
 import utilities.UnauthorizedAccessException
 
 class CreateUserUseCase(private val userRepository: UserRepository) {

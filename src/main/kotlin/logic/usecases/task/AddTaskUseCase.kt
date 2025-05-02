@@ -1,7 +1,7 @@
 package logic.usecases.task
 
 import logic.models.Task
-import logic.repositoies.TasksRepository
+import logic.repositories.TasksRepository
 
 class AddTaskUseCase(
     private val tasksRepository: TasksRepository

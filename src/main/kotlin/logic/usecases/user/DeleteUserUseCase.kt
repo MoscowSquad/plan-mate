@@ -1,7 +1,7 @@
 package logic.usecases.user
 
 import logic.models.UserRole
-import logic.repositoies.UserRepository
+import logic.repositories.UserRepository
 import utilities.UnauthorizedAccessException
 import java.util.*
 import kotlin.NoSuchElementException

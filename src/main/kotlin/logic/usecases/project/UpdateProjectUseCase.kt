@@ -1,7 +1,7 @@
 package logic.usecases.project
 
 import logic.models.Project
-import logic.repositoies.ProjectsRepository
+import logic.repositories.ProjectsRepository
 import utilities.InvalidProjectNameException
 import utilities.NoExistProjectException
 import utilities.NotAdminException

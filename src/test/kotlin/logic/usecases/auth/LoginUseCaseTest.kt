@@ -1,7 +1,7 @@
 package logic.usecases.auth
 
 import logic.models.User
-import logic.repositoies.AuthenticationRepository
+import logic.repositories.AuthenticationRepository
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import utilities.toMD5Hash

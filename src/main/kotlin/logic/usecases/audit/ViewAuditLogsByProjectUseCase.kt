@@ -1,7 +1,7 @@
 package logic.usecases.audit
 
 import logic.models.AuditLog
-import logic.repositoies.AuditRepository
+import logic.repositories.AuditRepository
 import java.util.UUID
 
 class ViewAuditLogsByProjectUseCase(private val auditLogUseCase: AuditRepository) {

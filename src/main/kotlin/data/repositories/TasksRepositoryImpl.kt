@@ -1,13 +1,14 @@
 package data.repositories
 
+import data.datasource.TaskDataSource
 import logic.models.Task
-import logic.repositoies.TasksRepository
+import logic.repositories.TasksRepository
 import utilities.TaskIsExist
 import utilities.TaskIsNotFoundException
 import java.util.*
 
 class TasksRepositoryImpl(
-
+    private val taskDataSource: TaskDataSource
 ) : TasksRepository {
 
     private val tasks = mutableListOf<Task>()

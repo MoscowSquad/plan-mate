@@ -1,11 +1,14 @@
 package data.repositories
 
+import data.datasource.ProjectDataSource
 import logic.models.Project
-import logic.repositoies.ProjectsRepository
+import logic.repositories.ProjectsRepository
 import utilities.ProjectNotFoundException
 import java.util.UUID
 
-class ProjectsRepositoryImpl: ProjectsRepository {
+class ProjectsRepositoryImpl(
+    private val projectDataSource: ProjectDataSource
+): ProjectsRepository {
     private val projects = mutableListOf<Project>()
 
     override fun add(project: Project): Boolean {

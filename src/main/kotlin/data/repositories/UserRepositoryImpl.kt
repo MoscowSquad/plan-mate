@@ -1,10 +1,13 @@
 package data.repositories
 
+import data.datasource.UserDataSource
 import logic.models.User
-import logic.repositoies.UserRepository
+import logic.repositories.UserRepository
 import java.util.*
 
-class UserRepositoryImpl : UserRepository {
+class UserRepositoryImpl(
+    private val userDataSource: UserDataSource
+) : UserRepository {
 
     private val users = mutableListOf<User>()
 

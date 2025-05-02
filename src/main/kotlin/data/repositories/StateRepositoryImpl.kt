@@ -1,12 +1,12 @@
 package data.repositories
 
+import data.datasource.TaskStateDataSource
 import logic.models.TaskState
-import logic.repositoies.ProjectsRepository
-import logic.repositoies.StateRepository
+import logic.repositories.StateRepository
 import java.util.*
 
 class StateRepositoryImpl(
-    private val projectsRepository: ProjectsRepository
+    private val stateDataSource: TaskStateDataSource
 ) : StateRepository {
 
     override fun getById(id: UUID): TaskState {

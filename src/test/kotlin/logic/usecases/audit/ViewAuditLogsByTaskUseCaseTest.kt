@@ -5,7 +5,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import logic.models.AuditLog
 import logic.models.AuditType
-import logic.repositoies.AuditRepository
+import logic.repositories.AuditRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*

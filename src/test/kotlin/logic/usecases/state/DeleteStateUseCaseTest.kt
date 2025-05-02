@@ -3,7 +3,7 @@ package logic.usecases.state
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.repositoies.StateRepository
+import logic.repositories.StateRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach

@@ -1,6 +1,6 @@
 package logic.usecases.task
 
-import logic.repositoies.TasksRepository
+import logic.repositories.TasksRepository
 import java.util.*
 
 class DeleteTaskUseCase(

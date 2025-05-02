@@ -1,7 +1,7 @@
 package logic.usecases.project
 
 import logic.models.Project
-import logic.repositoies.ProjectsRepository
+import logic.repositories.ProjectsRepository
 import java.util.UUID
 
 class GetProjectByIdUseCase(

@@ -1,6 +1,6 @@
 package logic.usecases.project
 
-import logic.repositoies.ProjectsRepository
+import logic.repositories.ProjectsRepository
 import utilities.NoExistProjectException
 import utilities.NotAdminException
 import java.util.UUID

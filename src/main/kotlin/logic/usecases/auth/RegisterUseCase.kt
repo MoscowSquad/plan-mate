@@ -2,7 +2,7 @@ package logic.usecases.auth
 
 import logic.models.User
 import logic.models.UserRole
-import logic.repositoies.AuthenticationRepository
+import logic.repositories.AuthenticationRepository
 import utilities.toMD5Hash
 import java.util.*
 

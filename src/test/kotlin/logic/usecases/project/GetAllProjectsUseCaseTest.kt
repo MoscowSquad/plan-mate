@@ -3,7 +3,7 @@ package logic.usecases.project
 import io.mockk.every
 import io.mockk.mockk
 import logic.models.Project
-import logic.repositoies.ProjectsRepository
+import logic.repositories.ProjectsRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

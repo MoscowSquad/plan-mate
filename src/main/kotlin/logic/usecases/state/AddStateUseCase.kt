@@ -1,7 +1,7 @@
 package logic.usecases.state
 
 import logic.models.TaskState
-import logic.repositoies.StateRepository
+import logic.repositories.StateRepository
 
 class AddStateUseCase(
     private val stateRepository: StateRepository,
