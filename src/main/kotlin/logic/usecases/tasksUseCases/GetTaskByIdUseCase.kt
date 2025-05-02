@@ -4,12 +4,13 @@ import logic.models.Task
 import logic.repositoies.TasksRepository
 import utilities.PropertyNullException
 import utilities.TaskIsNotFoundException
+import java.util.UUID
 
 class GetTaskByIdUseCase(
     private val tasksRepository: TasksRepository
 ) {
 
-    fun getTaskById(id: Int?): Task {
+    fun getTaskById(id: UUID?): Task {
         val allTasks = tasksRepository.getAll()
         val taskID = id?: throw PropertyNullException()
 
