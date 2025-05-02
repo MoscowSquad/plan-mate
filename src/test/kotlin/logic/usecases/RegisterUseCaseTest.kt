@@ -5,7 +5,9 @@ import logic.models.UserRole
 import logic.repositoies.AuthenticationRepository
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import utilities.toMD5Hash
 import java.util.*
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 import kotlin.test.fail
@@ -27,7 +29,7 @@ class RegisterUseCaseTest {
 
     private val fakeRepository = FakeAuthRepository()
     private val passwordHasher = { plain: String -> "hashed_$plain" }
-    private val registerUseCase = RegisterUseCase(fakeRepository, passwordHasher)
+    private val registerUseCase = RegisterUseCase(fakeRepository)
 
     @Test
     fun `should return non-null user when registration succeeds`() {
@@ -38,11 +40,16 @@ class RegisterUseCaseTest {
         )
         assertNotNull(result)
     }
-
     @Test
     fun `should handle password hashing failure`() {
-        val failingHasher = { _: String -> throw RuntimeException("Hashing failed") }
-        val failingRegisterUseCase = RegisterUseCase(fakeRepository, failingHasher)
+        val failingAuthRepository = object : AuthenticationRepository {
+            override fun register(user: User): User {
+                throw RuntimeException("Password hashing failed")
+            }
+            override fun login(name: String, password: String): Boolean = false
+        }
+
+        val failingRegisterUseCase = RegisterUseCase(failingAuthRepository)
 
         assertThrows<RuntimeException> {
             failingRegisterUseCase(
@@ -88,12 +95,14 @@ class RegisterUseCaseTest {
 
     @Test
     fun `should store hashed password when registration succeeds`() {
+        val password = "validPassword123"
+
         registerUseCase(
             name = "testuser",
-            plainPassword = "validPassword123",
+            plainPassword = password,
             role = UserRole.MATE
         )
-        assertTrue { fakeRepository.registeredUsers[0].hashedPassword == "hashed_validPassword123" }
+        assertEquals(password.toMD5Hash(), fakeRepository.registeredUsers[0].hashedPassword)
     }
 
     @Test

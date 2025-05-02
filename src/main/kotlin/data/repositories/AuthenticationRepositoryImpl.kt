@@ -3,12 +3,12 @@ package data.repositories
 import logic.models.User
 import logic.models.UserRole
 import logic.repositoies.AuthenticationRepository
+import utilities.toMD5Hash
 import java.io.File
 import java.util.*
 
 class AuthenticationRepositoryImpl(
-    private val usersFile: File,
-    private val passwordHasher: (String) -> String
+    private val usersFile: File
 ) : AuthenticationRepository {
 
     val users = mutableListOf<User>()
@@ -24,13 +24,14 @@ class AuthenticationRepositoryImpl(
 
     override fun register(user: User): User {
         require(users.none { it.name == user.name }) { "Username already exists" }
-        users.add(user)
+        val userWithHashedPassword = user.copy(hashedPassword = user.hashedPassword.toMD5Hash())
+        users.add(userWithHashedPassword)
         saveUsersToFile()
-        return user
+        return userWithHashedPassword
     }
 
     override fun login(name: String, password: String): Boolean {
-        val hashedPassword = passwordHasher(password)
+        val hashedPassword = password.toMD5Hash()
         return users.any { it.name == name && it.hashedPassword == hashedPassword }
     }
 
@@ -82,9 +83,9 @@ class AuthenticationRepositoryImpl(
                 User(
                     id = UUID.randomUUID(),
                     name = "admin",
-                    hashedPassword = passwordHasher("admin123"),
+                    hashedPassword = "admin123", // This will be hashed in register()
                     role = UserRole.ADMIN,
-                    projectIds = emptyList() // Added empty list for projectIds
+                    projectIds = emptyList()
                 )
             )
         }

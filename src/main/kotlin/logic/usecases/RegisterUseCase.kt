@@ -3,11 +3,11 @@ package logic.usecases
 import logic.models.User
 import logic.models.UserRole
 import logic.repositoies.AuthenticationRepository
+import utilities.toMD5Hash
 import java.util.*
 
 class RegisterUseCase(
-    private val authRepository: AuthenticationRepository,
-    private val passwordHasher: (String) -> String
+    private val authRepository: AuthenticationRepository
 ) {
     operator fun invoke(
         name: String,
@@ -23,7 +23,7 @@ class RegisterUseCase(
             User(
                 id = UUID.randomUUID(),
                 name = name,
-                hashedPassword = passwordHasher(plainPassword),
+                hashedPassword = plainPassword.toMD5Hash(),
                 role = role,
                 projectIds = projectIds
             )
