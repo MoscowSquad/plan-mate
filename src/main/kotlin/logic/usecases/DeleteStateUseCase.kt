@@ -12,10 +12,6 @@ class DeleteStateUseCase(
         return true
     }
 
-    private fun isStateExist(stateId: UUID): Boolean{
-        return false
-    }
-
     private fun getState(stateId: UUID): TaskState {
         return TaskState(id = stateId, title = "nre", projectId = UUID.randomUUID()) // fake return
     }
