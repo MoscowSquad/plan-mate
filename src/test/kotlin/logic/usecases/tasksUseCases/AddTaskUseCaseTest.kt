@@ -26,7 +26,6 @@ class AddTaskUseCaseTest {
     @Test
     fun `should return list of Tasks when add task without any issue`() {
         // Given
-        val projectId: UUID = mockk()
         val tasks: List<Task> = listOf(
             Task(id=id, title = "Videos",projectId=id,stateId = id),
             Task(id=id2, title = "Videos2",projectId=id2,stateId = id2),
