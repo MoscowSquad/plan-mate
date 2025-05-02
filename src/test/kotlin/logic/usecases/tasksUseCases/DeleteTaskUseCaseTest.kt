@@ -9,10 +9,13 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import utilities.TaskIsNotFoundException
+import java.util.*
 
 class DeleteTaskUseCaseTest {
     private lateinit var deleteTaskUseCase: DeleteTaskUseCase
     private lateinit var tasksRepository: TasksRepository
+    val id = UUID.fromString("00000000-0000-0000-0000-000000000001")
+    val id2 = UUID.fromString("00000000-0000-0000-0000-000000000002")
 
     @BeforeEach
     fun setup() {
@@ -24,14 +27,14 @@ class DeleteTaskUseCaseTest {
     fun `should return list of Tasks when task deleted successfully `() {
         // Given
         val tasks: List<Task> = listOf(
-            Task(id = 1234, title = "Videos1"),
-            Task(id = 12345, title = "Videos2")
+            Task(id=id, title = "Videos",projectId=id,stateId = id),
+            Task(id=id2, title = "Videos2",projectId=id2,stateId = id2),
         )
-        val inputTask = 1234
+        val inputTask = id
         every { tasksRepository.getAll() } returns tasks
 
         val expected = listOf(
-            Task(id = 12345, title = "Videos2")
+            Task(id = id2, title = "Videos2",projectId=id2,stateId = id2)
         )
 
         // When
@@ -45,8 +48,8 @@ class DeleteTaskUseCaseTest {
     fun `should Throw exception when task ID is null during deleting `() {
         // Given
         val tasks: List<Task> = listOf(
-            Task(id = 1234, title = "Videos1"),
-            Task(id = 12345, title = "Videos2")
+            Task(id=id, title = "Videos",projectId=id,stateId = id),
+            Task(id=id2, title = "Videos2",projectId=id2,stateId = id2),
         )
         every { tasksRepository.getAll() } returns tasks
         val input = null
@@ -60,11 +63,11 @@ class DeleteTaskUseCaseTest {
     fun `should Throw TaskIsNotFoundException when wanted Id not found `() {
         // Given
         val tasks: List<Task> = listOf(
-            Task(id = 1234, title = "Videos1"),
-            Task(id = 12345, title = "Videos2")
+            Task(id=id, title = "Videos",projectId=id,stateId = id),
+            Task(id=id2, title = "Videos2",projectId=id2,stateId = id2),
         )
         every { tasksRepository.getAll() } returns tasks
-        val input = 456
+        val input = UUID.fromString("00000000-0000-0000-0000-000000000003")
         // When & Then
         assertThrows<TaskIsNotFoundException> {
             deleteTaskUseCase.deleteTask(input)
@@ -75,7 +78,7 @@ class DeleteTaskUseCaseTest {
     fun `should Throw TaskIsNotFoundException when there is no tasks found to delete`() {
         // Given
         every { tasksRepository.getAll() } returns emptyList()
-        val input = 1234
+        val input = UUID.fromString("00000000-0000-0000-0000-000000000001")
         // When & Then
         assertThrows<TaskIsNotFoundException> {
             deleteTaskUseCase.deleteTask(input)
@@ -86,13 +89,14 @@ class DeleteTaskUseCaseTest {
     fun `should Throw TaskIsNotFoundException when no task is removed in deleteTask`() {
         // Given
         val tasks: List<Task> = listOf(
-            Task(id = 1111, title = "Not matching")
+            Task(id=id, title = "Videos",projectId=id,stateId = id),
+            Task(id=id2, title = "Videos2",projectId=id2,stateId = id2),
         )
         every { tasksRepository.getAll() } returns tasks
 
         // When & Then
         assertThrows<TaskIsNotFoundException> {
-            deleteTaskUseCase.deleteTask(1234)
+            deleteTaskUseCase.deleteTask(UUID.fromString("00000000-0000-0000-0000-000000000003"))
         }
     }
 }
