@@ -9,7 +9,7 @@ class AddTaskUseCase(
 ) {
     fun addTask(task: Task): List<Task> {
         val allTasks = tasksRepository.getAll().toMutableList()
-        if (task.title == null || task.id == null || task.state == null) {
+        if (task.title == null || task.id == null || task.stateId == null) {
             throw PropertyNullException()
         }
         allTasks.add(task)
