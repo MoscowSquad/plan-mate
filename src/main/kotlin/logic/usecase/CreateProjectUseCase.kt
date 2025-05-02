@@ -10,7 +10,7 @@ import java.util.UUID
 class CreateProjectUseCase(
     private val projectsRepository: ProjectsRepository
 ) {
-    fun invoke(name: String, userIds: List<UUID>, isAdmin: Boolean): UUID {
+    operator fun invoke(name: String, userIds: List<UUID>, isAdmin: Boolean): UUID {
 
         if (!isAdmin) {
             throw NotAdminException("Only administrators can create projects")
