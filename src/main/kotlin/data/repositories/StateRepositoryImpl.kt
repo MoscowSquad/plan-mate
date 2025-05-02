@@ -9,10 +9,6 @@ class StateRepositoryImpl(
     private val projectsRepository: ProjectsRepository
 ) : StateRepository {
 
-    override fun getStateById(id: UUID): TaskState {
-        return TaskState(UUID.randomUUID(), "name", UUID.randomUUID()) // fake to TDD
-    }
-
     override fun getById(id: UUID): TaskState {
         return TaskState(UUID.randomUUID(), "", UUID.randomUUID()) // fake to TDD
     }
