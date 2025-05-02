@@ -13,8 +13,8 @@ class StateRepositoryImpl(
         return TaskState(UUID.randomUUID(), "name", UUID.randomUUID()) // fake to TDD
     }
 
-    override fun getById(id: UUID): List<TaskState> {
-        return emptyList() // fake to TDD
+    override fun getById(id: UUID): TaskState {
+        return TaskState(UUID.randomUUID(), "", UUID.randomUUID()) // fake to TDD
     }
 
     override fun getByProjectId(projectId: UUID): List<TaskState> {

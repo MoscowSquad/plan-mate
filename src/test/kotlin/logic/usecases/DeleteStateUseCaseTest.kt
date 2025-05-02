@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
-import utilities.StateNotExistException
+import utilities.NoStateExistException
 import java.util.*
 import kotlin.test.Test
 
@@ -48,7 +48,7 @@ class DeleteStateUseCaseTest {
         every { stateRepository.delete(projectId, stateId) } returns false
 
         // When/Then
-        val exception = assertThrows<StateNotExistException> {
+        val exception = assertThrows<NoStateExistException> {
             deleteStateUseCase(projectId, stateId)
         }
 
