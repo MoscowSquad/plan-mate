@@ -5,13 +5,16 @@ import data.csv_parser.CsvHandler
 import data.csv_parser.ProjectCsvParser
 
 class ProjectDataSource(
+    private val csvHandler: CsvHandler,
     private val csvParser: ProjectCsvParser,
 ) : DataSource<Project> {
     override fun fetch(): List<Project> {
-        TODO("Not yet implemented")
+        val lines = csvHandler.getLines()
+        return csvParser.parse(lines)
     }
 
     override fun save(data: List<Project>) {
-        TODO("Not yet implemented")
+        val serializedData = csvParser.serialize(data)
+        csvHandler.write(serializedData)
     }
 }

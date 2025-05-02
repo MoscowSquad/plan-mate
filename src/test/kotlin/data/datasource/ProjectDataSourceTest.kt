@@ -21,7 +21,7 @@ class ProjectDataSourceTest {
     fun setUp() {
         csvHandler = mockk(relaxed = true)
         projectCsvParser = mockk(relaxed = true)
-        dataSource = ProjectDataSource(projectCsvParser)
+        dataSource = ProjectDataSource(csvHandler, projectCsvParser)
     }
 
     @Test
@@ -33,9 +33,9 @@ class ProjectDataSourceTest {
     @Test
     fun `fetch() should return parsed projects when there is projects returned by project csv-parser`() {
         val projects = listOf(
-            Project(UUID.randomUUID(), "The chance", emptyList()),
-            Project(UUID.randomUUID(), "Work", emptyList()),
-            Project(UUID.randomUUID(), "Study", emptyList()),
+            Project(UUID.randomUUID(), "The chance"),
+            Project(UUID.randomUUID(), "Work"),
+            Project(UUID.randomUUID(), "Study"),
         )
         every { projectCsvParser.parse(any()) } returns projects
 

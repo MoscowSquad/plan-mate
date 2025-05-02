@@ -7,7 +7,6 @@ import logic.models.TaskState
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import test_helper.toCsvData
-import utilities.STATES_FILE
 import java.util.*
 
 class TaskStateCsvParserTest {
@@ -17,7 +16,7 @@ class TaskStateCsvParserTest {
     @BeforeEach
     fun setUp() {
         csvHandler = mockk(relaxed = true)
-        parser = TaskStateCsvParser(csvHandler)
+        parser = TaskStateCsvParser()
     }
 
     @Test
@@ -51,9 +50,7 @@ class TaskStateCsvParserTest {
     @Test
     fun `should return empty list when parse data from empty state file with csv-header`() {
         // Given
-        val csvLines = listOf(
-            "id,title,projectId",
-        )
+        val csvLines = listOf("id,title,projectId")
         every { csvHandler.getLines() } returns csvLines
 
         // When
@@ -73,7 +70,7 @@ class TaskStateCsvParserTest {
         val result = parser.serialize(states)
 
         // Then
-        val csvLines = getCsvLines().toCsvData()
+        val csvLines = getCsvLines()
         Truth.assertThat(result).isEqualTo(csvLines)
     }
 
@@ -86,25 +83,25 @@ class TaskStateCsvParserTest {
         val result = parser.serialize(states)
 
         // Then
-        val csvLines = "id,title,projectId"
+        val csvLines = listOf("id,title,projectId")
         Truth.assertThat(result).isEqualTo(csvLines)
     }
 
 
     private fun getStates(): List<TaskState> {
         return listOf(
-            createState("82e16049-a9fb-4f69-b6f7-3336b68f2ae4", "Todo", "w09w98we-d23d-4f69-b6f7-3336b68f2ae4"),
-            createState("045e2ef6-a9f8-43d9-9c33-da8cf3a0ff2f", "In Progress", "8223k433-3l3l-23j0-b6f7-3336b68f2ae4"),
-            createState("07f641d4-077e-4f08-978d-3b6c9587f4bf", "Done", "9283h32p-o320-lk30-b6f7-3336b68f2ae4"),
+            createState("caf22bb1-90ff-409d-bef2-3b8bc9759354", "Todo", "caf22bb1-90ff-409d-bef2-3b8bc9759354"),
+            createState("caf22bb1-90ff-409d-bef2-3b8bc9759354", "In Progress", "caf22bb1-90ff-409d-bef2-3b8bc9759354"),
+            createState("caf22bb1-90ff-409d-bef2-3b8bc9759354", "Done", "caf22bb1-90ff-409d-bef2-3b8bc9759354"),
         )
     }
 
     private fun getCsvLines(): List<String> {
         return listOf(
             "id,title,projectId",
-            "82e16049-a9fb-4f69-b6f7-3336b68f2ae4,The chance,w09w98we-d23d-4f69-b6f7-3336b68f2ae4",
-            "045e2ef6-a9f8-43d9-9c33-da8cf3a0ff2f,Work,8223k433-3l3l-23j0-b6f7-3336b68f2ae4",
-            "07f641d4-077e-4f08-978d-3b6c9587f4bf,Homework,9283h32p-o320-lk30-b6f7-3336b68f2ae4",
+            "caf22bb1-90ff-409d-bef2-3b8bc9759354,Todo,caf22bb1-90ff-409d-bef2-3b8bc9759354",
+            "caf22bb1-90ff-409d-bef2-3b8bc9759354,In Progress,caf22bb1-90ff-409d-bef2-3b8bc9759354",
+            "caf22bb1-90ff-409d-bef2-3b8bc9759354,Done,caf22bb1-90ff-409d-bef2-3b8bc9759354",
         )
     }
 

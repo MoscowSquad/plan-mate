@@ -6,8 +6,6 @@ import io.mockk.mockk
 import logic.models.Project
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import test_helper.toCsvData
-import utilities.PROJECTS_FILE
 import java.util.*
 
 class ProjectCsvParserTest {
@@ -17,7 +15,7 @@ class ProjectCsvParserTest {
     @BeforeEach
     fun setUp() {
         csvHandler = mockk(relaxed = true)
-        parser = ProjectCsvParser(csvHandler)
+        parser = ProjectCsvParser()
     }
 
     @Test
@@ -73,7 +71,7 @@ class ProjectCsvParserTest {
         val result = parser.serialize(projects)
 
         // Then
-        val csvLines = getCsvLines().toCsvData()
+        val csvLines = getCsvLines()
         Truth.assertThat(result).isEqualTo(csvLines)
     }
 
@@ -86,25 +84,29 @@ class ProjectCsvParserTest {
         val result = parser.serialize(projects)
 
         // Then
-        val csvLines = "id,name"
+        val csvLines = listOf("id,name")
         Truth.assertThat(result).isEqualTo(csvLines)
     }
 
 
     private fun getProjects(): List<Project> {
         return listOf(
-            Project(UUID.fromString("82e16049-a9fb-4f69-b6f7-3336b68f2ae4"), "The chance", emptyList()),
-            Project(UUID.fromString("045e2ef6-a9f8-43d9-9c33-da8cf3a0ff2f"), "Work", emptyList()),
-            Project(UUID.fromString("07f641d4-077e-4f08-978d-3b6c9587f4bf"), "Homework", emptyList()),
+            createProject("045e2ef6-a9f8-43d9-9c33-da8cf3a0ff2f", "The chance"),
+            createProject("045e2ef6-a9f8-43d9-9c33-da8cf3a0ff2f", "Work"),
+            createProject("045e2ef6-a9f8-43d9-9c33-da8cf3a0ff2f", "Homework"),
         )
+    }
+
+    private fun createProject(id: String, name: String): Project {
+        return Project(UUID.fromString(id), name)
     }
 
     private fun getCsvLines(): List<String> {
         return listOf(
             "id,name",
-            "82e16049-a9fb-4f69-b6f7-3336b68f2ae4,The chance",
+            "045e2ef6-a9f8-43d9-9c33-da8cf3a0ff2f,The chance",
             "045e2ef6-a9f8-43d9-9c33-da8cf3a0ff2f,Work",
-            "07f641d4-077e-4f08-978d-3b6c9587f4bf,Homework",
+            "045e2ef6-a9f8-43d9-9c33-da8cf3a0ff2f,Homework",
         )
     }
 }

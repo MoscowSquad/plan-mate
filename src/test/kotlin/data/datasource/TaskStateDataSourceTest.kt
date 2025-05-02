@@ -21,7 +21,7 @@ class TaskStateDataSourceTest {
     fun setUp() {
         csvHandler = mockk(relaxed = true)
         stateCsvParser = mockk(relaxed = true)
-        dataSource = TaskStateDataSource(stateCsvParser)
+        dataSource = TaskStateDataSource(csvHandler, stateCsvParser)
     }
 
     @Test

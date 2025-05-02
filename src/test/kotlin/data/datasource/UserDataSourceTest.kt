@@ -23,7 +23,7 @@ class UserDataSourceTest {
         csvHandler = mockk(relaxed = true)
         userCsvParser = mockk(relaxed = true)
 
-        dataSource = UserDataSource(userCsvParser)
+        dataSource = UserDataSource(csvHandler, userCsvParser)
     }
 
 

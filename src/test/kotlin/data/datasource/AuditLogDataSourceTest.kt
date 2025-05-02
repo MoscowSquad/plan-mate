@@ -25,7 +25,7 @@ class AuditLogDataSourceTest {
         csvHandler = mockk(relaxed = true)
         auditLogCsvParser = mockk(relaxed = true)
 
-        dataSource = AuditLogDataSource(auditLogCsvParser)
+        dataSource = AuditLogDataSource(csvHandler, auditLogCsvParser)
     }
 
     @Test

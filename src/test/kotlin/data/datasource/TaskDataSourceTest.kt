@@ -22,7 +22,7 @@ class TaskDataSourceTest {
         csvHandler = mockk(relaxed = true)
         taskCsvParser = mockk(relaxed = true)
 
-        dataSource = TaskDataSource(taskCsvParser)
+        dataSource = TaskDataSource(csvHandler, taskCsvParser)
     }
 
     @Test
