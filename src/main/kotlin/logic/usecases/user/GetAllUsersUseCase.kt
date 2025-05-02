@@ -7,6 +7,9 @@ import utilities.UnauthorizedAccessException
 
 class GetAllUsersUseCase(private val userRepository: UserRepository) {
     operator fun invoke(role: UserRole): List<User> {
-        return listOf()
+        if (role == UserRole.MATE) {
+            throw UnauthorizedAccessException("Only admins can access all users")
+        }
+        return userRepository.getAll()
     }
 }

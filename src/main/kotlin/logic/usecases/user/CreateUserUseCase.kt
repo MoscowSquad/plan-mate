@@ -7,6 +7,9 @@ import utilities.UnauthorizedAccessException
 
 class CreateUserUseCase(private val userRepository: UserRepository) {
     operator fun invoke(role: UserRole, user: User): Boolean {
-        return false
+        if (role == UserRole.MATE) {
+            throw UnauthorizedAccessException("Only admins can create users")
+        }
+        return userRepository.add(user)
     }
 }
