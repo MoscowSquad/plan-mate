@@ -6,7 +6,7 @@ import logic.repositoies.TasksRepository
 class AddTaskUseCase(
     private val tasksRepository: TasksRepository
 ) {
-    fun addTask(task: Task): Boolean {
-        return tasksRepository.addTask(task)
+    operator fun invoke(task: Task): Boolean {
+        return tasksRepository.add(task)
     }
 }

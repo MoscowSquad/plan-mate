@@ -2,16 +2,17 @@ package logic.usecases.tasksUseCases
 
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import logic.models.Task
 import logic.repositoies.TasksRepository
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import utilities.TaskIsNotFoundException
 import java.util.*
+import kotlin.test.assertTrue
 
-class DeleteTaskUseCaseTest {
+class DeleteUseCaseTest {
     private lateinit var deleteTaskUseCase: DeleteTaskUseCase
     private lateinit var tasksRepository: TasksRepository
     val id = UUID.fromString("00000000-0000-0000-0000-000000000001")
@@ -24,24 +25,26 @@ class DeleteTaskUseCaseTest {
     }
 
     @Test
-    fun `should return list of Tasks when task deleted successfully `() {
+    fun `should return true when task deleted successfully `() {
         // Given
-        val tasks: List<Task> = listOf(
-            Task(id = id, title = "Videos", projectId = id, description = "description", stateId = id),
-            Task(id = id2, title = "Videos2", projectId = id2, description = "description", stateId = id2),
+        val task = Task(
+            id = UUID.randomUUID(),
+            title = "Videos3",
+            projectId = UUID.randomUUID(),
+            description = "description",
+            stateId = UUID.randomUUID()
         )
-        val inputTask = id
-        every { tasksRepository.getAll() } returns tasks
 
-        val expected = listOf(
-            Task(id = id2, title = "Videos2", projectId = id2, description = "description", stateId = id2)
-        )
+        every { tasksRepository.add(task) } returns true
+
 
         // When
-        val result = deleteTaskUseCase.deleteTask(inputTask)
+        val result = deleteTaskUseCase(UUID.randomUUID())
 
         // Then
-        assertEquals(result, expected)
+        assertTrue(result)
+        verify(exactly = 1) { deleteTaskUseCase(UUID.randomUUID()) }
+
     }
 
     @Test
@@ -55,7 +58,7 @@ class DeleteTaskUseCaseTest {
         val input = UUID.fromString("00000000-0000-0000-0000-000000000003")
         // When & Then
         assertThrows<TaskIsNotFoundException> {
-            deleteTaskUseCase.deleteTask(input)
+            deleteTaskUseCase(input)
         }
     }
 
@@ -66,7 +69,7 @@ class DeleteTaskUseCaseTest {
         val input = UUID.fromString("00000000-0000-0000-0000-000000000001")
         // When & Then
         assertThrows<TaskIsNotFoundException> {
-            deleteTaskUseCase.deleteTask(input)
+            deleteTaskUseCase(input)
         }
     }
 
@@ -81,7 +84,7 @@ class DeleteTaskUseCaseTest {
 
         // When & Then
         assertThrows<TaskIsNotFoundException> {
-            deleteTaskUseCase.deleteTask(UUID.fromString("00000000-0000-0000-0000-000000000003"))
+            deleteTaskUseCase(UUID.fromString("00000000-0000-0000-0000-000000000003"))
         }
     }
 

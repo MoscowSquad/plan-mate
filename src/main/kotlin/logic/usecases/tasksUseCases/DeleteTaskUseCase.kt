@@ -7,8 +7,8 @@ class DeleteTaskUseCase(
     private val tasksRepository: TasksRepository
 ) {
 
-    fun deleteTask(id: UUID): Boolean {
-        return tasksRepository.deleteTask(id)
+    operator fun invoke(id: UUID): Boolean {
+        return tasksRepository.delete(id)
     }
 
 }

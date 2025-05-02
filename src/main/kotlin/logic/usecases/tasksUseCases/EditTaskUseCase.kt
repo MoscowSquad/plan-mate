@@ -6,7 +6,7 @@ import logic.repositoies.TasksRepository
 class EditTaskUseCase(
     private val tasksRepository: TasksRepository
 ) {
-    fun editTask(task: Task): Boolean {
-        return tasksRepository.editTask(task)
+    operator fun invoke(task: Task): Boolean {
+        return tasksRepository.edit(task)
     }
 }

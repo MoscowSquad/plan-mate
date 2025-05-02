@@ -35,7 +35,7 @@ class GetTaskByProjectIdUseCaseTest {
         val expected = Task(id = id, title = "Videos", projectId = id, description = "description", stateId = id)
 
         // When
-        val result = getTaskByProjectIdUseCase.getTaskByProjectId(input)
+        val result = getTaskByProjectIdUseCase(input)
 
         // Then
         assertEquals(result, expected)
@@ -53,7 +53,7 @@ class GetTaskByProjectIdUseCaseTest {
 
         // When & Then
         org.junit.jupiter.api.assertThrows<TaskIsNotFoundException> {
-            getTaskByProjectIdUseCase.getTaskByProjectId(input)
+            getTaskByProjectIdUseCase(input)
         }
     }
 
@@ -65,7 +65,7 @@ class GetTaskByProjectIdUseCaseTest {
 
         // When & Then
         org.junit.jupiter.api.assertThrows<TaskIsNotFoundException> {
-            getTaskByProjectIdUseCase.getTaskByProjectId(input)
+            getTaskByProjectIdUseCase(input)
         }
     }
 }

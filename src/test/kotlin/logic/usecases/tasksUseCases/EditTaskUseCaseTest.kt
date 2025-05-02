@@ -11,7 +11,7 @@ import org.junit.jupiter.api.assertThrows
 import utilities.TaskIsNotFoundException
 import java.util.*
 
-class EditTaskUseCaseTest{
+class EditUseCaseTest {
     private lateinit var editTaskUseCase: EditTaskUseCase
     private lateinit var tasksRepository: TasksRepository
     val id = UUID.fromString("00000000-0000-0000-0000-000000000001")
@@ -33,7 +33,7 @@ class EditTaskUseCaseTest{
         every { tasksRepository.getAll() } returns tasks
 
         // When
-        val result = editTaskUseCase.editTask(inputTask)
+        val result = editTaskUseCase(inputTask)
 
         // Then
         assertEquals(result, inputTask)
@@ -51,7 +51,7 @@ class EditTaskUseCaseTest{
 
         // When & Then
         assertThrows<TaskIsNotFoundException> {
-            editTaskUseCase.editTask(
+            editTaskUseCase(
                 Task(
                     id = UUID.fromString("00000000-0000-0000-0000-000000000003"),
                     title = "Videos2",

@@ -8,7 +8,7 @@ class GetTaskByIdUseCase(
     private val tasksRepository: TasksRepository
 ) {
 
-    fun getTaskById(id: UUID): Task {
-        return tasksRepository.getTaskById(id)
+    operator fun invoke(id: UUID): Task {
+        return tasksRepository.getById(id)
     }
 }

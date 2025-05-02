@@ -11,7 +11,7 @@ import org.junit.jupiter.api.assertThrows
 import utilities.TaskIsNotFoundException
 import java.util.*
 
-class GetTaskByIdUseCaseTest {
+class GetByIdUseCaseTest {
     private lateinit var getTaskByIdUseCase: GetTaskByIdUseCase
     private lateinit var tasksRepository: TasksRepository
     val id = UUID.fromString("00000000-0000-0000-0000-000000000001")
@@ -36,7 +36,7 @@ class GetTaskByIdUseCaseTest {
         val expected = Task(id = id, title = "Videos", projectId = id, description = "description", stateId = id)
 
         // When
-        val result = getTaskByIdUseCase.getTaskById(input)
+        val result = getTaskByIdUseCase(input)
 
         // Then
         assertEquals(result, expected)
@@ -54,7 +54,7 @@ class GetTaskByIdUseCaseTest {
 
         // When & Then
         assertThrows<TaskIsNotFoundException> {
-            getTaskByIdUseCase.getTaskById(input)
+            getTaskByIdUseCase(input)
         }
     }
 
@@ -66,7 +66,7 @@ class GetTaskByIdUseCaseTest {
 
         // When & Then
         assertThrows<TaskIsNotFoundException> {
-            getTaskByIdUseCase.getTaskById(input)
+            getTaskByIdUseCase(input)
         }
     }
 }

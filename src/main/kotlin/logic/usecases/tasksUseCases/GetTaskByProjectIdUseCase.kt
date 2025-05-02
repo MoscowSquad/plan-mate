@@ -7,7 +7,7 @@ import java.util.*
 class GetTaskByProjectIdUseCase(
     private val tasksRepository: TasksRepository
 ) {
-    fun getTaskByProjectId(id: UUID): List<Task> {
-        return tasksRepository.getTaskByProjectId(id)
+    operator fun invoke(id: UUID): List<Task> {
+        return tasksRepository.getByProjectId(id)
     }
 }
