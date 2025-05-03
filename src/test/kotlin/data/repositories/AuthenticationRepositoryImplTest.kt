@@ -46,6 +46,33 @@ class AuthenticationRepositoryImplTest {
         // Act & Assert
         assertTrue(repository.login("validUser", "correctPass"))
     }
+    @Test
+    fun `login returns false when username matches but password hash differs`() {
+        // Arrange
+        val testUser = createTestUser(
+            name = "user1",
+            password = "pass1" // Will be hashed to hash1
+        )
+        repository.users.add(testUser)
+
+        // Act & Assert
+        assertFalse(repository.login("user1", "pass2"),
+            "Should return false when password hashes don't match")
+    }
+
+    @Test
+    fun `login is case sensitive for usernames`() {
+        // Arrange
+        val testUser = createTestUser(
+            name = "User1", // With capital U
+            password = "pass1"
+        )
+        repository.users.add(testUser)
+
+        // Act & Assert
+        assertFalse(repository.login("user1", "pass1"),
+            "Should be case sensitive for usernames")
+    }
 
     @Test
     fun `login returns false when username exists but password is wrong`() {
