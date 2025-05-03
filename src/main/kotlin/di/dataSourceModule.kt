@@ -2,9 +2,9 @@ package di
 
 import data.csv_parser.*
 import data.datasource.*
+import data.util.*
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
-import utilities.*
 import java.io.File
 
 val dataSourceModule = module {

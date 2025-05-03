@@ -1,25 +1,25 @@
 package data.csv_parser
 
-import logic.models.Task
-import utilities.TaskIndex
+import data.dto.TaskDto
+import data.util.TaskIndex
 
-class TaskCsvParser : CsvParser<Task> {
-    override fun parse(data: List<CsvData>): List<Task> {
+class TaskCsvParser : CsvParser<TaskDto> {
+    override fun parse(data: List<CsvData>): List<TaskDto> {
         return data.drop(1).map { line ->
             val it = line.split(",")
-            Task(
-                id = it[TaskIndex.ID].toUUID(),
-                title = it[TaskIndex.TITLE],
+            TaskDto(
+                id = it[TaskIndex.ID],
+                name = it[TaskIndex.TITLE],
                 description = it[TaskIndex.DESCRIPTION],
-                projectId = it[TaskIndex.PROJECT_ID].toUUID(),
-                stateId = it[TaskIndex.STATE_ID].toUUID(),
+                projectId = it[TaskIndex.PROJECT_ID],
+                stateId = it[TaskIndex.STATE_ID],
             )
         }
     }
 
-    override fun serialize(data: List<Task>): List<String> {
+    override fun serialize(data: List<TaskDto>): List<String> {
         return listOf("id,title,description,projectId,stateId") + data.map { datum ->
-            "${datum.id},${datum.title},${datum.description},${datum.projectId},${datum.stateId}"
+            "${datum.id},${datum.name},${datum.description},${datum.projectId},${datum.stateId}"
         }
     }
 }

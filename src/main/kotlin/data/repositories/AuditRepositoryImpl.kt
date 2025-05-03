@@ -1,6 +1,8 @@
 package data.repositories
 
 import data.datasource.AuditLogDataSource
+import data.mappers.toDto
+import data.mappers.toLogic
 import logic.models.AuditLog
 import logic.models.AuditType
 import logic.repositories.AuditRepository
@@ -13,26 +15,29 @@ class AuditRepositoryImpl(
     private val audits = mutableListOf<AuditLog>()
 
     init {
-        audits.addAll(auditLogDataSource.fetch())
+        val auditLogDtos = auditLogDataSource.fetch()
+        audits.addAll(auditLogDtos.map { it.toLogic() })
     }
 
-    override fun add(log: AuditLog?): Boolean {
+    override fun addLog(log: AuditLog): Boolean {
         return try {
-            if (log != null) {
-                audits.add(log)
-                auditLogDataSource.save(audits)
-            }
+            audits.add(log)
+            auditLogDataSource.save(audits.map { it.toDto() })
             true
         } catch (e: Exception) {
             false
         }
     }
 
-    override fun getAllByTaskId(taskId: UUID): List<AuditLog> {
+    override fun getAuditLogById(taskId: UUID): List<AuditLog> {
+        TODO("Not yet implemented")
+    }
+
+    override fun getAllLogsByTaskId(taskId: UUID): List<AuditLog> {
         return audits.filter { it.auditType == AuditType.TASK && it.entityId == taskId }
     }
 
-    override fun getAllByProjectId(projectId: UUID): List<AuditLog> {
+    override fun getAllLogsByProjectId(projectId: UUID): List<AuditLog> {
         return audits.filter { it.auditType == AuditType.PROJECT && it.entityId == projectId }
     }
 }

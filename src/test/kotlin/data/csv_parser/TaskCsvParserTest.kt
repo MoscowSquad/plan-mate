@@ -1,10 +1,9 @@
 package data.csv_parser
 
 import com.google.common.truth.Truth
-import logic.models.Task
+import data.dto.TaskDto
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import test_helper.toCsvData
 import java.util.*
 
 class TaskCsvParserTest {
@@ -38,7 +37,7 @@ class TaskCsvParserTest {
         val result = parser.parse(csvLines)
 
         // Then
-        val tasks = emptyList<Task>()
+        val tasks = emptyList<TaskDto>()
         Truth.assertThat(result).isEqualTo(tasks)
     }
 
@@ -53,7 +52,7 @@ class TaskCsvParserTest {
         val result = parser.parse(csvLines)
 
         // Then
-        val tasks = emptyList<Task>()
+        val tasks = emptyList<TaskDto>()
         Truth.assertThat(result).isEqualTo(tasks)
     }
 
@@ -73,7 +72,7 @@ class TaskCsvParserTest {
     @Test
     fun `should return task header when serialize empty task data`() {
         // Given
-        val tasks = emptyList<Task>()
+        val tasks = emptyList<TaskDto>()
 
         // When
         val result = parser.serialize(tasks)
@@ -84,7 +83,7 @@ class TaskCsvParserTest {
     }
 
 
-    private fun getTasks(): List<Task> {
+    private fun getTasks(): List<TaskDto> {
         return listOf(
             createTask(
                 "6d3c0dfc-5b05-479d-be86-4d31b22582cc",
@@ -125,5 +124,5 @@ class TaskCsvParserTest {
         description: String,
         projectId: String,
         stateId: String,
-    ): Task = Task(UUID.fromString(id), title, description, UUID.fromString(projectId), UUID.fromString(stateId))
+    ): TaskDto = TaskDto(id, title, description, projectId, stateId)
 }

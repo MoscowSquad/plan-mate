@@ -1,15 +1,15 @@
-package logic.usecases.state
+package logic.usecases.task_state
 
 import logic.models.TaskState
-import logic.repositories.StateRepository
-import utilities.IllegalStateTitle
+import logic.repositories.TaskStateRepository
+import logic.util.IllegalStateTitle
 
-class EditStateUseCase(
-    private val stateRepository: StateRepository
+class EditTaskStateUseCase(
+    private val stateRepository: TaskStateRepository
 ){
 
     operator fun invoke(state: TaskState): TaskState {
-        return state.copy(title = state.title) // fake for now
+        return state.copy(name = state.name) // fake for now
     }
 
     private fun isValidTitle(title: String) {

@@ -1,13 +1,13 @@
 package data.csv_parser
 
 import com.google.common.truth.Truth
+import data.dto.UserDto
+import data.util.ADMIN
+import data.util.MATE
 import io.mockk.every
 import io.mockk.mockk
-import logic.models.User
-import logic.models.UserRole
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.util.*
 
 class UserCsvParserTest {
     private lateinit var csvHandler: CsvHandler
@@ -43,7 +43,7 @@ class UserCsvParserTest {
         val result = parser.parse(csvLines)
 
         // Then
-        val users = emptyList<User>()
+        val users = emptyList<UserDto>()
         Truth.assertThat(result).isEqualTo(users)
     }
 
@@ -59,7 +59,7 @@ class UserCsvParserTest {
         val result = parser.parse(csvLines)
 
         // Then
-        val users = emptyList<User>()
+        val users = emptyList<UserDto>()
         Truth.assertThat(result).isEqualTo(users)
     }
 
@@ -79,7 +79,7 @@ class UserCsvParserTest {
     @Test
     fun `should return user header when serialize empty user data`() {
         // Given
-        val users = emptyList<User>()
+        val users = emptyList<UserDto>()
 
         // When
         val result = parser.serialize(users)
@@ -90,21 +90,21 @@ class UserCsvParserTest {
     }
 
 
-    private fun getUsers(): List<User> {
+    private fun getUsers(): List<UserDto> {
         return listOf(
-            createUser("82e16049-a9fb-4f69-b6f7-3336b68f2ae4", "Aiman", "3336b68f2ae4", UserRole.ADMIN, emptyList()),
+            createUser("82e16049-a9fb-4f69-b6f7-3336b68f2ae4", "Aiman", "3336b68f2ae4", ADMIN, emptyList()),
             createUser(
                 "045e2ef6-a9f8-43d9-9c33-da8cf3a0ff2f",
                 "Zeyad",
                 "09sd23od3skd",
-                UserRole.ADMIN,
+                ADMIN,
                 listOf("82e16049-a9fb-4f69-b6f7-3336b68f2ae4")
             ),
             createUser(
                 "07f641d4-077e-4f08-978d-3b6c9587f4bf",
                 "Yaser",
                 "wk5dr98sd6dd",
-                UserRole.MATE,
+                MATE,
                 listOf("82e16049-a9fb-4f69-b6f7-3336b68f2ae4", "82e16049-a9fb-4f69-b6f7-3336b68f2ae4")
             ),
         )
@@ -113,9 +113,9 @@ class UserCsvParserTest {
     private fun getCsvLines(): List<String> {
         return listOf(
             "id,name,hashedPassword,role,projectIds",
-            "82e16049-a9fb-4f69-b6f7-3336b68f2ae4,Aiman,3336b68f2ae4,${UserRole.ADMIN},[]",
-            "045e2ef6-a9f8-43d9-9c33-da8cf3a0ff2f,Zeyad,09sd23od3skd,${UserRole.ADMIN},[82e16049-a9fb-4f69-b6f7-3336b68f2ae4]",
-            "07f641d4-077e-4f08-978d-3b6c9587f4bf,Yaser,wk5dr98sd6dd,${UserRole.MATE},[82e16049-a9fb-4f69-b6f7-3336b68f2ae4, 82e16049-a9fb-4f69-b6f7-3336b68f2ae4]",
+            "82e16049-a9fb-4f69-b6f7-3336b68f2ae4,Aiman,3336b68f2ae4,${ADMIN},[]",
+            "045e2ef6-a9f8-43d9-9c33-da8cf3a0ff2f,Zeyad,09sd23od3skd,${ADMIN},[82e16049-a9fb-4f69-b6f7-3336b68f2ae4]",
+            "07f641d4-077e-4f08-978d-3b6c9587f4bf,Yaser,wk5dr98sd6dd,${MATE},[82e16049-a9fb-4f69-b6f7-3336b68f2ae4, 82e16049-a9fb-4f69-b6f7-3336b68f2ae4]",
         )
     }
 
@@ -123,9 +123,9 @@ class UserCsvParserTest {
         id: String,
         userName: String,
         hashedPassword: String,
-        role: UserRole,
+        role: String,
         projectIds: List<String>
-    ): User {
-        return User(UUID.fromString(id), userName, hashedPassword, role, projectIds.map { UUID.fromString(it) })
+    ): UserDto {
+        return UserDto(id, userName, hashedPassword, role, projectIds)
     }
 }

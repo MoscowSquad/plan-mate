@@ -1,11 +1,11 @@
 package logic.usecases.auth
 
+import logic.util.toMD5Hash
 import logic.models.User
 import logic.models.UserRole
 import logic.repositories.AuthenticationRepository
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import utilities.toMD5Hash
 import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -40,12 +40,14 @@ class RegisterUseCaseTest {
         )
         assertNotNull(result)
     }
+
     @Test
     fun `should handle password hashing failure`() {
         val failingAuthRepository = object : AuthenticationRepository {
             override fun register(user: User): User {
                 throw RuntimeException("Password hashing failed")
             }
+
             override fun login(name: String, password: String): Boolean = false
         }
 

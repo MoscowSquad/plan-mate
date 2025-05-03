@@ -9,7 +9,7 @@ import logic.repositories.ProjectsRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import java.util.UUID
+import java.util.*
 
 class GetProjectByIdUseCaseTest {
     private lateinit var projectsRepository: ProjectsRepository
@@ -25,16 +25,16 @@ class GetProjectByIdUseCaseTest {
     fun `should return project when valid id is provided`() {
         // Given
         val projectId = UUID.randomUUID()
-        val expectedProject = Project(id = projectId, name = "Test Project", userIds = listOf())
+        val expectedProject = Project(id = projectId, name = "Test Project")
 
-        every { projectsRepository.getById(projectId) } returns expectedProject
+        every { projectsRepository.getProjectById(projectId) } returns expectedProject
 
         // When
         val result = getProjectByIdUseCase.invoke(projectId)
 
         // Then
         assertThat(result).isEqualTo(expectedProject)
-        verify(exactly = 1) { projectsRepository.getById(projectId) }
+        verify(exactly = 1) { projectsRepository.getProjectById(projectId) }
     }
 
     @Test
@@ -43,7 +43,7 @@ class GetProjectByIdUseCaseTest {
         val projectId = UUID.randomUUID()
         val exception = NoSuchElementException("Project not found")
 
-        every { projectsRepository.getById(projectId) } throws exception
+        every { projectsRepository.getProjectById(projectId) } throws exception
 
         // When & Then
         val thrownException = assertThrows<NoSuchElementException> {
@@ -51,22 +51,22 @@ class GetProjectByIdUseCaseTest {
         }
 
         assertThat(thrownException.message).isEqualTo("Project not found")
-        verify(exactly = 1) { projectsRepository.getById(projectId) }
+        verify(exactly = 1) { projectsRepository.getProjectById(projectId) }
     }
 
     @Test
     fun `should call repository with correct id`() {
         // Given
         val projectId = UUID.randomUUID()
-        val project = Project(id = projectId, name = "Test Project", userIds = listOf())
+        val project = Project(id = projectId, name = "Test Project")
 
-        every { projectsRepository.getById(projectId) } returns project
+        every { projectsRepository.getProjectById(projectId) } returns project
 
         // When
         getProjectByIdUseCase.invoke(projectId)
 
         // Then
-        verify(exactly = 1) { projectsRepository.getById(projectId) }
+        verify(exactly = 1) { projectsRepository.getProjectById(projectId) }
     }
 
     @Test
@@ -74,11 +74,11 @@ class GetProjectByIdUseCaseTest {
         // Given
         val projectId1 = UUID.randomUUID()
         val projectId2 = UUID.randomUUID()
-        val project1 = Project(id = projectId1, name = "Project 1", userIds = listOf())
-        val project2 = Project(id = projectId2, name = "Project 2", userIds = listOf())
+        val project1 = Project(id = projectId1, name = "Project 1")
+        val project2 = Project(id = projectId2, name = "Project 2")
 
-        every { projectsRepository.getById(projectId1) } returns project1
-        every { projectsRepository.getById(projectId2) } returns project2
+        every { projectsRepository.getProjectById(projectId1) } returns project1
+        every { projectsRepository.getProjectById(projectId2) } returns project2
 
         // When
         val result1 = getProjectByIdUseCase.invoke(projectId1)
@@ -87,7 +87,7 @@ class GetProjectByIdUseCaseTest {
         // Then
         assertThat(result1).isEqualTo(project1)
         assertThat(result2).isEqualTo(project2)
-        verify(exactly = 1) { projectsRepository.getById(projectId1) }
-        verify(exactly = 1) { projectsRepository.getById(projectId2) }
+        verify(exactly = 1) { projectsRepository.getProjectById(projectId1) }
+        verify(exactly = 1) { projectsRepository.getProjectById(projectId2) }
     }
 }

@@ -1,14 +1,13 @@
 package data.csv_parser
 
 import com.google.common.truth.Truth
-import kotlinx.datetime.LocalDateTime
+import data.dto.AuditLogDto
+import data.mappers.toDto
+import data.util.PROJECT
+import data.util.TASK
 import logic.models.AuditLog
-import logic.models.AuditType
-import logic.models.AuditType.PROJECT
-import logic.models.AuditType.TASK
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.util.*
 
 class AuditLogCsvParserTest {
     private lateinit var parser: AuditLogCsvParser
@@ -80,7 +79,7 @@ class AuditLogCsvParserTest {
         val auditLogs = emptyList<AuditLog>()
 
         // When
-        val result = parser.serialize(auditLogs)
+        val result = parser.serialize(auditLogs.map { it.toDto() })
 
         // Then
         val csvLines = listOf("id,entityType,action,timestamp,entityId,userId")
@@ -88,7 +87,7 @@ class AuditLogCsvParserTest {
     }
 
 
-    private fun getAuditLogs(timestamp: String): List<AuditLog> {
+    private fun getAuditLogs(timestamp: String): List<AuditLogDto> {
         return listOf(
             createAuditLog(
                 "12a6e381-379d-492e-a4a1-f367733f449d", "Add", PROJECT, timestamp,
@@ -127,15 +126,12 @@ class AuditLogCsvParserTest {
     private fun createAuditLog(
         id: String,
         action: String,
-        auditType: AuditType,
+        auditType: String,
         timestamp: String,
         entityId: String,
         userId: String,
-    ): AuditLog {
-        return AuditLog(
-            UUID.fromString(id), action, auditType, LocalDateTime.parse(timestamp),
-            UUID.fromString(entityId), UUID.fromString(userId)
-        )
+    ): AuditLogDto {
+        return AuditLogDto(id, action, auditType, timestamp, entityId, userId)
     }
 
 }

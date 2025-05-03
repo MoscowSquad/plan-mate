@@ -2,7 +2,6 @@ package logic.usecases.audit
 
 import data.datasource.AuditLogDataSource
 import logic.models.AuditLog
-import logic.models.AuditType
 import data.repositories.AuditRepositoryImpl
 import io.mockk.every
 import io.mockk.mockk
@@ -12,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
 import kotlinx.datetime.LocalDateTime
+import logic.models.AuditType
 import logic.repositories.AuditRepository
 import java.io.File
 import java.util.UUID
@@ -36,7 +36,7 @@ class AddAuditLogUseCaseTest {
     fun `add should append log to file and return true`() {
         val repository = mockk<AuditRepository>()
 
-        every { repository.add(any()) } returns true
+        every { repository.addLog(any()) } returns true
 
         val log = AuditLog(
             id = UUID.fromString("00000000-0000-0000-0000-000000000001"),
@@ -46,10 +46,10 @@ class AddAuditLogUseCaseTest {
             entityId = UUID.fromString("00000000-0000-0000-0000-000000000002"),
             userId = UUID.fromString("00000000-0000-0000-0000-000000000003")
         )
-        val result = repository.add(log)
+        val result = repository.addLog(log)
 
         assertTrue(result)
-        verify { repository.add(log) }
+        verify { repository.addLog(log) }
     }
 
     @Test
@@ -69,10 +69,10 @@ class AddAuditLogUseCaseTest {
             userId = userId
         )
 
-        every { repository.getAllByTaskId(taskId) } returns listOf(log)
+        every { repository.getAllLogsByTaskId(taskId) } returns listOf(log)
 
         // Verify
-        val result = repository.getAllByTaskId(taskId)
+        val result = repository.getAllLogsByTaskId(taskId)
         assertEquals(1, result.size)
         assertEquals(log.id, result[0].id)
     }
@@ -93,9 +93,9 @@ class AddAuditLogUseCaseTest {
             userId = userId
         )
 
-        every { repository.getAllByProjectId(projectId) } returns listOf(log)
+        every { repository.getAllLogsByProjectId(projectId) } returns listOf(log)
 
-        val result = repository.getAllByProjectId(projectId)
+        val result = repository.getAllLogsByProjectId(projectId)
         assertEquals(1, result.size)
         assertEquals(log.id, result[0].id)
     }
@@ -103,7 +103,7 @@ class AddAuditLogUseCaseTest {
     @Test
     fun `invoke should return true when audit log is successfully added`() {
         val mockRepository = mockk<AuditRepository>()
-        every { mockRepository.add(any()) } returns true
+        every { mockRepository.addLog(any()) } returns true
 
         val useCase = AddAuditLogUseCase(mockRepository)
         val testLog = AuditLog(
@@ -117,13 +117,13 @@ class AddAuditLogUseCaseTest {
 
         val result = useCase.invoke(testLog)
         assertTrue(result)
-        verify { mockRepository.add(any()) }
+        verify { mockRepository.addLog(any()) }
     }
 
     @Test
     fun `invoke should return false when repository fails to add audit log`() {
         val mockRepository = mockk<AuditRepository>()
-        every { mockRepository.add(any()) } returns false
+        every { mockRepository.addLog(any()) } returns false
 
         val useCase = AddAuditLogUseCase(mockRepository)
         val testLog = AuditLog(
@@ -138,16 +138,6 @@ class AddAuditLogUseCaseTest {
         val result = useCase.invoke(testLog)
 
         assertFalse(result)
-        verify { mockRepository.add(testLog) }
-    }
-
-    @Test
-    fun `invoke should return false when audit log is invalid`() {
-        val mockRepository = mockk<AuditRepository>()
-        every { mockRepository.add(any()) } returns false
-
-        val useCase = AddAuditLogUseCase(mockRepository)
-
-        assertFalse(useCase.invoke(null))
+        verify { mockRepository.addLog(testLog) }
     }
 }

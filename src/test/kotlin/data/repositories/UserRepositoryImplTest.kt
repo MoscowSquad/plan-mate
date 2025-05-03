@@ -1,19 +1,31 @@
 package data.repositories
 
+import data.csv_parser.CsvHandler
+import data.csv_parser.UserCsvParser
+import data.datasource.UserDataSource
+import io.mockk.mockk
 import logic.models.User
 import logic.models.UserRole
-import org.junit.jupiter.api.*
 import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.util.*
 
 class UserRepositoryImplTest {
 
+    private lateinit var csvHandler: CsvHandler
+    private lateinit var csvParser: UserCsvParser
+    private lateinit var dataSource: UserDataSource
     private lateinit var repository: UserRepositoryImpl
     private lateinit var user: User
 
     @BeforeEach
     fun setUp() {
-        repository = UserRepositoryImpl()
+        csvHandler = mockk(relaxed = true)
+        csvParser = mockk(relaxed = true)
+        dataSource = UserDataSource(csvHandler, csvParser)
+        repository = UserRepositoryImpl(dataSource)
         user = User(
             id = UUID.randomUUID(),
             name = "Test User",
@@ -25,25 +37,25 @@ class UserRepositoryImplTest {
 
     @Test
     fun `add user successfully`() {
-        val result = repository.add(user)
+        val result = repository.addUser(user)
         assertTrue(result)
-        assertEquals(user, repository.getById(user.id))
+        assertEquals(user, repository.getUserById(user.id))
     }
 
     @Test
     fun `add user with duplicate ID throws exception`() {
-        repository.add(user)
+        repository.addUser(user)
         val duplicateUser = user.copy(name = "Duplicate")
         val exception = assertThrows<IllegalArgumentException> {
-            repository.add(duplicateUser)
+            repository.addUser(duplicateUser)
         }
         assertEquals("User with id ${user.id} already exists", exception.message)
     }
 
     @Test
     fun `delete existing user successfully`() {
-        repository.add(user)
-        val result = repository.delete(user.id)
+        repository.addUser(user)
+        val result = repository.deleteUser(user.id)
         assertTrue(result)
     }
 
@@ -51,27 +63,27 @@ class UserRepositoryImplTest {
     fun `delete non-existing user throws exception`() {
         val fakeId = UUID.randomUUID()
         val exception = assertThrows<NoSuchElementException> {
-            repository.delete(fakeId)
+            repository.deleteUser(fakeId)
         }
         assertEquals("Cannot delete: User with id $fakeId not found", exception.message)
     }
 
     @Test
     fun `assign user to project successfully`() {
-        repository.add(user)
+        repository.addUser(user)
         val projectId = UUID.randomUUID()
-        val result = repository.assignToProject(projectId, user.id)
+        val result = repository.assignUserToProject(projectId, user.id)
         assertTrue(result)
-        assertTrue(repository.getById(user.id).projectIds.contains(projectId))
+        assertTrue(repository.getUserById(user.id).projectIds.contains(projectId))
     }
 
     @Test
     fun `assign user to already assigned project throws exception`() {
-        repository.add(user)
+        repository.addUser(user)
         val projectId = UUID.randomUUID()
-        repository.assignToProject(projectId, user.id)
+        repository.assignUserToProject(projectId, user.id)
         val exception = assertThrows<IllegalStateException> {
-            repository.assignToProject(projectId, user.id)
+            repository.assignUserToProject(projectId, user.id)
         }
         assertEquals("Project $projectId is already assigned to user ${user.id}", exception.message)
     }
@@ -81,7 +93,7 @@ class UserRepositoryImplTest {
         val fakeId = UUID.randomUUID()
         val projectId = UUID.randomUUID()
         val exception = assertThrows<NoSuchElementException> {
-            repository.assignToProject(projectId, fakeId)
+            repository.assignUserToProject(projectId, fakeId)
         }
         assertEquals("User with id $fakeId not found", exception.message)
     }
@@ -89,19 +101,19 @@ class UserRepositoryImplTest {
     @Test
     fun `revoke user from project successfully`() {
         val projectId = UUID.randomUUID()
-        repository.add(user)
-        repository.assignToProject(projectId, user.id)
-        val result = repository.removeFromProject(projectId, user.id)
+        repository.addUser(user)
+        repository.assignUserToProject(projectId, user.id)
+        val result = repository.unassignUserFromProject(projectId, user.id)
         assertTrue(result)
-        assertFalse(repository.getById(user.id).projectIds.contains(projectId))
+        assertFalse(repository.getUserById(user.id).projectIds.contains(projectId))
     }
 
     @Test
     fun `revoke project not assigned throws exception`() {
         val projectId = UUID.randomUUID()
-        repository.add(user)
+        repository.addUser(user)
         val exception = assertThrows<IllegalStateException> {
-            repository.removeFromProject(projectId, user.id)
+            repository.unassignUserFromProject(projectId, user.id)
         }
         assertEquals("Project $projectId is not assigned to user ${user.id}", exception.message)
     }
@@ -111,15 +123,15 @@ class UserRepositoryImplTest {
         val fakeId = UUID.randomUUID()
         val projectId = UUID.randomUUID()
         val exception = assertThrows<NoSuchElementException> {
-            repository.removeFromProject(projectId, fakeId)
+            repository.unassignUserFromProject(projectId, fakeId)
         }
         assertEquals("User with id $fakeId not found", exception.message)
     }
 
     @Test
     fun `getById returns user when found`() {
-        repository.add(user)
-        val result = repository.getById(user.id)
+        repository.addUser(user)
+        val result = repository.getUserById(user.id)
         assertEquals(user.id, result.id)
     }
 
@@ -127,11 +139,11 @@ class UserRepositoryImplTest {
     fun `getById returns correct user from multiple users`() {
         val user2 = user.copy(id = UUID.randomUUID(), name = "User2")
         val user3 = user.copy(id = UUID.randomUUID(), name = "User3")
-        repository.add(user)
-        repository.add(user2)
-        repository.add(user3)
+        repository.addUser(user)
+        repository.addUser(user2)
+        repository.addUser(user3)
 
-        val result = repository.getById(user2.id)
+        val result = repository.getUserById(user2.id)
         assertEquals(user2.id, result.id)
         assertEquals("User2", result.name)
     }
@@ -140,19 +152,18 @@ class UserRepositoryImplTest {
     fun `getById throws exception when user not found`() {
         val fakeId = UUID.randomUUID()
         val exception = assertThrows<NoSuchElementException> {
-            repository.getById(fakeId)
+            repository.getUserById(fakeId)
         }
         assertEquals("User with id $fakeId not found", exception.message)
     }
 
 
-
     @Test
     fun `getAll returns all users`() {
         val user2 = user.copy(id = UUID.randomUUID(), name = "Second")
-        repository.add(user)
-        repository.add(user2)
-        val allUsers = repository.getAll()
+        repository.addUser(user)
+        repository.addUser(user2)
+        val allUsers = repository.getAllUsers()
         assertEquals(2, allUsers.size)
         assertTrue(allUsers.contains(user))
         assertTrue(allUsers.contains(user2))

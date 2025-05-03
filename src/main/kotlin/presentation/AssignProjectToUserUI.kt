@@ -1,7 +1,6 @@
-import presentation.io.ConsoleIO
 import logic.models.UserRole
+import presentation.io.ConsoleIO
 import logic.usecases.user.AssignProjectToUserUseCase
-import utilities.UnauthorizedAccessException
 import java.util.UUID
 
 class AssignProjectToUserUI(

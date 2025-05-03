@@ -2,16 +2,16 @@ package logic.usecases.project
 
 import logic.models.Project
 import logic.repositories.ProjectsRepository
-import utilities.InvalidProjectNameException
-import utilities.NoExistProjectException
-import utilities.NotAdminException
-import java.util.UUID
+import logic.util.InvalidProjectNameException
+import logic.util.NoExistProjectException
+import logic.util.NotAdminException
+import java.util.*
 
 class UpdateProjectUseCase(
     private val projectsRepository: ProjectsRepository
 ) {
 
-    operator fun invoke(id: UUID, name: String, userIds: List<UUID>, isAdmin: Boolean): Boolean {
+    operator fun invoke(id: UUID, name: String, isAdmin: Boolean): Boolean {
         if (!isAdmin) {
             throw NotAdminException("Only administrators can update projects")
         }
@@ -23,10 +23,9 @@ class UpdateProjectUseCase(
         val updatedProject = Project(
             id = id,
             name = name,
-            userIds = userIds
         )
 
-        val success = projectsRepository.update(updatedProject)
+        val success = projectsRepository.updateProject(updatedProject)
         if (!success) {
             throw NoExistProjectException(id)
         }

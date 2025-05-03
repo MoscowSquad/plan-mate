@@ -1,34 +1,23 @@
 package data.csv_parser
 
-import logic.models.Project
-import utilities.ProjectIndex
-import java.util.*
+import data.dto.ProjectDto
+import data.util.ProjectIndex
 
-class ProjectCsvParser : CsvParser<Project> {
-    override fun parse(data: List<CsvData>): List<Project> {
+class ProjectCsvParser : CsvParser<ProjectDto> {
+    override fun parse(data: List<CsvData>): List<ProjectDto> {
         return data.drop(1).map { line ->
             val it = line.split(",")
-            Project(
-                id = it[ProjectIndex.ID].toUUID(),
+            ProjectDto(
+                id = it[ProjectIndex.ID],
                 name = it[ProjectIndex.NAME],
-                userIds = it[ProjectIndex.USER_IDS].toUserIds()
             )
         }
     }
 
-    override fun serialize(data: List<Project>): List<String> {
-        return listOf("id,name,userIds") +
+    override fun serialize(data: List<ProjectDto>): List<String> {
+        return listOf("id,name") +
                 data.map { datum ->
-                    "${datum.id},${datum.name},${datum.userIds}"
+                    "${datum.id},${datum.name}"
                 }
-    }
-
-    private fun String.toUserIds(): List<UUID> {
-        return this.removeSurrounding("[", "]")
-            .split(",")
-            .takeIf { it.isNotEmpty() }
-            ?.filter { it.isNotBlank() }
-            ?.map { UUID.fromString(it.trim()) }
-            ?: return emptyList()
     }
 }

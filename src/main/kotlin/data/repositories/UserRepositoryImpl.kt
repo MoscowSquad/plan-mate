@@ -11,14 +11,14 @@ class UserRepositoryImpl(
 
     private val users = mutableListOf<User>()
 
-    override fun add(user: User): Boolean {
+    override fun addUser(user: User): Boolean {
         if (users.any { it.id == user.id }) {
             throw IllegalArgumentException("User with id ${user.id} already exists")
         }
         return users.add(user)
     }
 
-    override fun delete(id: UUID): Boolean {
+    override fun deleteUser(id: UUID): Boolean {
         val removed = users.removeIf { it.id == id }
         if (!removed) {
             throw NoSuchElementException("Cannot delete: User with id $id not found")
@@ -26,7 +26,7 @@ class UserRepositoryImpl(
         return true
     }
 
-    override fun assignToProject(projectId: UUID, userId: UUID): Boolean {
+    override fun assignUserToProject(projectId: UUID, userId: UUID): Boolean {
         val index = users.indexOfFirst { it.id == userId }
         if (index == -1) {
             throw NoSuchElementException("User with id $userId not found")
@@ -41,7 +41,7 @@ class UserRepositoryImpl(
         return true
     }
 
-    override fun removeFromProject(projectId: UUID, userId: UUID): Boolean {
+    override fun unassignUserFromProject(projectId: UUID, userId: UUID): Boolean {
         val index = users.indexOfFirst { it.id == userId }
         if (index == -1) {
             throw NoSuchElementException("User with id $userId not found")
@@ -56,12 +56,12 @@ class UserRepositoryImpl(
         return true
     }
 
-    override fun getById(id: UUID): User {
+    override fun getUserById(id: UUID): User {
         return users.find { it.id == id }
             ?: throw NoSuchElementException("User with id $id not found")
     }
 
-    override fun getAll(): List<User> {
+    override fun getAllUsers(): List<User> {
         return users.toList()
     }
 }

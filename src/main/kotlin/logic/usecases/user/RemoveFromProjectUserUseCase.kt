@@ -2,7 +2,7 @@ package logic.usecases.user
 
 import logic.models.UserRole
 import logic.repositories.UserRepository
-import utilities.UnauthorizedAccessException
+import logic.util.UnauthorizedAccessException
 import java.util.*
 
 class RemoveFromProjectUserUseCase(private val userRepository: UserRepository) {
@@ -10,6 +10,6 @@ class RemoveFromProjectUserUseCase(private val userRepository: UserRepository) {
         if (role == UserRole.MATE) {
             throw UnauthorizedAccessException("Only admins can revoke projects from users")
         }
-        return userRepository.removeFromProject(projectId, userId)
+        return userRepository.unassignUserFromProject(projectId, userId)
     }
 }

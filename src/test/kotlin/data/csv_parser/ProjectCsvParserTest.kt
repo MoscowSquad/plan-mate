@@ -3,7 +3,7 @@ package data.csv_parser
 import com.google.common.truth.Truth
 import io.mockk.every
 import io.mockk.mockk
-import logic.models.Project
+import data.dto.ProjectDto
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.*
@@ -42,7 +42,7 @@ class ProjectCsvParserTest {
         val result = parser.parse(csvLines)
 
         // Then
-        val projects = emptyList<Project>()
+        val projects = emptyList<ProjectDto>()
         Truth.assertThat(result).isEqualTo(projects)
     }
 
@@ -58,7 +58,7 @@ class ProjectCsvParserTest {
         val result = parser.parse(csvLines)
 
         // Then
-        val projects = emptyList<Project>()
+        val projects = emptyList<ProjectDto>()
         Truth.assertThat(result).isEqualTo(projects)
     }
 
@@ -78,7 +78,7 @@ class ProjectCsvParserTest {
     @Test
     fun `should return project header when serialize empty project data`() {
         // Given
-        val projects = emptyList<Project>()
+        val projects = emptyList<ProjectDto>()
 
         // When
         val result = parser.serialize(projects)
@@ -89,7 +89,7 @@ class ProjectCsvParserTest {
     }
 
 
-    private fun getProjects(): List<Project> {
+    private fun getProjects(): List<ProjectDto> {
         return listOf(
             createProject("045e2ef6-a9f8-43d9-9c33-da8cf3a0ff2f", "The chance"),
             createProject("045e2ef6-a9f8-43d9-9c33-da8cf3a0ff2f", "Work"),
@@ -97,8 +97,8 @@ class ProjectCsvParserTest {
         )
     }
 
-    private fun createProject(id: String, name: String): Project {
-        return Project(UUID.fromString(id), name, listOf())
+    private fun createProject(id: String, name: String): ProjectDto {
+        return ProjectDto(id, name)
     }
 
     private fun getCsvLines(): List<String> {
