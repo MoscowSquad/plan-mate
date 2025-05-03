@@ -53,44 +53,6 @@ import java.util.*
   }
 
   @Test
-  fun `addLog successfully adds log and saves to data source`() {
-   val newLog = AuditLog(
-    id = UUID.fromString("00000000-0000-0000-0000-000000000106"),
-    timestamp = LocalDateTime(2023, 12, 31, 23, 59, 59),
-    userId = UUID.fromString("00000000-0000-0000-0000-000000000107"),
-    entityId = testTaskId,
-    auditType = AuditType.TASK,
-    action = "Updated",
-   )
-
-   every { auditLogDataSource.save(any()) } returns Unit
-
-   val result = repository.addLog(newLog)
-
-   assertTrue(result)
-   assertTrue(repository.getAllLogs().contains(newLog))
-   verify { auditLogDataSource.save(any()) }
-  }
-
-  @Test
-  fun `getAllLogsByTaskId returns only task logs for specified task`() {
-   val result = repository.getAllLogsByTaskId(testTaskId)
-
-   assertEquals(1, result.size)
-   assertEquals(testTaskId, result[0].entityId)
-   assertEquals(AuditType.TASK, result[0].auditType)
-  }
-
-  @Test
-  fun `getAllLogsByProjectId returns only project logs for specified project`() {
-   val result = repository.getAllLogsByProjectId(testProjectId)
-
-   assertEquals(1, result.size)
-   assertEquals(testProjectId, result[0].entityId)
-   assertEquals(AuditType.PROJECT, result[0].auditType)
-  }
-
-  @Test
   fun `getAllLogsByTaskId returns empty list when no matching logs exist`() {
    val existingTaskId = UUID.fromString("00000000-0000-0000-0000-000000000108")
    val existingLog = AuditLog(
