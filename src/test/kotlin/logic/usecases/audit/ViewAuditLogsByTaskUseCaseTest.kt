@@ -4,12 +4,12 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.models.AuditLog
-import logic.models.AuditType
 import logic.repositories.AuditRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 import kotlinx.datetime.LocalDateTime
+import logic.models.AuditType
 import java.util.UUID
 
  class ViewAuditLogsByTaskUseCaseTest{
@@ -25,14 +25,14 @@ import java.util.UUID
   fun `invoke should return empty list when no logs exist for task`() {
    // Given
    val taskId = UUID.fromString("00000000-0000-0000-0000-000000000020")
-   every { repository.getAllByTaskId(taskId) } returns emptyList()
+   every { repository.getAllLogsByTaskId(taskId) } returns emptyList()
 
    // When
    val result = useCase(taskId)
 
    // Then
    assertTrue(result.isEmpty())
-   verify(exactly = 1) { repository.getAllByTaskId(taskId) }
+   verify(exactly = 1) { repository.getAllLogsByTaskId(taskId) }
   }
 
   @Test
@@ -50,7 +50,7 @@ import java.util.UUID
     )
    )
 
-   every { repository.getAllByTaskId(taskId) } returns expectedLogs
+   every { repository.getAllLogsByTaskId(taskId) } returns expectedLogs
 
    // When
    val result = useCase(taskId)
@@ -59,7 +59,7 @@ import java.util.UUID
    assertEquals(expectedLogs.size, result.size)
    assertEquals(taskId, result[0].entityId)
    assertEquals(AuditType.TASK, result[0].auditType)
-   verify(exactly = 1) { repository.getAllByTaskId(taskId) }
+   verify(exactly = 1) { repository.getAllLogsByTaskId(taskId) }
   }
 
   @Test
@@ -86,7 +86,7 @@ import java.util.UUID
     )
    )
 
-   every { repository.getAllByTaskId(taskId) } returns mixedLogs.filter { it.auditType == AuditType.TASK && it.entityId == taskId }
+   every { repository.getAllLogsByTaskId(taskId) } returns mixedLogs.filter { it.auditType == AuditType.TASK && it.entityId == taskId }
 
    // When
    val result = useCase(taskId)
@@ -94,7 +94,7 @@ import java.util.UUID
    // Then
    assertEquals(1, result.size)
    assertEquals(AuditType.TASK, result[0].auditType)
-   verify(exactly = 1) { repository.getAllByTaskId(taskId) }
+   verify(exactly = 1) { repository.getAllLogsByTaskId(taskId) }
   }
 
  }

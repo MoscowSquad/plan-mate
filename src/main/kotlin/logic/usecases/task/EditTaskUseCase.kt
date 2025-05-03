@@ -7,6 +7,6 @@ class EditTaskUseCase(
     private val tasksRepository: TasksRepository
 ) {
     operator fun invoke(task: Task): Boolean {
-        return tasksRepository.edit(task)
+        return tasksRepository.editTask(task)
     }
 }

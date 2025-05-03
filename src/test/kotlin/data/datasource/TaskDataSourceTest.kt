@@ -4,7 +4,7 @@ import com.google.common.truth.Truth
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.models.Task
+import data.dto.TaskDto
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import data.csv_parser.CsvHandler
@@ -33,14 +33,14 @@ class TaskDataSourceTest {
 
     @Test
     fun `fetch() should return parsed tasks when there is tasks returned by task csv-parser`() {
-        val projectId = UUID.randomUUID()
-        val stateId = UUID.randomUUID()
+        val projectId = UUID.randomUUID().toString()
+        val stateId = UUID.randomUUID().toString()
         val description = "Watch all videos"
         val tasks = listOf(
-            Task(UUID.randomUUID(), "Videos 101 to 110", description, projectId, stateId),
-            Task(UUID.randomUUID(), "Videos 201 to 210", description, projectId, stateId),
-            Task(UUID.randomUUID(), "Videos 301 to 210", description, projectId, stateId),
-            Task(UUID.randomUUID(), "Videos 401 to 210", description, projectId, stateId),
+            TaskDto(UUID.randomUUID().toString(), "Videos 101 to 110", description, projectId, stateId),
+            TaskDto(UUID.randomUUID().toString(), "Videos 201 to 210", description, projectId, stateId),
+            TaskDto(UUID.randomUUID().toString(), "Videos 301 to 210", description, projectId, stateId),
+            TaskDto(UUID.randomUUID().toString(), "Videos 401 to 210", description, projectId, stateId),
         )
         every { taskCsvParser.parse(any()) } returns tasks
 
@@ -50,7 +50,7 @@ class TaskDataSourceTest {
 
     @Test
     fun `fetch() should return empty list when there is no tasks returned by task csv-parser`() {
-        val tasks = listOf<Task>()
+        val tasks = listOf<TaskDto>()
         every { taskCsvParser.parse(any()) } returns tasks
 
         val result = dataSource.fetch()

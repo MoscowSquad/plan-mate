@@ -3,7 +3,7 @@ package data.csv_parser
 import com.google.common.truth.Truth
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import utilities.TEST_FILE
+import data.util.TEST_FILE
 import java.io.File
 
 class CsvHandlerTest {

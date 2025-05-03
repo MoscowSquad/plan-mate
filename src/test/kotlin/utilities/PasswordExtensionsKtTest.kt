@@ -1,5 +1,8 @@
 package utilities
 
+import logic.util.isValidPasswordFormat
+import logic.util.matchesMD5Hash
+import logic.util.toMD5Hash
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals

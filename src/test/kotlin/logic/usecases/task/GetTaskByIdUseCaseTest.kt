@@ -8,9 +8,11 @@ import logic.repositories.TasksRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import logic.util.TaskIsNotFoundException
 import java.util.*
 
-class GetByIdUseCaseTest {
+class GetTaskByIdUseCaseTest {
     private lateinit var getTaskByIdUseCase: GetTaskByIdUseCase
     private lateinit var tasksRepository: TasksRepository
 
@@ -28,7 +30,7 @@ class GetByIdUseCaseTest {
 
         val task = Task(
             id = id,
-            title = "Videos",
+            name = "Videos",
             projectId = UUID.randomUUID(),
             description = "description",
             stateId = UUID.randomUUID()

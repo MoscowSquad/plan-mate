@@ -6,11 +6,11 @@ import io.mockk.verify
 import logic.models.User
 import logic.models.UserRole
 import logic.repositories.UserRepository
+import logic.util.UnauthorizedAccessException
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import utilities.UnauthorizedAccessException
 import java.util.*
 
 class DeleteUserUseCaseTest {
@@ -31,7 +31,7 @@ class DeleteUserUseCaseTest {
     @Test
     fun `should throw UnauthorizedAccessException for mates`() {
         // Given
-        every { userRepository.add(user) } returns true
+        every { userRepository.addUser(user) } returns true
 
         // When & Then
         val exception = assertThrows<UnauthorizedAccessException> {
@@ -43,8 +43,8 @@ class DeleteUserUseCaseTest {
     @Test
     fun `should throw exception when user is not exist`() {
         // Given
-        every { userRepository.getAll() } returns listOf(user)
-        every { userRepository.delete(user.id) } returns false
+        every { userRepository.getAllUsers() } returns listOf(user)
+        every { userRepository.deleteUser(user.id) } returns false
 
         // When & Then
         val exception = assertThrows<NoSuchElementException> {
@@ -56,13 +56,13 @@ class DeleteUserUseCaseTest {
     @Test
     fun `should delete user for admins`() {
         // Given
-        every { userRepository.getAll() } returns listOf(user)
-        every { userRepository.delete(user.id) } returns true
+        every { userRepository.getAllUsers() } returns listOf(user)
+        every { userRepository.deleteUser(user.id) } returns true
 
         // When
         deleteUserUseCase(adminRole, user.id)
 
         // Then
-        verify(exactly = 1) { userRepository.delete(user.id) }
+        verify(exactly = 1) { userRepository.deleteUser(user.id) }
     }
 }

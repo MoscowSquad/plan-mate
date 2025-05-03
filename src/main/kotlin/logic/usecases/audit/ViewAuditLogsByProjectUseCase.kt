@@ -6,6 +6,6 @@ import java.util.UUID
 
 class ViewAuditLogsByProjectUseCase(private val auditLogUseCase: AuditRepository) {
     operator fun invoke(projectId: UUID): List<AuditLog>{
-        return auditLogUseCase.getAllByProjectId(projectId)
+        return auditLogUseCase.getAllLogsByProjectId(projectId)
     }
 }

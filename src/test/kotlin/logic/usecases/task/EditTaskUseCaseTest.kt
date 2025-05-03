@@ -5,16 +5,16 @@ import io.mockk.mockk
 import io.mockk.verify
 import logic.models.Task
 import logic.repositories.TasksRepository
+import logic.util.TaskIsNotFoundException
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import utilities.TaskIsNotFoundException
 import java.util.*
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class EditUseCaseTest {
+class EditTaskUseCaseTest {
     private lateinit var editTaskUseCase: EditTaskUseCase
     private lateinit var tasksRepository: TasksRepository
     val id = UUID.fromString("00000000-0000-0000-0000-000000000001")
@@ -54,7 +54,7 @@ class EditUseCaseTest {
         // Given
         val task = Task(
             id = UUID.randomUUID(),
-            title = "Videos",
+            name = "Videos",
             projectId = UUID.randomUUID(),
             description = "description",
             stateId = UUID.randomUUID()

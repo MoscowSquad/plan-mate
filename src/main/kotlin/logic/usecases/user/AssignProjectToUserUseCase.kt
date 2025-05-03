@@ -2,7 +2,7 @@ package logic.usecases.user
 
 import logic.models.UserRole
 import logic.repositories.UserRepository
-import utilities.UnauthorizedAccessException
+import logic.util.UnauthorizedAccessException
 import java.util.*
 
 class AssignProjectToUserUseCase(private val userRepository: UserRepository) {
@@ -10,6 +10,6 @@ class AssignProjectToUserUseCase(private val userRepository: UserRepository) {
         if (role == UserRole.MATE) {
             throw UnauthorizedAccessException("Only admins can assign projects to users")
         }
-        return userRepository.assignToProject(projectId, userId)
+        return userRepository.assignUserToProject(projectId, userId)
     }
 }

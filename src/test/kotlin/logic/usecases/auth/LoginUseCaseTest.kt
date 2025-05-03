@@ -1,11 +1,13 @@
 package logic.usecases.auth
 
+import logic.util.toMD5Hash
 import logic.models.User
 import logic.repositories.AuthenticationRepository
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import utilities.toMD5Hash
-import kotlin.test.*
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class LoginUseCaseTest {
 

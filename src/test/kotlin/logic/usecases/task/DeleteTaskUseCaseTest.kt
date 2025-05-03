@@ -8,12 +8,12 @@ import logic.repositories.TasksRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import utilities.TaskIsNotFoundException
+import logic.util.TaskIsNotFoundException
 import java.util.*
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-class DeleteUseCaseTest {
+class DeleteTaskUseCaseTest {
     private lateinit var deleteTaskUseCase: DeleteTaskUseCase
     private lateinit var tasksRepository: TasksRepository
 
@@ -21,7 +21,6 @@ class DeleteUseCaseTest {
     fun setup() {
         tasksRepository = mockk(relaxed = true)
         deleteTaskUseCase = DeleteTaskUseCase(tasksRepository)
-
     }
 
     @Test
@@ -30,13 +29,13 @@ class DeleteUseCaseTest {
         val id = UUID.fromString("00000000-0000-0000-0000-000000000001")
         val task = Task(
             id = id,
-            title = "Videos3",
+            name = "Videos3",
             projectId = UUID.randomUUID(),
             description = "description",
             stateId = UUID.randomUUID()
         )
 
-        every { tasksRepository.delete(id) } returns true
+        every { tasksRepository.deleteTask(id) } returns true
 
 
         // When
@@ -61,7 +60,7 @@ class DeleteUseCaseTest {
             stateId = UUID.randomUUID()
         )
 
-        every { tasksRepository.delete(id) } returns false
+        every { tasksRepository.deleteTask(id) } returns false
 
 
         // When
