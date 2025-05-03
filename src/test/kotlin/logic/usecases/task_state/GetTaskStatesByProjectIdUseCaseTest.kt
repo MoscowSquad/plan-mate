@@ -5,7 +5,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import logic.models.TaskState
 import logic.repositories.TaskStateRepository
-import logic.util.NoExistProjectException
+import logic.util.NoStateExistException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -25,18 +25,17 @@ class GetTaskStatesByProjectIdUseCaseTest {
     }
 
     @Test
-    fun `should throw NoExistProjectException when project has no states`() {
+    fun `should throw NoStateExistException when project has no states`() {
         // Given
-        val projectId = UUID.fromString("00000000-0000-0000-0000-000000000001")
-        every { stateRepository.getTaskStateByProjectId(projectId) } returns emptyList()
+        val projectId = UUID.randomUUID()
+        every { stateRepository.getTaskStateByProjectId(projectId) } throws NoStateExistException("No State Exist")
 
         // When/Then
-        val exception = assertThrows<NoExistProjectException> {
+        val exception = assertThrows<NoStateExistException> {
             useCase(projectId)
         }
 
-        // Verify exception message and repository call
-        assertEquals("Project '$projectId' does not exist", exception.message)
+        assertEquals("No State Exist", exception.message)
         verify(exactly = 1) { stateRepository.getTaskStateByProjectId(projectId) }
     }
 
