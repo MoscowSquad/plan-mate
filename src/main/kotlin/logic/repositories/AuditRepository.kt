@@ -4,8 +4,7 @@ import logic.models.AuditLog
 import java.util.*
 
 interface AuditRepository {
-    fun addLog(log: AuditLog): Boolean
-    fun getAuditLogById(taskId: UUID): List<AuditLog>
+    fun addLog(log: AuditLog)
     fun getAllLogsByTaskId(taskId: UUID): List<AuditLog>
     fun getAllLogsByProjectId(projectId: UUID): List<AuditLog>
 }
