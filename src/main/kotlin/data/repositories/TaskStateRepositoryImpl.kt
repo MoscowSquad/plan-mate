@@ -5,6 +5,7 @@ import data.mappers.toDto
 import data.mappers.toTaskState
 import logic.models.TaskState
 import logic.repositories.TaskStateRepository
+import logic.util.NoStateExistException
 import java.util.*
 
 class TaskStateRepositoryImpl(
@@ -18,12 +19,14 @@ class TaskStateRepositoryImpl(
     }
 
     override fun getTaskStateById(id: UUID): TaskState {
-        return states.find { it.id == id } ?: throw NoSuchElementException("State with ID $id not found.")
+        return states.find { it.id == id } ?: throw NoStateExistException("State with ID $id not found.")
     }
 
     override fun getTaskStateByProjectId(projectId: UUID): List<TaskState> {
         return states.filter { it.projectId == projectId }
+            .ifEmpty { throw NoStateExistException("No State Exist") }
     }
+
 
     override fun updateTaskState(state: TaskState): Boolean {
         val index = states.indexOfFirst { it.id == state.id }
@@ -34,9 +37,8 @@ class TaskStateRepositoryImpl(
         return true
     }
 
-    override fun addTaskState(projectId: UUID, title: String): Boolean {
-        val newState = TaskState(UUID.randomUUID(), title, projectId)
-        val added = states.add(newState)
+    override fun addTaskState(projectId: UUID, state: TaskState): Boolean {
+        val added = states.add(state)
         if (added) stateDataSource.save(states.map { it.toDto() })
         return added
     }
