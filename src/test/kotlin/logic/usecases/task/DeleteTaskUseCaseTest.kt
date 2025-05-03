@@ -10,13 +10,12 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import logic.util.TaskIsNotFoundException
 import java.util.*
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class DeleteTaskUseCaseTest {
     private lateinit var deleteTaskUseCase: DeleteTaskUseCase
     private lateinit var tasksRepository: TasksRepository
-    val id = UUID.fromString("00000000-0000-0000-0000-000000000001")
-    val id2 = UUID.fromString("00000000-0000-0000-0000-000000000002")
 
     @BeforeEach
     fun setup() {
@@ -27,65 +26,50 @@ class DeleteTaskUseCaseTest {
     @Test
     fun `should return true when task deleted successfully `() {
         // Given
+        val id = UUID.fromString("00000000-0000-0000-0000-000000000001")
         val task = Task(
-            id = UUID.randomUUID(),
+            id = id,
             name = "Videos3",
             projectId = UUID.randomUUID(),
             description = "description",
             stateId = UUID.randomUUID()
         )
 
-        every { tasksRepository.addTask(task) } returns true
+        every { tasksRepository.deleteTask(id) } returns true
 
 
         // When
-        val result = deleteTaskUseCase(UUID.randomUUID())
+        val result = deleteTaskUseCase(id)
 
         // Then
         assertTrue(result)
-        verify(exactly = 1) { deleteTaskUseCase(UUID.randomUUID()) }
+        verify(exactly = 1) { deleteTaskUseCase(id) }
 
     }
 
     @Test
-    fun `should Throw TaskIsNotFoundException when wanted Id not found `() {
+    fun `should return false when task is not deleted successfully `() {
         // Given
-        val tasks: List<Task> = listOf(
-            Task(id = id, name = "Videos", projectId = id, description = "description", stateId = id),
-            Task(id = id2, name = "Videos2", projectId = id2, description = "description", stateId = id2),
+        val id = UUID.fromString("00000000-0000-0000-0000-000000000001")
+
+        val task = Task(
+            id = id,
+            name = "Videos3",
+            projectId = UUID.randomUUID(),
+            description = "description",
+            stateId = UUID.randomUUID()
         )
-        every { tasksRepository.getAllTasks() } returns tasks
-        val input = UUID.fromString("00000000-0000-0000-0000-000000000003")
-        // When & Then
-        assertThrows<TaskIsNotFoundException> {
-            deleteTaskUseCase(input)
-        }
-    }
 
-    @Test
-    fun `should Throw TaskIsNotFoundException when there is no tasks found to delete`() {
-        // Given
-        every { tasksRepository.getAllTasks() } returns emptyList()
-        val input = UUID.fromString("00000000-0000-0000-0000-000000000001")
-        // When & Then
-        assertThrows<TaskIsNotFoundException> {
-            deleteTaskUseCase(input)
-        }
-    }
+        every { tasksRepository.deleteTask(id) } returns false
 
-    @Test
-    fun `should Throw TaskIsNotFoundException when no task is removed in deleteTask`() {
-        // Given
-        val tasks: List<Task> = listOf(
-            Task(id = id, name = "Videos", projectId = id, description = "description", stateId = id),
-            Task(id = id2, name = "Videos2", projectId = id2, description = "description", stateId = id2),
-        )
-        every { tasksRepository.getAllTasks() } returns tasks
 
-        // When & Then
-        assertThrows<TaskIsNotFoundException> {
-            deleteTaskUseCase(UUID.fromString("00000000-0000-0000-0000-000000000003"))
-        }
+        // When
+        val result = deleteTaskUseCase(id)
+
+        // Then
+        assertFalse(result)
+        verify(exactly = 1) { deleteTaskUseCase(id) }
+
     }
 
 }
