@@ -1,15 +1,16 @@
-package logic.usecases.state
+package logic.usecases.task_state
 
 import logic.models.TaskState
+import logic.repositories.TaskStateRepository
 import logic.repositories.StateRepository
 import utilities.IllegalStateTitle
 
-class AddStateUseCase(
-    private val stateRepository: StateRepository,
+class AddTaskStateUseCase(
+    private val stateRepository: TaskStateRepository,
 ) {
 
     operator fun invoke(state: TaskState): Boolean {
-        require(isValidTitle(state.title)) {
+        require(isValidTitle(state.name)) {
             throw IllegalStateTitle("Task state title cannot be blank")
         }
 

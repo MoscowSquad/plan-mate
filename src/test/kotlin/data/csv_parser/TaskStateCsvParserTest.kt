@@ -1,13 +1,11 @@
 package data.csv_parser
 
 import com.google.common.truth.Truth
+import data.dto.TaskStateDto
 import io.mockk.every
 import io.mockk.mockk
-import logic.models.TaskState
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import test_helper.toCsvData
-import java.util.*
 
 class TaskStateCsvParserTest {
     private lateinit var csvHandler: CsvHandler
@@ -43,7 +41,7 @@ class TaskStateCsvParserTest {
         val result = parser.parse(csvLines)
 
         // Then
-        val states = emptyList<TaskState>()
+        val states = emptyList<TaskStateDto>()
         Truth.assertThat(result).isEqualTo(states)
     }
 
@@ -57,7 +55,7 @@ class TaskStateCsvParserTest {
         val result = parser.parse(csvLines)
 
         // Then
-        val states = emptyList<TaskState>()
+        val states = emptyList<TaskStateDto>()
         Truth.assertThat(result).isEqualTo(states)
     }
 
@@ -77,7 +75,7 @@ class TaskStateCsvParserTest {
     @Test
     fun `should return state header when serialize empty state data`() {
         // Given
-        val states = emptyList<TaskState>()
+        val states = emptyList<TaskStateDto>()
 
         // When
         val result = parser.serialize(states)
@@ -88,7 +86,7 @@ class TaskStateCsvParserTest {
     }
 
 
-    private fun getStates(): List<TaskState> {
+    private fun getStates(): List<TaskStateDto> {
         return listOf(
             createState("caf22bb1-90ff-409d-bef2-3b8bc9759354", "Todo", "caf22bb1-90ff-409d-bef2-3b8bc9759354"),
             createState("caf22bb1-90ff-409d-bef2-3b8bc9759354", "In Progress", "caf22bb1-90ff-409d-bef2-3b8bc9759354"),
@@ -110,9 +108,7 @@ class TaskStateCsvParserTest {
         id: String,
         title: String,
         projectId: String,
-    ): TaskState {
-        return TaskState(
-            UUID.fromString(id), title, UUID.fromString(projectId),
-        )
+    ): TaskStateDto {
+        return TaskStateDto(id, title, projectId)
     }
 }

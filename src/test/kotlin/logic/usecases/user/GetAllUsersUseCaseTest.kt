@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import utilities.UnauthorizedAccessException
+import logic.util.UnauthorizedAccessException
 import java.util.*
 
 class GetAllUsersUseCaseTest {
@@ -31,7 +31,7 @@ class GetAllUsersUseCaseTest {
     @Test
     fun `should throw UnauthorizedAccessException for mates`() {
         // Given
-        every { userRepository.add(user) } returns true
+        every { userRepository.addUser(user) } returns true
 
         // When & Then
         val exception = assertThrows<UnauthorizedAccessException> {
@@ -43,14 +43,14 @@ class GetAllUsersUseCaseTest {
     @Test
     fun `should return all users for admins`() {
         // Given
-        every { userRepository.add(user) } returns true
-        every { userRepository.getAll() } returns listOf(user)
+        every { userRepository.addUser(user) } returns true
+        every { userRepository.getAllUsers() } returns listOf(user)
 
         // When
         val result = getAllUsersUseCase(adminRole)
 
         // Then
         assertTrue(result.isNotEmpty())
-        verify(exactly = 1) { userRepository.getAll() }
+        verify(exactly = 1) { userRepository.getAllUsers() }
     }
 }

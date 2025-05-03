@@ -1,8 +1,9 @@
-package logic.usecases.state
+package logic.usecases.task_state
 
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import logic.repositories.TaskStateRepository
 import io.mockk.verifyOrder
 import logic.models.TaskState
 import logic.repositories.StateRepository
@@ -10,19 +11,19 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
-import utilities.NoStateExistException
+import logic.util.NoStateExistException
 import java.util.*
 import kotlin.test.Test
 
-class DeleteStateUseCaseTest {
+class DeleteTaskStateUseCaseTest {
 
-    private lateinit var stateRepository: StateRepository
-    private lateinit var deleteStateUseCase: DeleteStateUseCase
+    private lateinit var stateRepository: TaskStateRepository
+    private lateinit var deleteStateUseCase: DeleteTaskStateUseCase
 
     @BeforeEach
     fun setUp() {
         stateRepository = mockk(relaxed = false) // Use strict mocking
-        deleteStateUseCase = DeleteStateUseCase(stateRepository)
+        deleteStateUseCase = DeleteTaskStateUseCase(stateRepository)
     }
 
     @Test
@@ -43,7 +44,7 @@ class DeleteStateUseCaseTest {
         assertTrue(result)
         verifyOrder {
             stateRepository.getByProjectId(projectId)
-            stateRepository.delete(projectId, stateId)
+            stateRepository.deleteTaskState(projectId, stateId)
         }
     }
 

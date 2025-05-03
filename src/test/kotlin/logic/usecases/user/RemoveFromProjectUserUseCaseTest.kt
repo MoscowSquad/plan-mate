@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import utilities.UnauthorizedAccessException
+import logic.util.UnauthorizedAccessException
 import java.util.*
 
 class RemoveFromProjectUserUseCaseTest {
@@ -32,7 +32,7 @@ class RemoveFromProjectUserUseCaseTest {
     @Test
     fun `should throw UnauthorizedAccessException for mates`() {
         // Given
-        every { userRepository.add(user) } returns true
+        every { userRepository.addUser(user) } returns true
 
         // When & Then
         val exception = assertThrows<UnauthorizedAccessException> {
@@ -44,14 +44,14 @@ class RemoveFromProjectUserUseCaseTest {
     @Test
     fun `should revoke project for mates when user is admin`() {
         // Given
-        every { userRepository.add(user) } returns true
-        every { userRepository.removeFromProject(projectId, user.id) } returns true
+        every { userRepository.addUser(user) } returns true
+        every { userRepository.unassignUserFromProject(projectId, user.id) } returns true
 
         // When
         val result = removeFromProjectUserUseCase(adminRole, projectId, user.id)
 
         // Then
         assertTrue(result)
-        verify(exactly = 1) { userRepository.removeFromProject(projectId, user.id) }
+        verify(exactly = 1) { userRepository.unassignUserFromProject(projectId, user.id) }
     }
 }

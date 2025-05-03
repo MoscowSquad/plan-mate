@@ -1,25 +1,25 @@
-package logic.usecases.state
+package logic.usecases.task_state
 
-import org.junit.jupiter.api.Assertions.*
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.models.TaskState
-import logic.repositories.StateRepository
+import logic.repositories.TaskStateRepository
+import logic.util.NoStateExistException
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import utilities.NoStateExistException
 import java.util.*
 
-class GetStateByIdUseCaseTest {
-    private val stateRepository = mockk<StateRepository>()
-    private val useCase = GetStateByIdUseCase(stateRepository)
+class GetTaskStateByIdUseCaseTest {
+    private val stateRepository = mockk<TaskStateRepository>()
+    private val useCase = GetTaskStateByIdUseCase(stateRepository)
 
     @Test
     fun `should throw NoStateExistException when state not found`() {
         // Given
         val stateId = UUID.fromString("00000000-0000-0000-0000-000000000001")
-        every { stateRepository.getById(stateId) } throws NoStateExistException("State with ID $stateId does not exist")
+        every { stateRepository.getTaskStateById(stateId) } throws NoStateExistException("State with ID $stateId does not exist")
 
         // When/Then
         val exception = assertThrows<NoStateExistException> {
@@ -27,7 +27,7 @@ class GetStateByIdUseCaseTest {
         }
 
         assertEquals("State with ID $stateId does not exist", exception.message)
-        verify(exactly = 1) { stateRepository.getById(stateId) }
+        verify(exactly = 1) { stateRepository.getTaskStateById(stateId) }
     }
 
     @Test
@@ -35,13 +35,13 @@ class GetStateByIdUseCaseTest {
         // Given
         val stateId = UUID.fromString("00000000-0000-0000-0000-000000000002")
         val expectedState = TaskState(stateId, "To Do", UUID.randomUUID())
-        every { stateRepository.getById(stateId) } returns expectedState
+        every { stateRepository.getTaskStateById(stateId) } returns expectedState
 
         // When
         val result = useCase(stateId)
 
         // Then
         assertEquals(expectedState, result)
-        verify(exactly = 1) { stateRepository.getById(stateId) }
+        verify(exactly = 1) { stateRepository.getTaskStateById(stateId) }
     }
 }

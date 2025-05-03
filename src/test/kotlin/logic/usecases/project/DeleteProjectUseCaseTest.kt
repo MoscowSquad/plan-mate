@@ -8,8 +8,8 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import utilities.NoExistProjectException
-import utilities.NotAdminException
+import logic.util.NoExistProjectException
+import logic.util.NotAdminException
 import java.util.UUID
 
 class DeleteProjectUseCaseTest {
@@ -27,27 +27,27 @@ class DeleteProjectUseCaseTest {
     fun `should delete project successfully when user is admin and project exists`() {
         // Given
         val projectId = UUID.randomUUID()
-        every { projectsRepository.delete(projectId) } returns true
+        every { projectsRepository.deleteProject(projectId) } returns true
 
         // When
         val result = deleteProjectUseCase.invoke(projectId, isAdmin = true)
 
         // Then
         assertTrue(result)
-        verify(exactly = 1) { projectsRepository.delete(projectId) }
+        verify(exactly = 1) { projectsRepository.deleteProject(projectId) }
     }
 
     @Test
     fun `should throw NoExistProjectException when project does not exist`() {
         // Given
         val projectId = UUID.randomUUID()
-        every { projectsRepository.delete(projectId) } returns false
+        every { projectsRepository.deleteProject(projectId) } returns false
 
         // When & Then
         assertThrows<NoExistProjectException> {
             deleteProjectUseCase.invoke(projectId, isAdmin = true)
         }
-        verify(exactly = 1) { projectsRepository.delete(projectId) }
+        verify(exactly = 1) { projectsRepository.deleteProject(projectId) }
     }
 
     @Test
@@ -59,14 +59,14 @@ class DeleteProjectUseCaseTest {
         assertThrows<NotAdminException> {
             deleteProjectUseCase.invoke(projectId, isAdmin = false)
         }
-        verify(exactly = 0) { projectsRepository.delete(any()) }
+        verify(exactly = 0) { projectsRepository.deleteProject(any()) }
     }
 
     @Test
     fun `should include project ID in NoExistProjectException message`() {
         // Given
         val projectId = UUID.randomUUID()
-        every { projectsRepository.delete(projectId) } returns false
+        every { projectsRepository.deleteProject(projectId) } returns false
 
         // When
         val exception = assertThrows<NoExistProjectException> {

@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import utilities.UnauthorizedAccessException
+import logic.util.UnauthorizedAccessException
 import java.util.*
 
 class AssignProjectToUserUseCaseTest {
@@ -32,7 +32,7 @@ class AssignProjectToUserUseCaseTest {
     @Test
     fun `should throw UnauthorizedAccessException for mates try to assign project`() {
         // Given
-        every { userRepository.add(user) } returns true
+        every { userRepository.addUser(user) } returns true
 
         // When & Then
         val exception = assertThrows<UnauthorizedAccessException> {
@@ -45,8 +45,8 @@ class AssignProjectToUserUseCaseTest {
     @Test
     fun `should assign project for users when admins try to assign`() {
         // Given
-        every { userRepository.add(user) } returns true
-        every { userRepository.assignToProject(projectId, user.id) } returns true
+        every { userRepository.addUser(user) } returns true
+        every { userRepository.assignUserToProject(projectId, user.id) } returns true
 
         // When
         val result = assignProjectToUserUseCase(adminRole, projectId, user.id)

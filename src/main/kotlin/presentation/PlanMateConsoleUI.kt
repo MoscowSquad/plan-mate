@@ -2,12 +2,7 @@ package presentation
 
 import AssignProjectToUserUI
 import CreateUserUI
-import GetUserByIdUI
-
-
 import presentation.io.ConsoleIO
-import presentation.user.DeleteUserUI
-import presentation.user.GetAllUserUI
 import kotlin.system.exitProcess
 
 class PlanMateConsoleUI(
@@ -15,7 +10,7 @@ class PlanMateConsoleUI(
     private val createUserUI: CreateUserUI,
     private val deleteUserUI: DeleteUserUI,
     private val getAllUserUI: GetAllUserUI,
-    private val getUserByIdUI:GetUserByIdUI,
+    private val getUserByIdUI: GetUserByIdUI,
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
     fun start(stopImminently: Boolean = false) {
@@ -75,6 +70,6 @@ Enter your option:
             5 -> getUserByIdUI()
             6 -> exitProcess(0)
             else -> write("\nInvalid input. Please enter a number between 1 and 6.")
-
-        }}
+        }
+    }
 }

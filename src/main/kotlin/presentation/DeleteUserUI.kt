@@ -1,4 +1,4 @@
-package presentation.user
+package presentation
 
 import logic.models.UserRole
 import logic.usecases.user.DeleteUserUseCase
@@ -24,8 +24,9 @@ class DeleteUserUI(
             write(" Invalid UUID format. Please provide a valid user ID.")
             return
         }
-            val role = currentUserRole()
-            deleteUserUseCase(role, userId)
-            write(" User with ID $userId has been successfully deleted.")
+        val role = currentUserRole()
+        deleteUserUseCase(role, userId)
+        write(" User with ID $userId has been successfully deleted.")
 
-}}
+    }
+}

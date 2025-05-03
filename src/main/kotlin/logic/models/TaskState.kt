@@ -4,6 +4,6 @@ import java.util.UUID
 
 data class TaskState(
     val id: UUID,
-    val title: String,
+    val name: String,
     val projectId: UUID,
 )

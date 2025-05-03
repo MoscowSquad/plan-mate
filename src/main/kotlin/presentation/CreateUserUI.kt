@@ -1,9 +1,8 @@
-import logic.models.User
-import logic.models.UserRole
 import logic.usecases.user.CreateUserUseCase
 import presentation.io.ConsoleIO
-import utilities.toMD5Hash
-import utilities.isValidPasswordFormat
+import logic.util.toMD5Hash
+import logic.models.User
+import logic.models.UserRole
 import java.util.*
 
 class CreateUserUI(

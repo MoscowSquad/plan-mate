@@ -1,10 +1,11 @@
-package logic.usecases.state
+package logic.usecases.task_state
 
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.models.TaskState
-import logic.repositories.StateRepository
+import logic.repositories.TaskStateRepository
+import logic.util.NoExistProjectException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -13,22 +14,22 @@ import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class GetStatesByProjectIdUseCaseTest {
+class GetTaskStatesByProjectIdUseCaseTest {
 
-    private lateinit var stateRepository: StateRepository
-    private lateinit var useCase: GetStatesByProjectIdUseCase
+    private lateinit var stateRepository: TaskStateRepository
+    private lateinit var useCase: GetTaskStatesByProjectIdUseCase
 
     @BeforeEach
     fun setup() {
         stateRepository = mockk()
-        useCase = GetStatesByProjectIdUseCase(stateRepository)
+        useCase = GetTaskStatesByProjectIdUseCase(stateRepository)
     }
 
     @Test
     fun `should throw NoStateExistException when project has no states`() {
         // Given
         val projectId = UUID.randomUUID()
-        every { stateRepository.getByProjectId(projectId) } throws NoStateExistException("No State Exist")
+        every { stateRepository.getTaskStateByProjectId(projectId) } throws NoStateExistException("No State Exist")
 
         // When/Then
         val exception = assertThrows<NoStateExistException> {
@@ -36,7 +37,7 @@ class GetStatesByProjectIdUseCaseTest {
         }
 
         assertEquals("No State Exist", exception.message)
-        verify(exactly = 1) { stateRepository.getByProjectId(projectId) }
+        verify(exactly = 1) { stateRepository.getTaskStateByProjectId(projectId) }
     }
 
     @Test
@@ -47,7 +48,7 @@ class GetStatesByProjectIdUseCaseTest {
             TaskState(UUID.randomUUID(), "To Do", projectId),
             TaskState(UUID.randomUUID(), "In Progress", projectId)
         )
-        every { stateRepository.getByProjectId(projectId) } returns testStates
+        every { stateRepository.getTaskStateByProjectId(projectId) } returns testStates
 
         // When
         val result = useCase(projectId)

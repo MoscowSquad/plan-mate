@@ -1,4 +1,4 @@
-package utilities
+package logic.util
 
 import java.security.MessageDigest
 

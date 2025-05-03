@@ -28,21 +28,21 @@ class GetUserByIdUseCaseTest {
     @Test
     fun `should return user by id when user exists`() {
         // Given
-        every { userRepository.getById(user.id) } returns user
+        every { userRepository.getUserById(user.id) } returns user
 
         // When
         val result = getUserByIdUseCase(user.id)
 
         // Then
         assertEquals(user.id, result.id)
-        verify(exactly = 1) { userRepository.getById(user.id) }
+        verify(exactly = 1) { userRepository.getUserById(user.id) }
     }
 
     @Test
     fun `should throw NoSuchElementException when user not found`() {
         // Given
         val nonExistentUserId = UUID.randomUUID()
-        every { userRepository.getById(nonExistentUserId) } throws NoSuchElementException("User with id $nonExistentUserId not found")
+        every { userRepository.getUserById(nonExistentUserId) } throws NoSuchElementException("User with id $nonExistentUserId not found")
 
         // When & Then
         val exception = assertThrows<NoSuchElementException> {

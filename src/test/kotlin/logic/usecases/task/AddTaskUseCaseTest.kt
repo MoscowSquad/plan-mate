@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test
 import java.util.*
 import kotlin.test.assertTrue
 
-class AddUseCaseTest {
+class AddTaskUseCaseTest {
     private lateinit var addTaskUseCase: AddTaskUseCase
     private lateinit var tasksRepository: TasksRepository
 
@@ -27,13 +27,13 @@ class AddUseCaseTest {
         // Given
         val task = Task(
             id = UUID.randomUUID(),
-            title = "Videos3",
+            name = "Videos3",
             projectId = UUID.randomUUID(),
             description = "description",
             stateId = UUID.randomUUID()
         )
 
-        every { tasksRepository.add(task) } returns true
+        every { tasksRepository.addTask(task) } returns true
 
 
         // When

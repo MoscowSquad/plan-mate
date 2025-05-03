@@ -1,8 +1,8 @@
 package logic.usecases.project
 
 import logic.repositories.ProjectsRepository
-import utilities.NoExistProjectException
-import utilities.NotAdminException
+import logic.util.NoExistProjectException
+import logic.util.NotAdminException
 import java.util.UUID
 
 class DeleteProjectUseCase(private val projectsRepository: ProjectsRepository) {
@@ -11,7 +11,7 @@ class DeleteProjectUseCase(private val projectsRepository: ProjectsRepository) {
             throw NotAdminException("Only administrators can delete projects")
         }
 
-        val success = projectsRepository.delete(id)
+        val success = projectsRepository.deleteProject(id)
         if (!success) {
             throw NoExistProjectException(id)
         }

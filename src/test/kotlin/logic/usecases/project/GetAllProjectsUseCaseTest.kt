@@ -7,7 +7,7 @@ import logic.repositories.ProjectsRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.util.UUID
+import java.util.*
 
 class GetAllProjectsUseCaseTest {
     private lateinit var projectsRepository: ProjectsRepository
@@ -23,11 +23,11 @@ class GetAllProjectsUseCaseTest {
     fun `should return all projects from repository`() {
         // Given
         val projects = listOf(
-            Project(UUID.randomUUID(), "Project 1", listOf(UUID.randomUUID())),
-            Project(UUID.randomUUID(), "Project 2", listOf(UUID.randomUUID())),
-            Project(UUID.randomUUID(), "Project 3", listOf(UUID.randomUUID()))
+            Project(UUID.randomUUID(), "Project 1"),
+            Project(UUID.randomUUID(), "Project 2"),
+            Project(UUID.randomUUID(), "Project 3")
         )
-        every { projectsRepository.getAll() } returns projects
+        every { projectsRepository.getAllProjects() } returns projects
 
         // When
         val result = getAllProjectsUseCase.invoke()
@@ -39,7 +39,7 @@ class GetAllProjectsUseCaseTest {
     @Test
     fun `should return empty list when repository has no projects`() {
         // Given
-        every { projectsRepository.getAll() } returns emptyList()
+        every { projectsRepository.getAllProjects() } returns emptyList()
 
         // When
         val result = getAllProjectsUseCase.invoke()

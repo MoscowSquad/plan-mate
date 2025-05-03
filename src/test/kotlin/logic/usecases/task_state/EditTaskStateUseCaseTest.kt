@@ -1,11 +1,12 @@
-package logic.usecases.state
+package logic.usecases.task_state
 
 import com.google.common.truth.Truth.assertThat
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.models.TaskState
-import logic.repositories.StateRepository
+import logic.repositories.TaskStateRepository
+import logic.util.IllegalStateTitle
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -14,14 +15,14 @@ import utilities.NoStateExistException
 import java.util.*
 
 
-class EditStateUseCaseTest {
-    private lateinit var editStateUseCase: EditStateUseCase
-    private lateinit var stateRepository: StateRepository
+class EditTaskStateUseCaseTest {
+    private lateinit var editStateUseCase: EditTaskStateUseCase
+    private lateinit var stateRepository: TaskStateRepository
 
     @BeforeEach
     fun setup() {
         stateRepository = mockk()
-        editStateUseCase = EditStateUseCase(stateRepository)
+        editStateUseCase = EditTaskStateUseCase(stateRepository)
     }
 
     @Test
@@ -29,18 +30,18 @@ class EditStateUseCaseTest {
         // Given
         val updatedState = TaskState(
             id = UUID.fromString("00000000-0000-0000-0000-000000000002"),
-            title = "Updated TaskState",
+            name = "Updated TaskState",
             projectId = UUID.fromString("00000000-0000-0000-0000-000000000001")
         )
 
-        every { stateRepository.update(updatedState) } returns true
+        every { stateRepository.updateTaskState(updatedState) } returns true
 
         // When
         val result = editStateUseCase(updatedState)
 
         // Then
         assertThat(result).isEqualTo(updatedState)
-        verify(exactly = 1) { stateRepository.update(updatedState) }
+        verify(exactly = 1) { stateRepository.updateTaskState(updatedState) }
     }
 
     @Test
@@ -48,7 +49,7 @@ class EditStateUseCaseTest {
         // Given
         val invalidState = TaskState(
             id = UUID.randomUUID(),
-            title = "",
+            name = "",
             projectId = UUID.randomUUID()
         )
 
@@ -57,7 +58,7 @@ class EditStateUseCaseTest {
             editStateUseCase(invalidState)
         }
         assertThat(exception.message).isEqualTo("TaskState title cannot be blank")
-        verify(exactly = 0) { stateRepository.update(any()) }
+        verify(exactly = 0) { stateRepository.updateTaskState(any()) }
     }
 
     @Test
