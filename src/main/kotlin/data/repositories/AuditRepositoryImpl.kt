@@ -2,7 +2,7 @@ package data.repositories
 
 import data.datasource.AuditLogDataSource
 import data.mappers.toDto
-import data.mappers.toLogic
+import data.mappers.toAudiLog
 import logic.models.AuditLog
 import logic.models.AuditType
 import logic.repositories.AuditRepository
@@ -11,26 +11,16 @@ import java.util.*
 class AuditRepositoryImpl(
     private val auditLogDataSource: AuditLogDataSource
 ) : AuditRepository {
-
     private val audits = mutableListOf<AuditLog>()
 
     init {
-        val auditLogDtos = auditLogDataSource.fetch()
-        audits.addAll(auditLogDtos.map { it.toLogic() })
+        val auditLog = auditLogDataSource.fetch()
+        audits.addAll(auditLog.map { it.toAudiLog() })
     }
 
-    override fun addLog(log: AuditLog): Boolean {
-        return try {
-            audits.add(log)
-            auditLogDataSource.save(audits.map { it.toDto() })
-            true
-        } catch (e: Exception) {
-            false
-        }
-    }
-
-    override fun getAuditLogById(taskId: UUID): List<AuditLog> {
-        TODO("Not yet implemented")
+    override fun addLog(log: AuditLog) {
+        audits.add(log)
+        auditLogDataSource.save(audits.map { it.toDto() })
     }
 
     override fun getAllLogsByTaskId(taskId: UUID): List<AuditLog> {
