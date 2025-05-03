@@ -8,7 +8,7 @@ class GetStatesByProjectIdUseCase(
     private val stateRepository: StateRepository
 ) {
 
-    operator fun invoke(projectId: UUID): List<TaskState>{
-        return emptyList()
+    operator fun invoke(projectId: UUID): List<TaskState> {
+        return stateRepository.getByProjectId(projectId)
     }
 }

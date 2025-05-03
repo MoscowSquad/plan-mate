@@ -8,7 +8,7 @@ import logic.repositories.StateRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import utilities.NoExistProjectException
+import utilities.NoStateExistException
 import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -25,18 +25,17 @@ class GetStatesByProjectIdUseCaseTest {
     }
 
     @Test
-    fun `should throw NoExistProjectException when project has no states`() {
+    fun `should throw NoStateExistException when project has no states`() {
         // Given
-        val projectId = UUID.fromString("00000000-0000-0000-0000-000000000001")
-        every { stateRepository.getByProjectId(projectId) } returns emptyList()
+        val projectId = UUID.randomUUID()
+        every { stateRepository.getByProjectId(projectId) } throws NoStateExistException("No State Exist")
 
         // When/Then
-        val exception = assertThrows<NoExistProjectException> {
+        val exception = assertThrows<NoStateExistException> {
             useCase(projectId)
         }
 
-        // Verify exception message and repository call
-        assertEquals("Project '$projectId' does not exist", exception.message)
+        assertEquals("No State Exist", exception.message)
         verify(exactly = 1) { stateRepository.getByProjectId(projectId) }
     }
 
