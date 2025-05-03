@@ -3,33 +3,35 @@ package data.repositories
 import data.datasource.UserDataSource
 import data.mappers.toDto
 import data.mappers.toUser
-import logic.util.toMD5Hash
 import logic.models.User
 import logic.models.UserRole
 import logic.repositories.AuthenticationRepository
+import logic.util.toMD5Hash
 import java.util.*
 
 class AuthenticationRepositoryImpl(
-    private val userDataSource: UserDataSource
+    private val dataSource: UserDataSource,
+    private val passwordHasher: (String) -> String
 ) : AuthenticationRepository {
 
-    private val users = mutableListOf<User>()
-
-    init {
-        users.addAll(userDataSource.fetch().map { it.toUser() })
-    }
+    val users = mutableListOf<User>()
 
     override fun register(user: User): User {
         require(users.none { it.name == user.name }) { "Username already exists" }
-        val userWithHashedPassword = user.copy(hashedPassword = user.hashedPassword.toMD5Hash())
-        users.add(userWithHashedPassword)
-        userDataSource.save(users.map { it.toDto() })
-        return userWithHashedPassword
+        users.add(user)
+        dataSource.save(users.map { it.toDto() })
+        return user
     }
 
     override fun login(name: String, password: String): Boolean {
-        val hashedPassword = password.toMD5Hash()
-        return users.any { it.name == name && it.hashedPassword == hashedPassword }
+        val hashedPassword = password.toMD5Hash() // Explicit MD5 hashing
+        return users.any { user ->
+            user.name == name && user.hashedPassword == hashedPassword
+        }
+    }
+
+    fun loadUsersFromFile() {
+        users.addAll(dataSource.fetch().map { it.toUser() })
     }
 
     fun createDefaultAdmin() {
@@ -38,9 +40,9 @@ class AuthenticationRepositoryImpl(
                 User(
                     id = UUID.randomUUID(),
                     name = "admin",
-                    hashedPassword = "admin123", // Will be hashed in register()
+                    hashedPassword = passwordHasher("admin123"),
                     role = UserRole.ADMIN,
-                    projectIds = emptyList()
+                    projectIds = emptyList() // Added empty list for projectIds
                 )
             )
         }

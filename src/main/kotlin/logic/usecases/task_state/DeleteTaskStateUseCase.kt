@@ -2,6 +2,7 @@ package logic.usecases.task_state
 
 import logic.models.TaskState
 import logic.repositories.TaskStateRepository
+import logic.util.NoStateExistException
 import java.util.*
 
 class DeleteTaskStateUseCase(
@@ -9,11 +10,17 @@ class DeleteTaskStateUseCase(
 ) {
 
     operator fun invoke(stateId: UUID, projectId: UUID): Boolean {
-        return true
+        getState(stateId, projectId)
+        return stateRepository.deleteTaskState(projectId, stateId)
+            .also { success ->
+                if (!success) throw IllegalStateException("Deletion failed unexpectedly")
+            }
     }
 
-    private fun getState(stateId: UUID): TaskState {
-        return TaskState(id = stateId, name = "nre", projectId = UUID.randomUUID()) // fake return
+    private fun getState(stateId: UUID, projectId: UUID): TaskState {
+        return stateRepository.getTaskStateByProjectId(projectId)
+            .firstOrNull { it.id == stateId }
+            ?: throw NoStateExistException("State with ID $stateId does not exist in project $projectId")
     }
 
 }

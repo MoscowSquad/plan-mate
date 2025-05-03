@@ -19,7 +19,7 @@ class GetTaskStateByIdUseCaseTest {
     fun `should throw NoStateExistException when state not found`() {
         // Given
         val stateId = UUID.fromString("00000000-0000-0000-0000-000000000001")
-        every { stateRepository.getTaskStateById(stateId) } returns TaskState(id = stateId, "New", UUID.randomUUID() )
+        every { stateRepository.getTaskStateById(stateId) } throws NoStateExistException("State with ID $stateId does not exist")
 
         // When/Then
         val exception = assertThrows<NoStateExistException> {
