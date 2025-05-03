@@ -7,14 +7,11 @@ import logic.repositories.TasksRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import utilities.TaskIsNotFoundException
 import java.util.*
 
 class GetTaskByProjectIdUseCaseTest {
     private lateinit var getTaskByProjectIdUseCase: GetTaskByProjectIdUseCase
     private lateinit var tasksRepository: TasksRepository
-
-    val id2 = UUID.fromString("00000000-0000-0000-0000-000000000002")
 
     @BeforeEach
     fun setup() {
