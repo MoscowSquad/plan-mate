@@ -9,44 +9,45 @@ import logic.usecases.project.*
 import logic.usecases.task.*
 import logic.usecases.task_state.*
 import logic.usecases.user.*
+import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 val useCaseModule = module {
     // Audit log-related use cases
-    single { AddAuditLogUseCase(get()) }
-    single { ViewAuditLogsByProjectUseCase(get()) }
-    single { ViewAuditLogsByTaskUseCase(get()) }
+    singleOf(::AddAuditLogUseCase)
+    singleOf(::ViewAuditLogsByProjectUseCase)
+    singleOf(::ViewAuditLogsByTaskUseCase)
 
     // Authentication-related use cases
-    single { LoginUseCase(get()) }
-    single { RegisterUseCase(get()) }
+    singleOf(::LoginUseCase)
+    singleOf(::RegisterUseCase)
 
     // Project-related use cases
-    single { CreateProjectUseCase(get()) }
-    single { DeleteProjectUseCase(get()) }
-    single { GetAllProjectsUseCase(get()) }
-    single { GetProjectByIdUseCase(get()) }
-    single { UpdateProjectUseCase(get()) }
+    singleOf(::CreateProjectUseCase)
+    singleOf(::DeleteProjectUseCase)
+    singleOf(::GetAllProjectsUseCase)
+    singleOf(::GetProjectByIdUseCase)
+    singleOf(::UpdateProjectUseCase)
 
     // Task-related use cases
-    single { AddTaskUseCase(get()) }
-    single { DeleteTaskUseCase(get()) }
-    single { EditTaskUseCase(get()) }
-    single { GetTaskByProjectIdUseCase(get()) }
-    single { GetTaskByIdUseCase(get()) }
+    singleOf(::AddTaskUseCase)
+    singleOf(::DeleteTaskUseCase)
+    singleOf(::EditTaskUseCase)
+    singleOf(::GetTaskByProjectIdUseCase)
+    singleOf(::GetTaskByIdUseCase)
 
     // Task state-related use cases
-    single { AddTaskStateUseCase(get()) }
-    single { DeleteTaskStateUseCase(get()) }
-    single { EditTaskStateUseCase(get()) }
-    single { GetTaskStateByIdUseCase(get()) }
-    single { GetTaskStatesByProjectIdUseCase(get()) }
+    singleOf(::AddTaskStateUseCase)
+    singleOf(::DeleteTaskStateUseCase)
+    singleOf(::EditTaskStateUseCase)
+    singleOf(::GetTaskStateByIdUseCase)
+    singleOf(::GetTaskStatesByProjectIdUseCase)
 
     // User-related use cases
-    single { AssignProjectToUserUseCase(get()) }
-    single { CreateUserUseCase(get()) }
-    single { DeleteUserUseCase(get()) }
-    single { GetAllUsersUseCase(get()) }
-    single { GetUserByIdUseCase(get()) }
-    single { RemoveFromProjectUserUseCase(get()) }
+    singleOf(::AssignProjectToUserUseCase)
+    singleOf(::CreateUserUseCase)
+    singleOf(::DeleteUserUseCase)
+    singleOf(::GetAllUsersUseCase)
+    singleOf(::GetUserByIdUseCase)
+    singleOf(::RemoveFromProjectUserUseCase)
 }

@@ -6,12 +6,12 @@ const val MATE = "MATE"
 const val PROJECT = "PROJECT"
 const val TASK = "TASK"
 
-const val USERS_FILE = "users.csv"
-const val PROJECTS_FILE = "projects.csv"
-const val TASKS_FILE = "tasks.csv"
-const val TASK_STATES_FILE = "states.csv"
-const val AUDIT_LOG_FILE = "audit_log.csv"
-const val TEST_FILE = "test.csv"
+const val USERS_FILE = "src/main/resources/users.csv"
+const val PROJECTS_FILE = "src/main/resources/projects.csv"
+const val TASKS_FILE = "src/main/resources/tasks.csv"
+const val TASK_STATES_FILE = "src/main/resources/states.csv"
+const val AUDIT_LOG_FILE = "src/main/resources/audit_log.csv"
+const val TEST_FILE = "src/test/resources/test.csv"
 
 object UserIndex {
     const val ID: Int = 0

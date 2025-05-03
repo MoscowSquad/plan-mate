@@ -9,9 +9,9 @@ import presentation.io.ConsoleIO
 import presentation.io.ConsoleIOImpl
 import java.util.*
 import presentation.auth.AuthenticationUI
+import presentation.project.*
 
 val presentationModule = module {
-
     single { Scanner(System.`in`) }
     single<ConsoleIO> { ConsoleIOImpl(get()) }
 
@@ -20,7 +20,12 @@ val presentationModule = module {
     factoryOf(::RegisterAdminUI)
     factoryOf(::AuthenticationUI)
 
-
+    // Project UI
+    factoryOf(::CreateProjectUI)
+    factoryOf(::DeleteProjectUI)
+    factoryOf(::UpdateProjectUI)
+    factoryOf(::GetAllProjectsUI)
+    factoryOf(::ProjectsUI)
 
 
     factoryOf(::PlanMateConsoleUI)
