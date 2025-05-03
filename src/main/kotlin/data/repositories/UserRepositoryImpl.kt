@@ -1,6 +1,7 @@
 package data.repositories
 
 import data.datasource.UserDataSource
+import data.mappers.toUser
 import logic.models.User
 import logic.repositories.UserRepository
 import java.util.*
@@ -62,6 +63,12 @@ class UserRepositoryImpl(
     }
 
     override fun getAllUsers(): List<User> {
-        return users.toList()
+        return if (users.isEmpty()) {
+            userDataSource.fetch()
+                .map { it.toUser() }
+                .also { users.addAll(it) }
+        } else {
+            users.toList()
+        }
     }
 }
