@@ -2,6 +2,7 @@ package logic.usecases.auth
 
 import logic.repositories.AuthenticationRepository
 import logic.util.toMD5Hash
+import presentation.session.LoggedInUser
 
 class LoginUseCase(
     private val authRepository: AuthenticationRepository

@@ -12,4 +12,5 @@ class NoStateExistException(message: String) : Exception(message)
 class IllegalStateTitle(message: String) : Exception(message)
 class TaskIsNotFoundException(taskId: UUID) : Exception("Task '$taskId' does not exist")
 class TaskIsExist(taskId: UUID) : Exception("Task '$taskId' is exist")
+class UserNotFoundException(name: String) : Exception("User '$name' does not exist")
 

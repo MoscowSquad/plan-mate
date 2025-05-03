@@ -7,6 +7,9 @@ import logic.util.toMD5Hash
 import logic.models.User
 import logic.models.UserRole
 import logic.repositories.AuthenticationRepository
+import logic.util.UserNotFoundException
+import presentation.session.LoggedInUser
+import presentation.session.SessionManager
 import java.util.*
 
 class AuthenticationRepositoryImpl(
@@ -24,12 +27,16 @@ class AuthenticationRepositoryImpl(
         val userWithHashedPassword = user.copy(hashedPassword = user.hashedPassword.toMD5Hash())
         users.add(userWithHashedPassword)
         userDataSource.save(users.map { it.toDto() })
+        SessionManager.currentUser = LoggedInUser(user.id, user.name, user.role, user.projectIds)
         return userWithHashedPassword
     }
 
     override fun login(name: String, password: String): Boolean {
         val hashedPassword = password.toMD5Hash()
-        return users.any { it.name == name && it.hashedPassword == hashedPassword }
+        val user = users.find { it.name == name && it.hashedPassword == hashedPassword }
+            ?: throw UserNotFoundException(name)
+        SessionManager.currentUser = LoggedInUser(user.id, user.name, user.role, user.projectIds)
+        return true
     }
 
     fun createDefaultAdmin() {
