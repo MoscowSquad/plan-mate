@@ -7,22 +7,27 @@ class LoginUserUI(
     private val loginUseCase: LoginUseCase,
     private val consoleIO: ConsoleIO,
 ) : ConsoleIO by consoleIO {
+
     operator fun invoke() {
-        while (true) {
-            write("\uD83D\uDD10 Login")
+        write("🔐 Login")
+
+        var isLoggedIn = false
+        while (!isLoggedIn) {
+
             write("Enter username: ")
             val username = read()
-            write("Enter password: \uD83D\uDD11")
+
+            write("Enter password: 🔑")
             val password = read()
-            try {
-                val success = loginUseCase(username, password)
-                if (success) {
-                    write("Login successful! \uD83D\uDE0A")
-                    break
+
+            runCatching { loginUseCase(username, password) }
+                .onSuccess {
+                    write("✅ Logged in successfully! Welcome back, $username.")
+                    isLoggedIn = true
                 }
-            } catch (e: Exception){
-                write("Login failed. ${e.message} \uD83D\uDE1E")
-            }
+                .onFailure {
+                    write("Login failed. ${it.message} 😞")
+                }
         }
     }
 }
