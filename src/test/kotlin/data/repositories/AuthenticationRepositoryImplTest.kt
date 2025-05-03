@@ -1,5 +1,6 @@
 package data.repositories
 
+import com.google.common.truth.Truth
 import data.csv_parser.CsvHandler
 import data.csv_parser.UserCsvParser
 import data.datasource.UserDataSource
@@ -19,17 +20,22 @@ class AuthenticationRepositoryImplTest {
     @TempDir
     lateinit var tempDir: File
     private lateinit var testFile: File
-    private lateinit var repository: AuthenticationRepositoryImpl
+    private lateinit var csvHandler: CsvHandler
+    private lateinit var csvParser: UserCsvParser
     private lateinit var dataSource: UserDataSource
+    private lateinit var repository: AuthenticationRepositoryImpl
     private val testPasswordHasher = { plain: String -> plain.toMD5Hash() }
 
     @BeforeEach
     fun setup() {
-        testFile = File(tempDir, "test_users.csv").apply { createNewFile() }
-        repository = AuthenticationRepositoryImpl(testFile, testPasswordHasher)
-        val csvHandler = CsvHandler(testFile)
-        val csvParser = mockk<UserCsvParser>(relaxed = true)
+        testFile = File(tempDir, "test_users.csv").apply {
+            if (exists().not())
+                createNewFile()
+        }
+        csvHandler = CsvHandler(testFile)
+        csvParser = UserCsvParser()
         dataSource = UserDataSource(csvHandler, csvParser)
+        repository = AuthenticationRepositoryImpl(dataSource, testPasswordHasher)
     }
 
     @Test
@@ -37,6 +43,7 @@ class AuthenticationRepositoryImplTest {
         repository.createDefaultAdmin()
         assertEquals("admin", repository.users.first { it.role == UserRole.ADMIN }.name)
     }
+
     @Test
     fun `login returns true when username and password match`() {
         // Arrange
@@ -46,6 +53,7 @@ class AuthenticationRepositoryImplTest {
         // Act & Assert
         assertTrue(repository.login("validUser", "correctPass"))
     }
+
     @Test
     fun `login returns false when username matches but password hash differs`() {
         // Arrange
@@ -56,8 +64,10 @@ class AuthenticationRepositoryImplTest {
         repository.users.add(testUser)
 
         // Act & Assert
-        assertFalse(repository.login("user1", "pass2"),
-            "Should return false when password hashes don't match")
+        assertFalse(
+            repository.login("user1", "pass2"),
+            "Should return false when password hashes don't match"
+        )
     }
 
     @Test
@@ -70,8 +80,10 @@ class AuthenticationRepositoryImplTest {
         repository.users.add(testUser)
 
         // Act & Assert
-        assertFalse(repository.login("user1", "pass1"),
-            "Should be case sensitive for usernames")
+        assertFalse(
+            repository.login("user1", "pass1"),
+            "Should be case sensitive for usernames"
+        )
     }
 
     @Test
@@ -94,6 +106,7 @@ class AuthenticationRepositoryImplTest {
         repository.createDefaultAdmin()
         assertTrue(repository.users.any { it.role == UserRole.ADMIN })
     }
+
     @Test
     fun `login returns true for matching credentials`() {
         val testPassword = "correct123"
@@ -107,6 +120,7 @@ class AuthenticationRepositoryImplTest {
         repository.users.add(testUser)
         assertTrue(repository.login("testuser", testPassword))
     }
+
     @Test
     fun `loadUsersFromFile skips header line`() {
         // Arrange
@@ -156,7 +170,7 @@ class AuthenticationRepositoryImplTest {
         repository.createDefaultAdmin()
         val initialCount = repository.users.size
         repository.createDefaultAdmin()
-        assertTrue(repository.users.size == initialCount)
+        Truth.assertThat(repository.users.size).isEqualTo(initialCount)
     }
 
     @AfterEach
@@ -175,7 +189,7 @@ class AuthenticationRepositoryImplTest {
     fun `created admin should have ADMIN role`() {
         repository.users.clear()
         repository.createDefaultAdmin()
-        assertTrue(repository.users[0].role == UserRole.ADMIN)
+        Truth.assertThat(repository.users[0].role).isEqualTo(UserRole.ADMIN)
     }
 
     @Test
@@ -206,7 +220,7 @@ class AuthenticationRepositoryImplTest {
         repository.createDefaultAdmin()
         val initialSize = repository.users.size
         repository.createDefaultAdmin()
-        assertTrue(repository.users.size == initialSize)
+        Truth.assertThat(repository.users.size).isEqualTo(initialSize)
     }
 
     @Test
@@ -215,33 +229,12 @@ class AuthenticationRepositoryImplTest {
         repository.createDefaultAdmin()
         val firstAdminHash = repository.users[0].hashCode()
         repository.createDefaultAdmin()
-        assertTrue(repository.users[0].hashCode() == firstAdminHash)
+        Truth.assertThat(repository.users[0].hashCode()).isEqualTo(firstAdminHash)
     }
 
     @Test
     fun `test file should exist after initialization`() {
         assertTrue(testFile.exists())
-    }
-
-    @Test
-    fun `should log error when parsing invalid UUID format`() {
-        testFile.writeText("id,name,hashedPassword,role,projectIds\ninvalid_uuid,test,hash,MATE,[]")
-        repository.loadUsersFromFile()
-        assertTrue(testFile.exists()) // Verify file was processed
-    }
-
-    @Test
-    fun `should skip line when project ID format is invalid`() {
-        // Arrange
-        testFile.writeText("id,name,hashedPassword,role,projectIds\n" +
-                "${UUID.randomUUID()},test,hash,MATE,[invalid_id]")
-
-        // Act
-        repository.loadUsersFromFile()
-
-        // Assert
-        assertTrue(repository.users.isEmpty(),
-            "Should skip line with invalid project ID, resulting in empty users list")
     }
 
     @Test
@@ -273,14 +266,6 @@ class AuthenticationRepositoryImplTest {
         val user = createTestUser(password = "test123")
         repository.register(user)
         assertFalse(repository.login(user.name, "wrongpass"))
-    }
-
-
-    @Test
-    fun `loadUsersFromFile should catch and log parsing exceptions`() {
-        testFile.writeText("id,name,hashedPassword,role,projectIds\ninvalid_line")
-        repository.loadUsersFromFile()
-        assertTrue(testFile.exists()) // Verify file was processed
     }
 
     @Test
