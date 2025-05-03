@@ -1,35 +1,70 @@
 package data.repositories
 
-import data.datasource.UserDataSource
-import data.mappers.toDto
-import data.mappers.toUser
-import logic.util.toMD5Hash
 import logic.models.User
 import logic.models.UserRole
 import logic.repositories.AuthenticationRepository
+import java.io.File
 import java.util.*
 
 class AuthenticationRepositoryImpl(
-    private val userDataSource: UserDataSource
+    private val usersFile: File,
+    private val passwordHasher: (String) -> String
 ) : AuthenticationRepository {
 
-    private val users = mutableListOf<User>()
-
-    init {
-        users.addAll(userDataSource.fetch().map { it.toUser() })
-    }
+    val users = mutableListOf<User>()
 
     override fun register(user: User): User {
         require(users.none { it.name == user.name }) { "Username already exists" }
-        val userWithHashedPassword = user.copy(hashedPassword = user.hashedPassword.toMD5Hash())
-        users.add(userWithHashedPassword)
-        userDataSource.save(users.map { it.toDto() })
-        return userWithHashedPassword
+        users.add(user)
+        saveUsersToFile()
+        return user
     }
 
     override fun login(name: String, password: String): Boolean {
-        val hashedPassword = password.toMD5Hash()
+        val hashedPassword = passwordHasher(password)
         return users.any { it.name == name && it.hashedPassword == hashedPassword }
+    }
+
+    fun loadUsersFromFile() {
+        usersFile.readLines()
+            .drop(1) // Skip header
+            .forEach { line ->
+                try {
+                    val parts = line.split(",")
+                    if (parts.size >= 5) {
+                        users.add(
+                            User(
+                                id = UUID.fromString(parts[0]),
+                                name = parts[1],
+                                hashedPassword = parts[2],
+                                role = UserRole.valueOf(parts[3]),
+                                projectIds = parts[4].removeSurrounding("[", "]")
+                                    .split(";")
+                                    .filter { it.isNotBlank() }
+                                    .map { UUID.fromString(it) }
+                            )
+                        )
+                    }
+                } catch (e: Exception) {
+                    println("Error parsing user line: $line. Error: ${e.message}")
+                }
+            }
+    }
+
+    private fun saveUsersToFile() {
+        val lines = mutableListOf("id,name,hashedPassword,role,projectIds")
+        users.forEach { user ->
+            lines.add(
+                listOf(
+                    user.id.toString(),
+                    user.name,
+                    user.hashedPassword,
+                    user.role.name,
+                    user.projectIds.joinToString(";") { it.toString() }
+                ).joinToString(",")
+            )
+        }
+        usersFile.writeText(lines.joinToString("\n"))
     }
 
     fun createDefaultAdmin() {
@@ -38,9 +73,9 @@ class AuthenticationRepositoryImpl(
                 User(
                     id = UUID.randomUUID(),
                     name = "admin",
-                    hashedPassword = "admin123", // Will be hashed in register()
+                    hashedPassword = passwordHasher("admin123"),
                     role = UserRole.ADMIN,
-                    projectIds = emptyList()
+                    projectIds = emptyList() // Added empty list for projectIds
                 )
             )
         }
