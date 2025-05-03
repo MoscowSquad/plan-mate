@@ -8,6 +8,6 @@ class GetStateByIdUseCase(
     private val stateRepository: StateRepository
 ) {
     operator fun invoke(id: UUID): TaskState{
-        return TaskState(UUID.randomUUID(), " ", UUID.randomUUID())
+        return stateRepository.getById(id)
     }
 }
