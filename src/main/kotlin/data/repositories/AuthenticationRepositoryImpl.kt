@@ -14,7 +14,6 @@ import java.util.*
 
 class AuthenticationRepositoryImpl(
     private val dataSource: UserDataSource,
-    private val passwordHasher: (String) -> String
 ) : AuthenticationRepository {
 
     private val users = mutableListOf<User>()
@@ -45,9 +44,9 @@ class AuthenticationRepositoryImpl(
                 User(
                     id = UUID.randomUUID(),
                     name = "admin",
-                    hashedPassword = passwordHasher("admin123"),
+                    hashedPassword = "admin123".toMD5Hash(),
                     role = UserRole.ADMIN,
-                    projectIds = emptyList() // Added empty list for projectIds
+                    projectIds = emptyList()
                 )
             )
         }
