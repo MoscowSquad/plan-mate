@@ -10,22 +10,22 @@ class AssignProjectToUserUI(
 ) : ConsoleIO by consoleIO {
 
     operator fun invoke() {
-            write("\n=== Assign Project to User ===")
+        write("\n=== Assign Project to User ===")
 
-            write("Enter Project ID:")
-            val projectIdInput = read()
-            val projectId = UUID.fromString(projectIdInput)
+        write("Enter Project ID:")
+        val projectIdInput = read()
+        val projectId = UUID.fromString(projectIdInput)
 
-            write("Enter User ID:")
-            val userIdInput = read()
-            val userId = UUID.fromString(userIdInput)
+        write("Enter User ID:")
+        val userIdInput = read()
+        val userId = UUID.fromString(userIdInput)
 
-            val success = assignProjectToUserUseCase(currentUserRole, projectId, userId)
+        val success = assignProjectToUserUseCase(currentUserRole, projectId, userId)
 
-            if (success) {
-                write("User successfully assigned to the project.")
-            } else {
-                write("Failed to assign user. Make sure IDs are correct.")
-            }
+        if (success) {
+            write("User successfully assigned to the project.")
+        } else {
+            write("Failed to assign user. Make sure IDs are correct.")
+        }
     }
 }
