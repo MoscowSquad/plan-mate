@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import utilities.IllegalStateTitle
+import utilities.NoStateExistException
 import java.util.*
 
 
@@ -24,26 +25,22 @@ class EditStateUseCaseTest {
     }
 
     @Test
-    fun `when valid title should return updated TaskState `() {
+    fun `when valid title should return updated TaskState`() {
         // Given
-        val originalState = TaskState(
+        val updatedState = TaskState(
             id = UUID.fromString("00000000-0000-0000-0000-000000000002"),
-            projectId = UUID.fromString("00000000-0000-0000-0000-000000000001"),
-            title = "Old TaskState"
+            title = "Updated TaskState",
+            projectId = UUID.fromString("00000000-0000-0000-0000-000000000001")
         )
-        val newTask = TaskState(originalState.id, "Updated TaskState", originalState.projectId)
 
-        every { stateRepository.update(any()) } returns true
+        every { stateRepository.update(updatedState) } returns true
 
         // When
-        val result = editStateUseCase(originalState)
+        val result = editStateUseCase(updatedState)
 
         // Then
-        assertThat(result).isEqualTo(
-            newTask
-        )
-
-        verify { stateRepository.update(newTask) }
+        assertThat(result).isEqualTo(updatedState)
+        verify(exactly = 1) { stateRepository.update(updatedState) }
     }
 
     @Test
@@ -59,10 +56,27 @@ class EditStateUseCaseTest {
         val exception = assertThrows<IllegalStateTitle> {
             editStateUseCase(invalidState)
         }
-        assertThat("TaskState title cannot be blank").isEqualTo(exception)
-
+        assertThat(exception.message).isEqualTo("TaskState title cannot be blank")
+        verify(exactly = 0) { stateRepository.update(any()) }
     }
 
+    @Test
+    fun `when state not found should throw NoStateExistException`() {
+        // Given
+        val state = TaskState(
+            id = UUID.randomUUID(),
+            title = "Valid",
+            projectId = UUID.randomUUID()
+        )
+
+        every { stateRepository.update(state) } returns false
+
+        // When & Then
+        val exception = assertThrows<NoStateExistException> {
+            editStateUseCase(state)
+        }
+        assertThat(exception.message).contains("not found")
+    }
 
 }
 
