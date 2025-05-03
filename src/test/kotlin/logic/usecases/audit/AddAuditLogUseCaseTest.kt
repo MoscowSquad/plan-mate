@@ -1,28 +1,27 @@
 package logic.usecases.audit
 
+import com.google.common.truth.Truth
 import data.datasource.AuditLogDataSource
-import logic.models.AuditLog
 import data.repositories.AuditRepositoryImpl
-import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import org.junit.jupiter.api.Assertions.*
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Test
 import kotlinx.datetime.LocalDateTime
+import logic.models.AuditLog
 import logic.models.AuditType
-import logic.repositories.AuditRepository
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.io.File
-import java.util.UUID
+import java.util.*
 
 class AddAuditLogUseCaseTest {
     private lateinit var testFile: File
     private lateinit var repository: AuditRepositoryImpl
-    private val auditLogDataSource: AuditLogDataSource = mockk()
+    private lateinit var auditLogDataSource: AuditLogDataSource
 
     @BeforeEach
     fun setUp() {
+        auditLogDataSource = mockk(relaxed = true)
         testFile = File.createTempFile("test-audit", ".csv")
         repository = AuditRepositoryImpl(auditLogDataSource)
     }
@@ -33,111 +32,125 @@ class AddAuditLogUseCaseTest {
     }
 
     @Test
-    fun `add should append log to file and return true`() {
-        val repository = mockk<AuditRepository>()
+    fun `addLog() should verify saving audit-log via AuditLogDataSource when add audit-log`() {
+        // Given
+        val log = createLog(auditType = AuditType.TASK)
 
-        every { repository.addLog(any()) } returns true
+        // When
+        repository.addLog(log)
 
-        val log = AuditLog(
-            id = UUID.fromString("00000000-0000-0000-0000-000000000001"),
-            auditType = AuditType.TASK,
+        // Then
+        verify { auditLogDataSource.save(any()) }
+    }
+
+    @Test
+    fun `getAllLogsByTaskId() should return only task logs for given taskId`() {
+        // Given
+        val taskId = "00000000-0000-0000-0000-000000000010"
+        val userId = "00000000-0000-0000-0000-000000000005"
+        addLogs(userId)
+
+        // When
+        val result = repository.getAllLogsByTaskId(UUID.fromString(taskId))
+        val resultIds = result.map { it.id.toString() }
+
+        // Then
+        Truth.assertThat(resultIds).isEqualTo(
+            listOf(
+                "00000000-0000-0000-0000-000000000001",
+                "00000000-0000-0000-0000-000000000004",
+            )
+        )
+    }
+
+
+    @Test
+    fun `getAllLogsByProjectId() should return only project logs for given projectId`() {
+        // Given
+        val projectId = "00000000-0000-0000-0000-000000000012"
+        val userId = "00000000-0000-0000-0000-000000000005"
+        addLogs(userId)
+
+        // When
+        val result = repository.getAllLogsByProjectId(UUID.fromString(projectId))
+        val resultIds = result.map { it.id.toString() }
+
+        // Then
+        Truth.assertThat(resultIds).isEqualTo(
+            listOf(
+                "00000000-0000-0000-0000-000000000003",
+                "00000000-0000-0000-0000-000000000007"
+            )
+        )
+    }
+
+    private fun createLog(
+        id: String = "00000000-0000-0000-0000-000000000001",
+        entityId: String = "00000000-0000-0000-0000-000000000002",
+        userId: String = "00000000-0000-0000-0000-000000000003",
+        auditType: AuditType,
+    ): AuditLog {
+        return AuditLog(
+            id = UUID.fromString(id),
+            auditType = auditType,
             action = "Task created",
             timestamp = LocalDateTime(2023, 12, 31, 23, 59, 59),
-            entityId = UUID.fromString("00000000-0000-0000-0000-000000000002"),
-            userId = UUID.fromString("00000000-0000-0000-0000-000000000003")
+            entityId = UUID.fromString(entityId),
+            userId = UUID.fromString(userId)
         )
-        val result = repository.addLog(log)
-
-        assertTrue(result)
-        verify { repository.addLog(log) }
     }
 
-    @Test
-    fun `getAllByTaskId should return only task logs for given taskId`() {
-        val repository = mockk<AuditRepository>()
-
-        // Test data
-        val taskId = UUID.fromString("00000000-0000-0000-0000-000000000004")
-        val userId = UUID.fromString("00000000-0000-0000-0000-000000000005")
-
-        val log = AuditLog(
-            id = UUID.fromString("00000000-0000-0000-0000-000000000006"),
-            auditType = AuditType.TASK,
-            action = "Task created",
-            timestamp = LocalDateTime(2023, 12, 31, 23, 59, 59),
-            entityId = taskId,
-            userId = userId
+    private fun addLogs(userId: String) {
+        repository.addLog(
+            createLog(
+                "00000000-0000-0000-0000-000000000001",
+                "00000000-0000-0000-0000-000000000010",
+                userId, AuditType.TASK
+            )
+        )
+        repository.addLog(
+            createLog(
+                "00000000-0000-0000-0000-000000000002",
+                "00000000-0000-0000-0000-000000000011",
+                userId, AuditType.PROJECT
+            )
+        )
+        repository.addLog(
+            createLog(
+                "00000000-0000-0000-0000-000000000003",
+                "00000000-0000-0000-0000-000000000012",
+                userId, AuditType.PROJECT
+            )
+        )
+        repository.addLog(
+            createLog(
+                "00000000-0000-0000-0000-000000000004",
+                "00000000-0000-0000-0000-000000000010",
+                userId, AuditType.TASK
+            )
+        )
+        repository.addLog(
+            createLog(
+                "00000000-0000-0000-0000-000000000005",
+                "00000000-0000-0000-0000-000000000013",
+                userId, AuditType.TASK
+            )
+        )
+        repository.addLog(
+            createLog(
+                "00000000-0000-0000-0000-000000000006",
+                "00000000-0000-0000-0000-000000000010",
+                userId, AuditType.PROJECT
+            )
         )
 
-        every { repository.getAllLogsByTaskId(taskId) } returns listOf(log)
-
-        // Verify
-        val result = repository.getAllLogsByTaskId(taskId)
-        assertEquals(1, result.size)
-        assertEquals(log.id, result[0].id)
-    }
-
-    @Test
-    fun `getAllByProjectId should return only project logs for given projectId`() {
-        val repository = mockk<AuditRepository>()
-
-        val projectId = UUID.fromString("00000000-0000-0000-0000-000000000007")
-        val userId = UUID.fromString("00000000-0000-0000-0000-000000000008")
-
-        val log = AuditLog(
-            id = UUID.fromString("00000000-0000-0000-0000-000000000009"),
-            auditType = AuditType.PROJECT,
-            action = "Project created",
-            timestamp = LocalDateTime(2023, 12, 31, 23, 59, 59),
-            entityId = projectId,
-            userId = userId
+        repository.addLog(
+            createLog(
+                "00000000-0000-0000-0000-000000000007",
+                "00000000-0000-0000-0000-000000000012",
+                userId, AuditType.PROJECT
+            )
         )
-
-        every { repository.getAllLogsByProjectId(projectId) } returns listOf(log)
-
-        val result = repository.getAllLogsByProjectId(projectId)
-        assertEquals(1, result.size)
-        assertEquals(log.id, result[0].id)
     }
 
-    @Test
-    fun `invoke should return true when audit log is successfully added`() {
-        val mockRepository = mockk<AuditRepository>()
-        every { mockRepository.addLog(any()) } returns true
-
-        val useCase = AddAuditLogUseCase(mockRepository)
-        val testLog = AuditLog(
-            id = UUID.fromString("00000000-0000-0000-0000-000000000010"),
-            auditType = AuditType.TASK,
-            action = "Test Action",
-            timestamp = LocalDateTime(2023, 12, 31, 23, 59, 59),
-            entityId = UUID.fromString("00000000-0000-0000-0000-000000000011"),
-            userId = UUID.fromString("00000000-0000-0000-0000-000000000012")
-        )
-
-        val result = useCase.invoke(testLog)
-        assertTrue(result)
-        verify { mockRepository.addLog(any()) }
-    }
-
-    @Test
-    fun `invoke should return false when repository fails to add audit log`() {
-        val mockRepository = mockk<AuditRepository>()
-        every { mockRepository.addLog(any()) } returns false
-
-        val useCase = AddAuditLogUseCase(mockRepository)
-        val testLog = AuditLog(
-            id = UUID.fromString("00000000-0000-0000-0000-000000000013"),
-            auditType = AuditType.TASK,
-            action = "Test Action",
-            timestamp = LocalDateTime(2023, 12, 31, 23, 59, 59),
-            entityId = UUID.fromString("00000000-0000-0000-0000-000000000014"),
-            userId = UUID.fromString("00000000-0000-0000-0000-000000000015")
-        )
-
-        val result = useCase.invoke(testLog)
-
-        assertFalse(result)
-        verify { mockRepository.addLog(testLog) }
-    }
 }

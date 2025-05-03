@@ -1,5 +1,6 @@
 package data.repositories
 
+import com.google.common.truth.Truth
 import data.datasource.AuditLogDataSource
 import data.mappers.toDto
 import io.mockk.every
@@ -13,144 +14,202 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.*
 
- class AuditRepositoryImplTest{
-  private lateinit var auditLogDataSource: AuditLogDataSource
-  private lateinit var repository: AuditRepositoryImpl
+class AuditRepositoryImplTest {
+    private lateinit var auditLogDataSource: AuditLogDataSource
+    private lateinit var repository: AuditRepositoryImpl
 
-  private val testTaskId = UUID.fromString("00000000-0000-0000-0000-000000000100")
-  private val testProjectId = UUID.fromString("00000000-0000-0000-0000-000000000101")
-  private val initialLogs = listOf(
-   AuditLog(
-    id = UUID.fromString("00000000-0000-0000-0000-000000000102"),
-    timestamp = LocalDateTime(2023, 12, 31, 23, 59, 59),
-    userId = UUID.fromString("00000000-0000-0000-0000-000000000103"),
-    entityId = testTaskId,
-    auditType = AuditType.TASK,
-    action = "Created",
-   ),
-   AuditLog(
-    id = UUID.fromString("00000000-0000-0000-0000-000000000104"),
-    timestamp = LocalDateTime(2023, 12, 31, 23, 59, 59),
-    userId = UUID.fromString("00000000-0000-0000-0000-000000000105"),
-    entityId = testProjectId,
-    auditType = AuditType.PROJECT,
-    action = "Updated",
-   )
-  )
+    private val testTaskId = UUID.fromString("00000000-0000-0000-0000-000000000100")
+    private val testProjectId = UUID.fromString("00000000-0000-0000-0000-000000000101")
+    private val initialLogs = listOf(
+        AuditLog(
+            id = UUID.fromString("00000000-0000-0000-0000-000000000102"),
+            timestamp = LocalDateTime(2023, 12, 31, 23, 59, 59),
+            userId = UUID.fromString("00000000-0000-0000-0000-000000000103"),
+            entityId = testTaskId,
+            auditType = AuditType.TASK,
+            action = "Created",
+        ),
+        AuditLog(
+            id = UUID.fromString("00000000-0000-0000-0000-000000000104"),
+            timestamp = LocalDateTime(2023, 12, 31, 23, 59, 59),
+            userId = UUID.fromString("00000000-0000-0000-0000-000000000105"),
+            entityId = testProjectId,
+            auditType = AuditType.PROJECT,
+            action = "Updated",
+        )
+    )
 
-  @BeforeEach
-  fun setUp() {
-   auditLogDataSource = mockk()
-   every { auditLogDataSource.fetch() } returns initialLogs.map { it.toDto() }
+    @BeforeEach
+    fun setUp() {
+        auditLogDataSource = mockk(relaxed = true)
+        every { auditLogDataSource.fetch() } returns initialLogs.map { it.toDto() }
 
-   repository = AuditRepositoryImpl(auditLogDataSource)
-  }
+        repository = AuditRepositoryImpl(auditLogDataSource)
+    }
 
-  @Test
-  fun `init loads logs from data source`() {
-   verify { auditLogDataSource.fetch() }
-   assertEquals(initialLogs.size, repository.getAllLogs().size)
-  }
+    @Test
+    fun `should load logs from data source when create an instance of the repository`() {
+        verify { auditLogDataSource.fetch() }
+        Truth.assertThat(initialLogs).isEqualTo(repository.getAllLogs())
+    }
 
-  @Test
-  fun `getAllLogsByTaskId returns empty list when no matching logs exist`() {
-   val existingTaskId = UUID.fromString("00000000-0000-0000-0000-000000000108")
-   val existingLog = AuditLog(
-    id = UUID.fromString("00000000-0000-0000-0000-000000000109"),
-    timestamp = LocalDateTime(2023, 12, 31, 23, 59, 59),
-    userId = UUID.fromString("00000000-0000-0000-0000-000000000110"),
-    entityId = existingTaskId,
-    auditType = AuditType.TASK,
-    action = "Created"
-   )
-   repository.addLog(existingLog)
-   val nonExistentTaskId = UUID.fromString("00000000-0000-0000-0000-000000000111")
-   val result = repository.getAllLogsByTaskId(nonExistentTaskId)
-   assertTrue(result.isEmpty(), "Expected empty list for non-existent task ID")
-  }
+    @Test
+    fun `getAllLogsByTaskId() should return empty list when no matching logs exist`() {
+        // Given
+        val id = "00000000-0000-0000-0000-000000000109"
+        val existingTaskId = UUID.fromString("00000000-0000-0000-0000-000000000108")
+        val existingUserId = UUID.fromString("00000000-0000-0000-0000-000000000110")
+        val existingLog = createLog(
+            id, existingTaskId.toString(), existingUserId.toString(), AuditType.TASK
+        )
+        repository.addLog(existingLog)
 
-  @Test
-  fun `getAllLogsByTaskId returns only task logs for specified task ID`() {
-   val additionalLog = AuditLog(
-    id = UUID.fromString("00000000-0000-0000-0000-000000000112"),
-    timestamp = LocalDateTime(2023, 12, 31, 23, 59, 59),
-    userId = UUID.fromString("00000000-0000-0000-0000-000000000113"),
-    entityId = testTaskId,
-    auditType = AuditType.TASK,
-    action = "Updated"
-   )
-   repository.addLog(additionalLog)
+        // When
+        val nonExistentTaskId = UUID.fromString("00000000-0000-0000-0000-000000000111")
+        val result = repository.getAllLogsByTaskId(nonExistentTaskId)
 
-   val result = repository.getAllLogsByTaskId(testTaskId)
+        // Then
+        assertTrue(result.isEmpty(), "Expected empty list for non-existent task ID")
+    }
 
-   assertEquals(2, result.size)
-   assertTrue(result.all { it.auditType == AuditType.TASK && it.entityId == testTaskId })
-  }
+    @Test
+    fun `getAllLogsByTaskId() should return only task logs when get specified task ID log`() {
+        val taskId = "00000000-0000-0000-0000-000000000010"
+        val userId = "00000000-0000-0000-0000-000000000005"
+        addLogs(userId)
 
-  @Test
-  fun `getAllLogsByTaskId does not return project logs`() {
-   val projectLog = AuditLog(
-    id = UUID.fromString("00000000-0000-0000-0000-000000000114"),
-    timestamp = LocalDateTime(2023, 12, 31, 23, 59, 59),
-    userId = UUID.fromString("00000000-0000-0000-0000-000000000115"),
-    entityId = testProjectId,
-    auditType = AuditType.PROJECT,
-    action = "Created"
-   )
-   repository.addLog(projectLog)
+        val result = repository.getAllLogsByTaskId(UUID.fromString(taskId))
+        val resultIds = result.map { it.id.toString() }
 
-   val result = repository.getAllLogsByTaskId(testTaskId)
+        Truth.assertThat(resultIds).isEqualTo(
+            listOf(
+                "00000000-0000-0000-0000-000000000001",
+                "00000000-0000-0000-0000-000000000004",
+            )
+        )
+    }
 
-   assertTrue(result.none { it.auditType == AuditType.PROJECT })
-  }
+    @Test
+    fun `getAllLogsByTaskId() should does not return project logs`() {
+        val taskId = "00000000-0000-0000-0000-000000000010"
+        val userId = "00000000-0000-0000-0000-000000000005"
+        addLogs(userId)
 
-  @Test
-  fun `getAllLogsByProjectId returns empty list when no matching logs exist`() {
-   val nonExistentProjectId = UUID.randomUUID()
-   val result = repository.getAllLogsByProjectId(nonExistentProjectId)
-   assertTrue(result.isEmpty())
-  }
+        val result = repository.getAllLogsByTaskId(UUID.fromString(taskId))
+        val resultAuditTypes = result.map { it.auditType }.toSet()
 
-  @Test
-  fun `getAllLogsByProjectId returns only project logs for specified project ID`() {
-   // Add another log for the same project
-   val additionalLog = AuditLog(
-    id = UUID.fromString("00000000-0000-0000-0000-000000000116"),
-    timestamp = LocalDateTime(2023, 12, 31, 23, 59, 59),
-    userId = UUID.fromString("00000000-0000-0000-0000-000000000117"),
-    entityId = testProjectId,
-    auditType = AuditType.PROJECT,
-    action = "Updated"
-   )
-   repository.addLog(additionalLog)
+        Truth.assertThat(resultAuditTypes).isEqualTo(setOf(AuditType.TASK))
+    }
 
-   val result = repository.getAllLogsByProjectId(testProjectId)
+    @Test
+    fun `getAllLogsByProjectId() returns empty list when no matching logs exist`() {
+        val nonExistentProjectId = UUID.randomUUID()
+        val result = repository.getAllLogsByProjectId(nonExistentProjectId)
+        assertTrue(result.isEmpty())
+    }
 
-   assertEquals(2, result.size)
-   assertTrue(result.all { it.auditType == AuditType.PROJECT && it.entityId == testProjectId })
-  }
+    @Test
+    fun `getAllLogsByProjectId() should return only project logs when get specified project ID log`() {
+        val projectId = "00000000-0000-0000-0000-000000000010"
+        val userId = "00000000-0000-0000-0000-000000000005"
+        addLogs(userId)
 
-  @Test
-  fun `getAllLogsByProjectId does not return task logs`() {
-   val taskLog = AuditLog(
-    id = UUID.fromString("00000000-0000-0000-0000-000000000118"),
-    timestamp = LocalDateTime(2023, 12, 31, 23, 59, 59),
-    userId = UUID.fromString("00000000-0000-0000-0000-000000000119"),
-    entityId = testTaskId,
-    auditType = AuditType.TASK,
-    action = "Created"
-   )
-   repository.addLog(taskLog)
+        val result = repository.getAllLogsByProjectId(UUID.fromString(projectId))
+        val resultIds = result.map { it.id.toString() }
 
-   val result = repository.getAllLogsByProjectId(testProjectId)
+        Truth.assertThat(resultIds).isEqualTo(
+            listOf(
+                "00000000-0000-0000-0000-000000000006",
+            )
+        )
+    }
 
-   assertTrue(result.none { it.auditType == AuditType.TASK })
-  }
+    @Test
+    fun `getAllLogsByProjectId() should does not return task logs`() {
+        val projectId = "00000000-0000-0000-0000-000000000010"
+        val userId = "00000000-0000-0000-0000-000000000005"
+        addLogs(userId)
 
-  // Helper extension function to access all logs for testing
-  private fun AuditRepositoryImpl.getAllLogs(): List<AuditLog> {
-   val allTaskLogs = this.getAllLogsByTaskId(testTaskId)
-   val allProjectLogs = this.getAllLogsByProjectId(testProjectId)
-   return allTaskLogs + allProjectLogs
-  }
- }
+        val result = repository.getAllLogsByProjectId(UUID.fromString(projectId))
+        val resultAuditTypes = result.map { it.auditType }.toSet()
+
+        Truth.assertThat(resultAuditTypes).isEqualTo(setOf(AuditType.PROJECT))
+    }
+
+    // Helper extension function to access all logs for testing
+    private fun AuditRepositoryImpl.getAllLogs(): List<AuditLog> {
+        val allTaskLogs = this.getAllLogsByTaskId(testTaskId)
+        val allProjectLogs = this.getAllLogsByProjectId(testProjectId)
+        return allTaskLogs + allProjectLogs
+    }
+
+    private fun createLog(
+        id: String = "00000000-0000-0000-0000-000000000001",
+        entityId: String = "00000000-0000-0000-0000-000000000002",
+        userId: String = "00000000-0000-0000-0000-000000000003",
+        auditType: AuditType,
+    ): AuditLog {
+        return AuditLog(
+            id = UUID.fromString(id),
+            auditType = auditType,
+            action = "Task created",
+            timestamp = LocalDateTime(2023, 12, 31, 23, 59, 59),
+            entityId = UUID.fromString(entityId),
+            userId = UUID.fromString(userId)
+        )
+    }
+
+
+    private fun addLogs(userId: String) {
+        repository.addLog(
+            createLog(
+                "00000000-0000-0000-0000-000000000001",
+                "00000000-0000-0000-0000-000000000010",
+                userId, AuditType.TASK
+            )
+        )
+        repository.addLog(
+            createLog(
+                "00000000-0000-0000-0000-000000000002",
+                "00000000-0000-0000-0000-000000000011",
+                userId, AuditType.PROJECT
+            )
+        )
+        repository.addLog(
+            createLog(
+                "00000000-0000-0000-0000-000000000003",
+                "00000000-0000-0000-0000-000000000012",
+                userId, AuditType.PROJECT
+            )
+        )
+        repository.addLog(
+            createLog(
+                "00000000-0000-0000-0000-000000000004",
+                "00000000-0000-0000-0000-000000000010",
+                userId, AuditType.TASK
+            )
+        )
+        repository.addLog(
+            createLog(
+                "00000000-0000-0000-0000-000000000005",
+                "00000000-0000-0000-0000-000000000013",
+                userId, AuditType.TASK
+            )
+        )
+        repository.addLog(
+            createLog(
+                "00000000-0000-0000-0000-000000000006",
+                "00000000-0000-0000-0000-000000000010",
+                userId, AuditType.PROJECT
+            )
+        )
+
+        repository.addLog(
+            createLog(
+                "00000000-0000-0000-0000-000000000007",
+                "00000000-0000-0000-0000-000000000012",
+                userId, AuditType.PROJECT
+            )
+        )
+    }
+}
