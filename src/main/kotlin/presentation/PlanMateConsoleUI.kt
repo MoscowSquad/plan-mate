@@ -2,10 +2,12 @@ package presentation
 
 import AssignProjectToUserUI
 import CreateUserUI
+import presentation.auth.AuthenticationUI
 import presentation.io.ConsoleIO
 import kotlin.system.exitProcess
 
 class PlanMateConsoleUI(
+    private val authenticationUI: AuthenticationUI,
     private val assignProjectToUserUI: AssignProjectToUserUI,
     private val createUserUI: CreateUserUI,
     private val deleteUserUI: DeleteUserUI,
@@ -13,25 +15,16 @@ class PlanMateConsoleUI(
     private val getUserByIdUI: GetUserByIdUI,
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
+
     fun start(stopImminently: Boolean = false) {
         write(
             """
-=============================================
-║       Welcome to Plan-Mate System!        ║
-=============================================
+🔷 Welcome to PlanMate v1.0 🔷
+Let's set up the app. Please sign up as the admin user.
         """.trimIndent()
         )
-        loginScreen()
+        authenticationUI()
         menuLoop(stopImminently)
-    }
-
-    private fun loginScreen() {
-        write("Please login with your username and password:")
-        write("Username: ")
-        val username = read()
-        write("Password: ")
-        val password = read()
-        write("Welcome, $username!")
     }
 
     private fun menuLoop(stopImminently: Boolean = false) {
