@@ -9,6 +9,6 @@ class GetTaskStatesByProjectIdUseCase(
 ) {
 
     operator fun invoke(projectId: UUID): List<TaskState>{
-        return emptyList()
+        return stateRepository.getTaskStateByProjectId(projectId)
     }
 }

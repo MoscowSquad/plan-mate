@@ -5,11 +5,10 @@ import io.mockk.mockk
 import io.mockk.verify
 import logic.models.TaskState
 import logic.repositories.TaskStateRepository
-import logic.util.NoExistProjectException
+import logic.util.NoStateExistException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import utilities.NoStateExistException
 import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

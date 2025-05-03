@@ -3,15 +3,14 @@ package logic.usecases.task_state
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.repositories.TaskStateRepository
 import io.mockk.verifyOrder
 import logic.models.TaskState
-import logic.repositories.StateRepository
+import logic.repositories.TaskStateRepository
+import logic.util.NoStateExistException
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
-import logic.util.NoStateExistException
 import java.util.*
 import kotlin.test.Test
 
@@ -32,10 +31,10 @@ class DeleteTaskStateUseCaseTest {
         val projectId = UUID.fromString("00000000-0000-0000-0000-000000000001")
         val stateId = UUID.fromString("00000000-0000-0000-0000-000000000002")
 
-        every { stateRepository.getByProjectId(projectId) } returns listOf(
+        every { stateRepository.getTaskStateByProjectId(projectId) } returns listOf(
             TaskState(stateId, "Test", projectId)
         )
-        every { stateRepository.delete(projectId, stateId) } returns true
+        every { stateRepository.deleteTaskState(projectId, stateId) } returns true
 
         // When
         val result = deleteStateUseCase(stateId, projectId)
@@ -43,7 +42,7 @@ class DeleteTaskStateUseCaseTest {
         // Then
         assertTrue(result)
         verifyOrder {
-            stateRepository.getByProjectId(projectId)
+            stateRepository.getTaskStateByProjectId(projectId)
             stateRepository.deleteTaskState(projectId, stateId)
         }
     }
@@ -54,7 +53,7 @@ class DeleteTaskStateUseCaseTest {
         val projectId = UUID.fromString("00000000-0000-0000-0000-000000000001")
         val stateId = UUID.fromString("00000000-0000-0000-0000-000000000002")
 
-        every { stateRepository.getByProjectId(projectId) } returns emptyList()
+        every { stateRepository.getTaskStateByProjectId(projectId) } returns emptyList()
 
         // When/Then
         val exception = assertThrows<NoStateExistException> {
@@ -65,7 +64,7 @@ class DeleteTaskStateUseCaseTest {
             "State with ID $stateId does not exist in project $projectId",
             exception.message
         )
-        verify(exactly = 0) { stateRepository.delete(any(), any()) }
+        verify(exactly = 0) { stateRepository.deleteTaskState(any(), any()) }
     }
 
     @Test
@@ -75,7 +74,7 @@ class DeleteTaskStateUseCaseTest {
         val stateId = UUID.fromString("00000000-0000-0000-0000-000000000002")
         val expectedError = IllegalStateException("Database error")
 
-        every { stateRepository.getByProjectId(projectId) } throws expectedError
+        every { stateRepository.getTaskStateByProjectId(projectId) } throws expectedError
 
         // When/Then
         val exception = assertThrows<IllegalStateException> {
@@ -83,6 +82,6 @@ class DeleteTaskStateUseCaseTest {
         }
 
         assertEquals(expectedError, exception)
-        verify(exactly = 0) { stateRepository.delete(any(), any()) }
+        verify(exactly = 0) { stateRepository.deleteTaskState(any(), any()) }
     }
 }

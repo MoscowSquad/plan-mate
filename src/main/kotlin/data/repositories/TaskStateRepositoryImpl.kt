@@ -5,8 +5,7 @@ import data.mappers.toDto
 import data.mappers.toTaskState
 import logic.models.TaskState
 import logic.repositories.TaskStateRepository
-import logic.repositories.StateRepository
-import utilities.NoStateExistException
+import logic.util.NoStateExistException
 import java.util.*
 
 class TaskStateRepositoryImpl(
@@ -38,7 +37,7 @@ class TaskStateRepositoryImpl(
         return true
     }
 
-    override fun add(projectId: UUID, state: TaskState): Boolean {
+    override fun addTaskState(projectId: UUID, state: TaskState): Boolean {
         val added = states.add(state)
         if (added) stateDataSource.save(states.map { it.toDto() })
         return added

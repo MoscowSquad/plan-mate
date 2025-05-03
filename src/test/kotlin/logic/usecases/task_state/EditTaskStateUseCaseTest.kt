@@ -7,11 +7,10 @@ import io.mockk.verify
 import logic.models.TaskState
 import logic.repositories.TaskStateRepository
 import logic.util.IllegalStateTitle
+import logic.util.NoStateExistException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import utilities.IllegalStateTitle
-import utilities.NoStateExistException
 import java.util.*
 
 
@@ -66,11 +65,11 @@ class EditTaskStateUseCaseTest {
         // Given
         val state = TaskState(
             id = UUID.randomUUID(),
-            title = "Valid",
+            name = "Valid",
             projectId = UUID.randomUUID()
         )
 
-        every { stateRepository.update(state) } returns false
+        every { stateRepository.updateTaskState(state) } returns false
 
         // When & Then
         val exception = assertThrows<NoStateExistException> {

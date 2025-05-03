@@ -2,8 +2,7 @@ package logic.usecases.task_state
 
 import logic.models.TaskState
 import logic.repositories.TaskStateRepository
-import logic.repositories.StateRepository
-import utilities.IllegalStateTitle
+import logic.util.IllegalStateTitle
 
 class AddTaskStateUseCase(
     private val stateRepository: TaskStateRepository,
@@ -14,7 +13,7 @@ class AddTaskStateUseCase(
             throw IllegalStateTitle("Task state title cannot be blank")
         }
 
-        return stateRepository.add(state.projectId, state)
+        return stateRepository.addTaskState(state.projectId, state)
             .also { success ->
                 if (!success) throw IllegalStateException("Failed to add state")
             }
