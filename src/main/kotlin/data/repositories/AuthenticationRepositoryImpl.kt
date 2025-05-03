@@ -3,6 +3,7 @@ package data.repositories
 import logic.models.User
 import logic.models.UserRole
 import logic.repositories.AuthenticationRepository
+import logic.util.toMD5Hash
 import java.io.File
 import java.util.*
 
@@ -21,8 +22,10 @@ class AuthenticationRepositoryImpl(
     }
 
     override fun login(name: String, password: String): Boolean {
-        val hashedPassword = passwordHasher(password)
-        return users.any { it.name == name && it.hashedPassword == hashedPassword }
+        val hashedPassword = password.toMD5Hash() // Explicit MD5 hashing
+        return users.any { user ->
+            user.name == name && user.hashedPassword == hashedPassword
+        }
     }
 
     fun loadUsersFromFile() {
