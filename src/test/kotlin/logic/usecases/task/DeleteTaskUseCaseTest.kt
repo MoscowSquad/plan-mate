@@ -54,7 +54,7 @@ class DeleteTaskUseCaseTest {
 
         val task = Task(
             id = id,
-            title = "Videos3",
+            name = "Videos3",
             projectId = UUID.randomUUID(),
             description = "description",
             stateId = UUID.randomUUID()

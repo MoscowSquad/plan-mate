@@ -26,10 +26,22 @@ class GetTaskByProjectIdUseCaseTest {
         // Given
         val projectID = UUID.fromString("00000000-0000-0000-0000-000000000001")
         val tasks: List<Task> = listOf(
-            Task(id =  UUID.randomUUID(), name = "Videos", projectId = projectID, description = "description", stateId = UUID.randomUUID()),
-            Task(id =  UUID.randomUUID(), name = "Videos2", projectId =  projectID, description = "description", stateId =  UUID.randomUUID()),
+            Task(
+                id = UUID.randomUUID(),
+                name = "Videos",
+                projectId = projectID,
+                description = "description",
+                stateId = UUID.randomUUID()
+            ),
+            Task(
+                id = UUID.randomUUID(),
+                name = "Videos2",
+                projectId = projectID,
+                description = "description",
+                stateId = UUID.randomUUID()
+            ),
         )
-        every { tasksRepository.getTaskByProjectIdUseCase(projectID) } returns tasks
+        every { tasksRepository.getTaskByProjectId(projectID) } returns tasks
 
 
         // When

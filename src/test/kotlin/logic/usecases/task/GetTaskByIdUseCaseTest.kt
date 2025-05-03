@@ -36,7 +36,7 @@ class GetTaskByIdUseCaseTest {
             stateId = UUID.randomUUID()
         )
 
-        every { tasksRepository.getById(id) } returns task
+        every { tasksRepository.getTaskById(id) } returns task
 
 
         // When
