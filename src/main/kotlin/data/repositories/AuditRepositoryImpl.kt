@@ -29,10 +29,6 @@ class AuditRepositoryImpl(
         }
     }
 
-    override fun getAuditLogById(taskId: UUID): List<AuditLog> {
-        TODO("Not yet implemented")
-    }
-
     override fun getAllLogsByTaskId(taskId: UUID): List<AuditLog> {
         return audits.filter { it.auditType == AuditType.TASK && it.entityId == taskId }
     }
