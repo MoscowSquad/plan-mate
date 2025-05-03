@@ -1,15 +1,12 @@
 package logic.usecases.auth
 
 import logic.repositories.AuthenticationRepository
-import utilities.toMD5Hash
+import logic.util.toMD5Hash
 
 class LoginUseCase(
     private val authRepository: AuthenticationRepository
 ) {
-    operator fun invoke(
-        name: String,
-        plainPassword: String
-    ): Boolean {
+    operator fun invoke(name: String, plainPassword: String): Boolean {
         require(name.isNotBlank()) { "Username cannot be blank" }
         require(plainPassword.isNotBlank()) { "Password cannot be blank" }
 

@@ -6,7 +6,7 @@ import data.csv_parser.ProjectCsvParser
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.models.Project
+import data.dto.ProjectDto
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.*
@@ -33,9 +33,9 @@ class ProjectDataSourceTest {
     @Test
     fun `fetch() should return parsed projects when there is projects returned by project csv-parser`() {
         val projects = listOf(
-            Project(UUID.randomUUID(), "The chance", listOf()),
-            Project(UUID.randomUUID(), "Work", listOf()),
-            Project(UUID.randomUUID(), "Study", listOf()),
+            ProjectDto(UUID.randomUUID().toString(), "The chance"),
+            ProjectDto(UUID.randomUUID().toString(), "Work"),
+            ProjectDto(UUID.randomUUID().toString(), "Study"),
         )
         every { projectCsvParser.parse(any()) } returns projects
 
@@ -45,7 +45,7 @@ class ProjectDataSourceTest {
 
     @Test
     fun `fetch() should return empty list when there is no projects returned by project csv-parser`() {
-        val projects = listOf<Project>()
+        val projects = listOf<ProjectDto>()
         every { projectCsvParser.parse(any()) } returns projects
 
         val result = dataSource.fetch()

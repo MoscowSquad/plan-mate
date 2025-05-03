@@ -1,4 +1,10 @@
-package utilities
+package data.util
+
+const val ADMIN = "ADMIN"
+const val MATE = "MATE"
+
+const val PROJECT = "PROJECT"
+const val TASK = "TASK"
 
 const val USERS_FILE = "users.csv"
 const val PROJECTS_FILE = "projects.csv"
@@ -6,7 +12,6 @@ const val TASKS_FILE = "tasks.csv"
 const val TASK_STATES_FILE = "states.csv"
 const val AUDIT_LOG_FILE = "audit_log.csv"
 const val TEST_FILE = "test.csv"
-
 
 object UserIndex {
     const val ID: Int = 0

@@ -1,4 +1,4 @@
-package presentation.user
+package presentation
 
 import logic.models.User
 import logic.models.UserRole
@@ -15,21 +15,21 @@ class GetAllUserUI(
         write("\n========================")
         write("║      ALL USERS        ║")
         write("========================")
-            val role = currentUserRole()
-            val users: List<User> = getAllUsersUseCase(role)
+        val role = currentUserRole()
+        val users: List<User> = getAllUsersUseCase(role)
 
-            if (users.isEmpty()) {
-                write("ℹ️  No users found.")
-                return
-            }
+        if (users.isEmpty()) {
+            write("ℹ️  No users found.")
+            return
+        }
 
-            write("\nList of Users:\n")
-            users.forEachIndexed { index, user ->
-                write("${index + 1}. ID: ${user.id}")
-                write("  Username: ${user.name}")
-                write(" Role: ${user.role}")
-                write("-------------------------------")
-            }
+        write("\nList of Users:\n")
+        users.forEachIndexed { index, user ->
+            write("${index + 1}. ID: ${user.id}")
+            write("  Username: ${user.name}")
+            write(" Role: ${user.role}")
+            write("-------------------------------")
+        }
 
 
     }

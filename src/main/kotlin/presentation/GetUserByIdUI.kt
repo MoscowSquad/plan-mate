@@ -1,3 +1,4 @@
+package presentation
 
 import logic.usecases.user.GetUserByIdUseCase
 import presentation.io.ConsoleIO

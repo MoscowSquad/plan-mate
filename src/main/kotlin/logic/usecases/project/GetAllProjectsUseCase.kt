@@ -8,6 +8,6 @@ class GetAllProjectsUseCase(
 ) {
 
     operator fun invoke(): List<Project> {
-        return projectsRepository.getAll()
+        return projectsRepository.getAllProjects()
     }
 }

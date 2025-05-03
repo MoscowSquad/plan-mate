@@ -4,11 +4,12 @@ import io.mockk.every
 import io.mockk.mockk
 import logic.models.Task
 import logic.repositories.TasksRepository
+import logic.util.TaskIsNotFoundException
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import utilities.TaskIsNotFoundException
 import java.util.*
+import org.junit.jupiter.api.assertThrows
 
 class GetTaskByProjectIdUseCaseTest {
     private lateinit var getTaskByProjectIdUseCase: GetTaskByProjectIdUseCase
@@ -26,13 +27,13 @@ class GetTaskByProjectIdUseCaseTest {
     fun `should return task model when found task successfully `() {
         // Given
         val tasks: List<Task> = listOf(
-            Task(id = id, title = "Videos", projectId = id, description = "description", stateId = id),
-            Task(id = id2, title = "Videos2", projectId = id2, description = "description", stateId = id2),
+            Task(id = id, name = "Videos", projectId = id, description = "description", stateId = id),
+            Task(id = id2, name = "Videos2", projectId = id2, description = "description", stateId = id2),
         )
         val input = id
-        every { tasksRepository.getAll() } returns tasks
+        every { tasksRepository.getAllTasks() } returns tasks
 
-        val expected = Task(id = id, title = "Videos", projectId = id, description = "description", stateId = id)
+        val expected = Task(id = id, name = "Videos", projectId = id, description = "description", stateId = id)
 
         // When
         val result = getTaskByProjectIdUseCase(input)
@@ -42,17 +43,17 @@ class GetTaskByProjectIdUseCaseTest {
     }
 
     @Test
-    fun `should Throw TaskIsNotFoundException when wanted task not found`() {
+    fun `should throw TaskIsNotFoundException when wanted task not found`() {
         // Given
         val tasks: List<Task> = listOf(
-            Task(id = id, title = "Videos", projectId = id, description = "description", stateId = id),
-            Task(id = id2, title = "Videos2", projectId = id2, description = "description", stateId = id2),
+            Task(id = id, name = "Videos", projectId = id, description = "description", stateId = id),
+            Task(id = id2, name = "Videos2", projectId = id2, description = "description", stateId = id2),
         )
-        every { tasksRepository.getAll() } returns tasks
+        every { tasksRepository.getAllTasks() } returns tasks
         val input = UUID.fromString("00000000-0000-0000-0000-000000000003")
 
         // When & Then
-        org.junit.jupiter.api.assertThrows<TaskIsNotFoundException> {
+        assertThrows<TaskIsNotFoundException> {
             getTaskByProjectIdUseCase(input)
         }
     }
@@ -60,11 +61,11 @@ class GetTaskByProjectIdUseCaseTest {
     @Test
     fun `should Throw TaskIsNotFoundException when there is no tasks`() {
         // Given
-        every { tasksRepository.getAll() } returns emptyList()
+        every { tasksRepository.getAllTasks() } returns emptyList()
         val input = UUID.fromString("00000000-0000-0000-0000-000000000002")
 
         // When & Then
-        org.junit.jupiter.api.assertThrows<TaskIsNotFoundException> {
+        assertThrows<TaskIsNotFoundException> {
             getTaskByProjectIdUseCase(input)
         }
     }

@@ -1,14 +1,14 @@
-package logic.usecases.state
+package logic.usecases.task_state
 
 import logic.models.TaskState
-import logic.repositories.StateRepository
+import logic.repositories.TaskStateRepository
 
-class AddStateUseCase(
-    private val stateRepository: StateRepository,
+class AddTaskStateUseCase(
+    private val stateRepository: TaskStateRepository,
 ) {
 
     operator fun invoke(state: TaskState): Boolean{
-        isValidTitleState(state.title)
+        isValidTitleState(state.name)
         return false// fake
     }
 

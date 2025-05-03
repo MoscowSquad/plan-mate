@@ -1,47 +1,49 @@
 package data.repositories
 
 import data.datasource.TaskStateDataSource
+import data.mappers.toDto
+import data.mappers.toTaskState
 import logic.models.TaskState
-import logic.repositories.StateRepository
+import logic.repositories.TaskStateRepository
 import java.util.*
 
-class StateRepositoryImpl(
+class TaskStateRepositoryImpl(
     private val stateDataSource: TaskStateDataSource
-) : StateRepository {
+) : TaskStateRepository {
 
     private val states = mutableListOf<TaskState>()
 
     init {
-        states.addAll(stateDataSource.fetch())
+        states.addAll(stateDataSource.fetch().map { it.toTaskState() })
     }
 
-    override fun getById(id: UUID): TaskState {
+    override fun getTaskStateById(id: UUID): TaskState {
         return states.find { it.id == id } ?: throw NoSuchElementException("State with ID $id not found.")
     }
 
-    override fun getByProjectId(projectId: UUID): List<TaskState> {
+    override fun getTaskStateByProjectId(projectId: UUID): List<TaskState> {
         return states.filter { it.projectId == projectId }
     }
 
-    override fun update(state: TaskState): Boolean {
+    override fun updateTaskState(state: TaskState): Boolean {
         val index = states.indexOfFirst { it.id == state.id }
         if (index == -1) return false
 
         states[index] = state
-        stateDataSource.save(states)
+        stateDataSource.save(states.map { it.toDto() })
         return true
     }
 
-    override fun add(projectId: UUID, title: String): Boolean {
+    override fun addTaskState(projectId: UUID, title: String): Boolean {
         val newState = TaskState(UUID.randomUUID(), title, projectId)
         val added = states.add(newState)
-        if (added) stateDataSource.save(states)
+        if (added) stateDataSource.save(states.map { it.toDto() })
         return added
     }
 
-    override fun delete(projectId: UUID, stateId: UUID): Boolean {
+    override fun deleteTaskState(projectId: UUID, stateId: UUID): Boolean {
         val removed = states.removeIf { it.id == stateId && it.projectId == projectId }
-        if (removed) stateDataSource.save(states)
+        if (removed) stateDataSource.save(states.map { it.toDto() })
         return removed
     }
 }

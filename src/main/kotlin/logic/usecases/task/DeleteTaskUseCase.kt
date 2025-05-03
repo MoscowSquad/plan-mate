@@ -8,7 +8,7 @@ class DeleteTaskUseCase(
 ) {
 
     operator fun invoke(id: UUID): Boolean {
-        return tasksRepository.delete(id)
+        return tasksRepository.deleteTask(id)
     }
 
 }

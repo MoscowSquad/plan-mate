@@ -4,12 +4,13 @@ import com.google.common.truth.Truth
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.models.UserRole
-import logic.models.User
+import data.dto.UserDto
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import data.csv_parser.CsvHandler
 import data.csv_parser.UserCsvParser
+import data.util.ADMIN
+import data.util.MATE
 import java.util.*
 
 class UserDataSourceTest {
@@ -36,10 +37,16 @@ class UserDataSourceTest {
     @Test
     fun `fetch() should return parsed users when there is users returned by user csv-parser`() {
         val users = listOf(
-            User(UUID.randomUUID(), "Aiman", "123456", UserRole.ADMIN, emptyList()),
-            User(UUID.randomUUID(), "Muhammed", "123456", UserRole.MATE, listOf(UUID.randomUUID())),
-            User(UUID.randomUUID(), "Zeyad", "123456", UserRole.MATE, listOf(UUID.randomUUID(), UUID.randomUUID())),
-            User(UUID.randomUUID(), "Yaser", "123456", UserRole.MATE, emptyList()),
+            UserDto(UUID.randomUUID().toString(), "Aiman", "123456", ADMIN, emptyList()),
+            UserDto(UUID.randomUUID().toString(), "Muhammed", "123456", MATE, listOf(UUID.randomUUID().toString())),
+            UserDto(
+                UUID.randomUUID().toString(),
+                "Zeyad",
+                "123456",
+                MATE,
+                listOf(UUID.randomUUID().toString(), UUID.randomUUID().toString())
+            ),
+            UserDto(UUID.randomUUID().toString(), "Yaser", "123456", MATE, emptyList()),
         )
         every { userCsvParser.parse(any()) } returns users
 
@@ -49,7 +56,7 @@ class UserDataSourceTest {
 
     @Test
     fun `fetch() should return empty list when there is no users returned by user csv-parser`() {
-        val users = listOf<User>()
+        val users = listOf<UserDto>()
         every { userCsvParser.parse(any()) } returns users
 
         val result = dataSource.fetch()

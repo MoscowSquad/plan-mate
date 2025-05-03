@@ -4,10 +4,10 @@ import logic.models.User
 import java.util.*
 
 interface UserRepository {
-    fun add(user: User): Boolean
-    fun delete(id: UUID): Boolean
-    fun assignToProject(projectId: UUID, userId: UUID): Boolean
-    fun removeFromProject(projectId: UUID, userId: UUID): Boolean
-    fun getById(id: UUID): User 
-    fun getAll(): List<User>
+    fun addUser(user: User): Boolean
+    fun deleteUser(id: UUID): Boolean
+    fun assignUserToProject(projectId: UUID, userId: UUID): Boolean
+    fun unassignUserFromProject(projectId: UUID, userId: UUID): Boolean
+    fun getUserById(id: UUID): User
+    fun getAllUsers(): List<User>
 }

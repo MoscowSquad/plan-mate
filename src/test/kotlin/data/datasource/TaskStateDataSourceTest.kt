@@ -6,7 +6,7 @@ import data.csv_parser.TaskStateCsvParser
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.models.TaskState
+import data.dto.TaskStateDto
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.*
@@ -32,11 +32,11 @@ class TaskStateDataSourceTest {
 
     @Test
     fun `fetch() should return parsed states when there is states returned by state csv-parser`() {
-        val projectId = UUID.randomUUID()
+        val projectId = UUID.randomUUID().toString()
         val states = listOf(
-            TaskState(UUID.randomUUID(), "Todo", projectId),
-            TaskState(UUID.randomUUID(), "In progress", projectId),
-            TaskState(UUID.randomUUID(), "Done", projectId),
+            TaskStateDto(UUID.randomUUID().toString(), "Todo", projectId),
+            TaskStateDto(UUID.randomUUID().toString(), "In progress", projectId),
+            TaskStateDto(UUID.randomUUID().toString(), "Done", projectId),
         )
         every { stateCsvParser.parse(any()) } returns states
 
@@ -46,7 +46,7 @@ class TaskStateDataSourceTest {
 
     @Test
     fun `fetch() should return empty list when there is no states returned by state csv-parser`() {
-        val states = listOf<TaskState>()
+        val states = listOf<TaskStateDto>()
         every { stateCsvParser.parse(any()) } returns states
 
         val result = dataSource.fetch()
