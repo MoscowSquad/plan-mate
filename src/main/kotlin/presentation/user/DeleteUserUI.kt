@@ -4,10 +4,11 @@ import logic.models.UserRole
 import logic.usecases.user.DeleteUserUseCase
 import presentation.io.ConsoleIO
 import presentation.session.SessionManager
-import java.util.*
+import java.util.UUID
 
 class DeleteUserUI(
     private val deleteUserUseCase: DeleteUserUseCase,
+    private val currentUserRole: () -> UserRole,
     consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
 

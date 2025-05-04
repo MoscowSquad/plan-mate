@@ -5,7 +5,10 @@ import presentation.io.ConsoleIO
 import logic.util.toMD5Hash
 import logic.models.User
 import logic.models.UserRole
-import java.util.*
+import logic.usecases.user.CreateUserUseCase
+import logic.util.toMD5Hash
+import presentation.io.ConsoleIO
+import java.util.UUID
 
 class CreateUserUI(
     private val createUserUseCase: CreateUserUseCase,
@@ -46,6 +49,8 @@ class CreateUserUI(
             }.onFailure {
                 write("Failed to create user. Username might already exist.")
             }
+
+
     }
 
 }

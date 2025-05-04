@@ -2,7 +2,7 @@ package presentation.user
 
 import logic.usecases.user.GetUserByIdUseCase
 import presentation.io.ConsoleIO
-import java.util.*
+import java.util.UUID
 
 class GetUserByIdUI(
     private val getUserByIdUseCase: GetUserByIdUseCase,
