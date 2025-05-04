@@ -4,17 +4,19 @@ import com.google.common.truth.Truth
 import data.csv_parser.CsvHandler
 import data.csv_parser.UserCsvParser
 import data.datasource.UserDataSource
+import logic.models.User
+import logic.models.UserRole
+import logic.util.toMD5Hash
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
-import logic.util.toMD5Hash
-import io.mockk.mockk
-import logic.models.User
-import logic.models.UserRole
 import java.io.File
 import java.util.*
-import kotlin.test.*
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class AuthenticationRepositoryImplTest {
     @TempDir
@@ -24,7 +26,7 @@ class AuthenticationRepositoryImplTest {
     private lateinit var csvParser: UserCsvParser
     private lateinit var dataSource: UserDataSource
     private lateinit var repository: AuthenticationRepositoryImpl
-    private val testPasswordHasher = { plain: String -> plain.toMD5Hash() }
+
 
     @BeforeEach
     fun setup() {
@@ -35,7 +37,7 @@ class AuthenticationRepositoryImplTest {
         csvHandler = CsvHandler(testFile)
         csvParser = UserCsvParser()
         dataSource = UserDataSource(csvHandler, csvParser)
-        repository = AuthenticationRepositoryImpl(dataSource, testPasswordHasher)
+        repository = AuthenticationRepositoryImpl(dataSource)
     }
 
     @Test
@@ -112,27 +114,25 @@ class AuthenticationRepositoryImplTest {
         val testPassword = "correct123"
         val testUser = User(
             id = UUID.randomUUID(),
-            name = "testuser",
-            hashedPassword = testPasswordHasher(testPassword),
+            name = "test user",
+            hashedPassword = testPassword.toMD5Hash(),
             role = UserRole.MATE,
             projectIds = emptyList()
         )
         repository.users.add(testUser)
-        assertTrue(repository.login("testuser", testPassword))
+        assertTrue(repository.login("test user", testPassword))
     }
 
     @Test
     fun `loadUsersFromFile skips header line`() {
         // Arrange
         testFile.writeText("id,name,password,role,projects\n${UUID.randomUUID()},user1,hash1,MATE,[]")
-        repository.loadUsersFromFile()
         assertEquals(1, repository.users.size)
     }
 
     @Test
     fun `loadUsersFromFile handles empty file`() {
         testFile.writeText("id,name,password,role,projects") // Only header
-        repository.loadUsersFromFile()
         assertTrue(repository.users.isEmpty())
     }
 
@@ -140,13 +140,13 @@ class AuthenticationRepositoryImplTest {
     fun `login returns false for wrong password`() {
         val testUser = User(
             id = UUID.randomUUID(),
-            name = "testuser",
-            hashedPassword = testPasswordHasher("correct123"),
+            name = "test user",
+            hashedPassword = "correct123".toMD5Hash(),
             role = UserRole.MATE,
             projectIds = emptyList()
         )
         repository.users.add(testUser)
-        assertFalse(repository.login("testuser", "wrong123"))
+        assertFalse(repository.login("test user", "wrong123"))
     }
 
     @Test
@@ -265,7 +265,7 @@ class AuthenticationRepositoryImplTest {
     fun `should return false for invalid password`() {
         val user = createTestUser(password = "test123")
         repository.register(user)
-        assertFalse(repository.login(user.name, "wrongpass"))
+        assertFalse(repository.login(user.name, "wrong pass"))
     }
 
     @Test
@@ -276,7 +276,7 @@ class AuthenticationRepositoryImplTest {
     }
 
     private fun createTestUser(
-        name: String = "testuser",
+        name: String = "test user",
         password: String = "test123",
         role: UserRole = UserRole.MATE,
         projects: List<UUID> = emptyList()
@@ -284,7 +284,7 @@ class AuthenticationRepositoryImplTest {
         return User(
             id = UUID.randomUUID(),
             name = name,
-            hashedPassword = testPasswordHasher(password),
+            hashedPassword = password.toMD5Hash(),
             role = role,
             projectIds = projects
         )
