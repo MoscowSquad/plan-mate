@@ -1,9 +1,9 @@
-package presentation
+package presentation.user
 
 import logic.models.UserRole
 import logic.usecases.user.DeleteUserUseCase
 import presentation.io.ConsoleIO
-import java.util.*
+import java.util.UUID
 
 class DeleteUserUI(
     private val deleteUserUseCase: DeleteUserUseCase,
