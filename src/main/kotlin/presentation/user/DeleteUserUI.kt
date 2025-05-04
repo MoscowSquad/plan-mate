@@ -1,4 +1,4 @@
-package presentation.user
+package presentation
 
 import logic.models.UserRole
 import logic.usecases.user.DeleteUserUseCase
