@@ -1,6 +1,5 @@
 package presentation.audit
 
-import logic.usecases.audit.ViewAuditLogsByProjectUseCase
 import logic.usecases.audit.ViewAuditLogsByTaskUseCase
 import presentation.io.ConsoleIO
 
