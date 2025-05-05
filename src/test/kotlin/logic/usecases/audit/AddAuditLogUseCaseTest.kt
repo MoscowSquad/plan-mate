@@ -1,8 +1,8 @@
 package logic.usecases.audit
 
 import com.google.common.truth.Truth
-import data.datasource.AuditLogDataSource
-import data.repositories.AuditRepositoryImpl
+import data.csv_data.datasource.AuditLogDataSource
+import data.csv_data.repositories.AuditRepositoryImpl
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.datetime.LocalDateTime

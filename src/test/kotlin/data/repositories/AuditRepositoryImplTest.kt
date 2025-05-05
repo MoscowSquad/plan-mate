@@ -1,15 +1,16 @@
 package data.repositories
 
 import com.google.common.truth.Truth
-import data.datasource.AuditLogDataSource
-import data.mappers.toDto
+import data.csv_data.datasource.AuditLogDataSource
+import data.csv_data.mappers.toDto
+import data.csv_data.repositories.AuditRepositoryImpl
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.datetime.LocalDateTime
 import logic.models.AuditLog
 import logic.models.AuditType
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.*

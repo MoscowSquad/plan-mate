@@ -1,9 +1,10 @@
 package data.repositories
 
 import com.google.common.truth.Truth.assertThat
-import data.csv_parser.CsvHandler
-import data.csv_parser.ProjectCsvParser
-import data.datasource.ProjectDataSource
+import data.csv_data.csv_parser.CsvHandler
+import data.csv_data.csv_parser.ProjectCsvParser
+import data.csv_data.repositories.ProjectsRepositoryImpl
+import data.mongodb_data.datasource.ProjectDataSource
 import io.mockk.mockk
 import logic.models.Project
 import logic.util.ProjectNotFoundException

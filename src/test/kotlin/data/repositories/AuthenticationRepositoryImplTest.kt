@@ -1,17 +1,17 @@
 package data.repositories
 
 import com.google.common.truth.Truth
-import data.csv_parser.CsvHandler
-import data.csv_parser.UserCsvParser
-import data.datasource.UserDataSource
+import data.csv_data.csv_parser.CsvHandler
+import data.csv_data.csv_parser.UserCsvParser
+import data.csv_data.datasource.UserDataSource
+import data.csv_data.repositories.AuthenticationRepositoryImpl
+import logic.models.User
+import logic.models.UserRole
+import logic.util.toMD5Hash
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
-import logic.util.toMD5Hash
-import io.mockk.mockk
-import logic.models.User
-import logic.models.UserRole
 import java.io.File
 import java.util.*
 import kotlin.test.*

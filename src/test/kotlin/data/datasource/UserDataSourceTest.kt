@@ -1,16 +1,17 @@
 package data.datasource
 
 import com.google.common.truth.Truth
+import data.csv_data.csv_parser.CsvHandler
+import data.csv_data.csv_parser.UserCsvParser
+import data.csv_data.datasource.UserDataSource
+import data.csv_data.util.ADMIN
+import data.csv_data.util.MATE
+import data.mongodb_data.dto.UserDto
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import data.dto.UserDto
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import data.csv_parser.CsvHandler
-import data.csv_parser.UserCsvParser
-import data.util.ADMIN
-import data.util.MATE
 import java.util.*
 
 class UserDataSourceTest {

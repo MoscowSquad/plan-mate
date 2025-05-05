@@ -1,10 +1,10 @@
 package data.csv_parser
 
 import com.google.common.truth.Truth
-import data.dto.TaskDto
+import data.csv_data.csv_parser.TaskCsvParser
+import data.mongodb_data.dto.TaskDto
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.util.*
 
 class TaskCsvParserTest {
     private lateinit var parser: TaskCsvParser

@@ -1,14 +1,15 @@
 package data.datasource
 
 import com.google.common.truth.Truth
+import data.csv_data.csv_parser.CsvHandler
+import data.csv_data.csv_parser.TaskCsvParser
+import data.csv_data.datasource.TaskDataSource
+import data.mongodb_data.dto.TaskDto
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import data.dto.TaskDto
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import data.csv_parser.CsvHandler
-import data.csv_parser.TaskCsvParser
 import java.util.*
 
 class TaskDataSourceTest {
