@@ -29,7 +29,6 @@ class CreateProjectUITest {
         MockKAnnotations.init(this)
         createProjectUI = CreateProjectUI(createProjectUseCase, consoleIO)
 
-        // Clear any previous state in SessionManager
         mockkObject(SessionManager)
     }
 
