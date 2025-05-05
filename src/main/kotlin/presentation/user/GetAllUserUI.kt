@@ -1,4 +1,4 @@
-package presentation
+package presentation.user
 
 import logic.models.User
 import logic.models.UserRole

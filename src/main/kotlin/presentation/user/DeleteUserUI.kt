@@ -1,13 +1,13 @@
-package presentation
+package presentation.user
 
 import logic.models.UserRole
 import logic.usecases.user.DeleteUserUseCase
 import presentation.io.ConsoleIO
+import presentation.session.SessionManager
 import java.util.*
 
 class DeleteUserUI(
     private val deleteUserUseCase: DeleteUserUseCase,
-    private val currentUserRole: () -> UserRole,
     consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
 
@@ -24,9 +24,16 @@ class DeleteUserUI(
             write(" Invalid UUID format. Please provide a valid user ID.")
             return
         }
-        val role = currentUserRole()
-        deleteUserUseCase(role, userId)
-        write(" User with ID $userId has been successfully deleted.")
+        val role = SessionManager.currentUser?.role
+        if (role != null) {
+            runCatching {
+                deleteUserUseCase(role, userId)
+            }.onSuccess {
+                write("User with ID $userId has been successfully deleted.")
+            }.onFailure {
+                write("Error while deleting user id: $userId, ${it.message}")
+            }
+        }
 
     }
 }

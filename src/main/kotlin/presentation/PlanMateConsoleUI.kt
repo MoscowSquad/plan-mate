@@ -1,13 +1,17 @@
 package presentation
 
+import presentation.audit.AuditUI
 import presentation.auth.AuthenticationUI
 import presentation.io.ConsoleIO
 import presentation.project.ProjectsUI
+import presentation.user.UserUI
 import kotlin.system.exitProcess
 
 class PlanMateConsoleUI(
     private val authenticationUI: AuthenticationUI,
     private val projectsUI: ProjectsUI,
+    private val userUI: UserUI,
+    private val auditUI: AuditUI,
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
 
@@ -48,7 +52,9 @@ Enter your option:""".trimIndent()
         val input = read().toIntOrNull()
         when (input) {
             1 -> projectsUI()
-            2 -> exitProcess(0)
+            2 -> userUI()
+            3 -> auditUI()
+            4 -> exitProcess(0)
             else -> write("\nInvalid input. Please enter a number between 1 and 4.")
         }
     }

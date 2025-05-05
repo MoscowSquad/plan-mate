@@ -1,3 +1,5 @@
+package presentation.user
+
 import logic.models.UserRole
 import presentation.io.ConsoleIO
 import logic.usecases.user.AssignProjectToUserUseCase
@@ -20,12 +22,11 @@ class AssignProjectToUserUI(
         val userIdInput = read()
         val userId = UUID.fromString(userIdInput)
 
-        val success = assignProjectToUserUseCase(currentUserRole, projectId, userId)
-
-        if (success) {
-            write("User successfully assigned to the project.")
-        } else {
-            write("Failed to assign user. Make sure IDs are correct.")
-        }
+        runCatching { assignProjectToUserUseCase(currentUserRole, projectId, userId) }
+            .onSuccess {
+                write("User successfully assigned to the project.")
+            }.onFailure {
+                write("Failed to assign user. ${it.message}")
+            }
     }
 }
