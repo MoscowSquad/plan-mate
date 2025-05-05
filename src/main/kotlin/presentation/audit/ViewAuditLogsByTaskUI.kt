@@ -48,7 +48,6 @@ class ViewAuditLogsByTaskUI(
     private fun viewAllTaskLogs() {
         try {
             write("\n📋 ALL TASK LOGS")
-            // Create a dummy UUID with all zeros to represent "all tasks"
             val allTasksId = UUID(0, 0)
             val logs = viewAuditLogsByTaskUseCase(allTasksId)
             displayLogs(logs, "All Tasks")
