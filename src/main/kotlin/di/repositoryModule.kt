@@ -1,6 +1,6 @@
 package di
 
-import data.repositories.*
+import data.csv_data.repositories.*
 import logic.repositories.*
 import org.koin.dsl.module
 

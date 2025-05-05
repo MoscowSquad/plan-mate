@@ -1,6 +1,6 @@
 package presentation.project
 
-import data.mappers.toUUID
+import data.csv_data.mappers.toUUID
 import logic.models.UserRole
 import logic.usecases.project.UpdateProjectUseCase
 import presentation.io.ConsoleIO
