@@ -1,5 +1,6 @@
 package presentation.user
 
+import di.SessionManager
 import logic.models.UserRole
 import presentation.io.ConsoleIO
 import logic.usecases.user.AssignProjectToUserUseCase
@@ -7,7 +8,7 @@ import java.util.UUID
 
 class AssignProjectToUserUI(
     private val assignProjectToUserUseCase: AssignProjectToUserUseCase,
-    private val currentUserRole: UserRole,
+    private val sessionManager: SessionManager,
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
 
@@ -22,7 +23,7 @@ class AssignProjectToUserUI(
         val userIdInput = read()
         val userId = UUID.fromString(userIdInput)
 
-        runCatching { assignProjectToUserUseCase(currentUserRole, projectId, userId) }
+        runCatching { sessionManager.getCurrentUserRole()?.let { assignProjectToUserUseCase(it, projectId, userId) } }
             .onSuccess {
                 write("User successfully assigned to the project.")
             }.onFailure {
