@@ -21,32 +21,6 @@ class AuthenticationUITest {
         authenticationUI = AuthenticationUI(registerAdminUI, loginUserUI, consoleIO)
     }
 
-
-//    @Test
-//    fun `should display menu options`() {
-//        // Given
-//        every { consoleIO.read() } returns "3"
-//
-//        // Use mockk to prevent actual system exit
-//        mockkStatic(::exitProcess)
-//        every { exitProcess(any()) } throws RuntimeException("Exit process called")
-//
-//        // When/Then
-//        assertFailsWith<RuntimeException> { authenticationUI.invoke() }
-//
-//        // Then
-//        verifySequence {
-//            consoleIO.write("""
-//Please choose an option:
-//1️⃣  Register as new 🛡️ Admin
-//2️⃣  Login 🔐 (Admin or 👤 Mate)
-//3️⃣  Exit ❌
-//            """.trimIndent())
-//            consoleIO.read()
-//            exitProcess(0)
-//        }
-//    }
-
     @Test
     fun `should call registerAdminUI when option 1 is selected`() {
         // Given
@@ -78,24 +52,6 @@ class AuthenticationUITest {
             loginUserUI()
         }
     }
-
-//    @Test
-//    fun `should exit when option 3 is selected`() {
-//        // Given
-//        every { consoleIO.read() } returns "3"
-//
-//        // Use mockk to prevent actual system exit
-//        mockkStatic(::exitProcess)
-//        every { exitProcess(any()) } throws RuntimeException("Exit process called")
-//
-//        // When/Then
-//        assertFailsWith<RuntimeException> { authenticationUI.invoke() }
-//
-//        // Then
-//        verify {
-//            exitProcess(0)
-//        }
-//    }
 
     @Test
     fun `should display error message for invalid input`() {
