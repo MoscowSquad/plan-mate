@@ -51,11 +51,11 @@ class AddAuditLogUITest {
 
         // Then
         verifySequence {
-            consoleIO.write(any()) // Main menu prompt
-            consoleIO.read() // Read "invalid"
+            consoleIO.write(any())
+            consoleIO.read()
             consoleIO.write("\nInvalid input. Please enter 1 or 2.")
-            consoleIO.write(any()) // Main menu prompt again
-            consoleIO.read() // Read "2"
+            consoleIO.write(any())
+            consoleIO.read()
         }
     }
 
@@ -63,12 +63,12 @@ class AddAuditLogUITest {
     fun `should create audit log successfully with valid inputs for TASK type`() {
         // Given
         val inputSequence = listOf(
-            "1", // Select create audit log
-            validUserIdString, // User ID
-            validEntityIdString, // Entity ID
-            validAction, // Action
-            "1", // AuditType.TASK
-            "2" // Return to main menu
+            "1",
+            validUserIdString,
+            validEntityIdString,
+            validAction,
+            "1",
+            "2"
         )
         every { consoleIO.read() } returnsMany inputSequence
 
@@ -91,12 +91,12 @@ class AddAuditLogUITest {
     fun `should create audit log successfully with valid inputs for PROJECT type`() {
         // Given
         val inputSequence = listOf(
-            "1", // Select create audit log
-            validUserIdString, // User ID
-            validEntityIdString, // Entity ID
-            validAction, // Action
-            "2", // AuditType.PROJECT
-            "2" // Return to main menu
+            "1",
+            validUserIdString,
+            validEntityIdString,
+            validAction,
+            "2",
+            "2"
         )
         every { consoleIO.read() } returnsMany inputSequence
 
@@ -118,13 +118,13 @@ class AddAuditLogUITest {
     fun `should handle invalid UUID format for user ID`() {
         // Given
         val inputSequence = listOf(
-            "1", // Select create audit log
-            "invalid-uuid", // Invalid user ID
-            validUserIdString, // Valid user ID on retry
-            validEntityIdString, // Entity ID
-            validAction, // Action
-            "1", // AuditType.TASK
-            "2" // Return to main menu
+            "1",
+            "invalid-uuid",
+            validUserIdString,
+            validEntityIdString,
+            validAction,
+            "1",
+            "2"
         )
         every { consoleIO.read() } returnsMany inputSequence
 
@@ -140,13 +140,13 @@ class AddAuditLogUITest {
     fun `should handle invalid UUID format for entity ID`() {
         // Given
         val inputSequence = listOf(
-            "1", // Select create audit log
-            validUserIdString, // User ID
-            "invalid-uuid", // Invalid entity ID
-            validEntityIdString, // Valid entity ID on retry
-            validAction, // Action
-            "1", // AuditType.TASK
-            "2" // Return to main menu
+            "1",
+            validUserIdString,
+            "invalid-uuid",
+            validEntityIdString,
+            validAction,
+            "1",
+            "2"
         )
         every { consoleIO.read() } returnsMany inputSequence
 
@@ -162,13 +162,13 @@ class AddAuditLogUITest {
     fun `should handle invalid audit type selection`() {
         // Given
         val inputSequence = listOf(
-            "1", // Select create audit log
-            validUserIdString, // User ID
-            validEntityIdString, // Entity ID
-            validAction, // Action
-            "invalid", // Invalid audit type
-            "1", // Valid audit type on retry
-            "2" // Return to main menu
+            "1",
+            validUserIdString,
+            validEntityIdString,
+            validAction,
+            "invalid",
+            "1",
+            "2"
         )
         every { consoleIO.read() } returnsMany inputSequence
 
@@ -184,13 +184,13 @@ class AddAuditLogUITest {
     fun `should handle empty action input`() {
         // Given
         val inputSequence = listOf(
-            "1", // Select create audit log
-            validUserIdString, // User ID
-            validEntityIdString, // Entity ID
-            "", // Empty action
-            validAction, // Valid action on retry
-            "1", // AuditType.TASK
-            "2" // Return to main menu
+            "1",
+            validUserIdString,
+            validEntityIdString,
+            "",
+            validAction,
+            "1",
+            "2"
         )
         every { consoleIO.read() } returnsMany inputSequence
 
@@ -207,12 +207,12 @@ class AddAuditLogUITest {
         // Given
         val errorMessage = "Database connection failed"
         val inputSequence = listOf(
-            "1", // Select create audit log
-            validUserIdString, // User ID
-            validEntityIdString, // Entity ID
-            validAction, // Action
-            "1", // AuditType.TASK
-            "2" // Return to main menu
+            "1",
+            validUserIdString,
+            validEntityIdString,
+            validAction,
+            "1",
+            "2"
         )
         every { consoleIO.read() } returnsMany inputSequence
         every { addAuditLogUseCase.invoke(any()) } throws RuntimeException(errorMessage)
@@ -227,7 +227,6 @@ class AddAuditLogUITest {
     @Test
     fun `should accept optional empty input`() {
         // Given
-        // Using reflection to directly test the private method
         val readInputMethod = AddAuditLogUI::class.java.getDeclaredMethod(
             "readInput",
             String::class.java,
@@ -276,17 +275,17 @@ class AddAuditLogUITest {
     fun `should test the full sequence with multiple interactions`() {
         // Given
         val inputSequence = listOf(
-            "invalid", // Invalid initial selection
-            "1",       // Select create audit log
-            "invalid", // Invalid UUID
-            validUserIdString, // Valid user ID
-            "invalid", // Invalid entity ID
-            validEntityIdString, // Valid entity ID
-            "",        // Empty action
-            validAction, // Valid action
-            "3",       // Invalid audit type
-            "1",       // Valid audit type
-            "2"        // Return to main menu
+            "invalid",
+            "1",
+            "invalid",
+            validUserIdString,
+            "invalid",
+            validEntityIdString,
+            "",
+            validAction,
+            "3",
+            "1",
+            "2"
         )
         every { consoleIO.read() } returnsMany inputSequence
 
