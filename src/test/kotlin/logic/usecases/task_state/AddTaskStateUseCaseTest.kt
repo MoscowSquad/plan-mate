@@ -14,88 +14,115 @@ import org.junit.jupiter.api.assertThrows
 import java.util.*
 
 class AddTaskStateUseCaseTest {
- private lateinit var stateRepository: TaskStateRepository
+    private lateinit var stateRepository: TaskStateRepository
 
- private lateinit var addStateUseCase: AddTaskStateUseCase
+    private lateinit var addStateUseCase: AddTaskStateUseCase
 
- @BeforeEach
- fun setUp() {
-  stateRepository = mockk()
-  addStateUseCase = AddTaskStateUseCase(stateRepository)
- }
+    @BeforeEach
+    fun setUp() {
+        stateRepository = mockk()
+        addStateUseCase = AddTaskStateUseCase(stateRepository)
+    }
 
- @Test
- fun `should return true when state is successfully added`() {
-  // Given
-  val validState = TaskState(
-   id = UUID.randomUUID(),
-   name = "Valid State",
-   projectId = UUID.randomUUID()
-  )
+    @Test
+    fun `should return true when state is successfully added`() {
+        // Given
+        val validState = TaskState(
+            id = UUID.randomUUID(),
+            name = "Valid State",
+            projectId = UUID.randomUUID()
+        )
 
-  every { stateRepository.addTaskState(validState.projectId, validState) } returns true
+        every { stateRepository.addTaskState(validState.projectId, validState) } returns true
 
-  // When
-  val result = addStateUseCase(validState)
+        // When
+        val result = addStateUseCase(validState)
 
-  // Then
-  assertTrue(result)
-  verify(exactly = 1) { stateRepository.addTaskState(validState.projectId, validState) }
- }
+        // Then
+        assertTrue(result)
+        verify(exactly = 1) { stateRepository.addTaskState(validState.projectId, validState) }
+    }
 
- @Test
- fun `should throw IllegalStateTitle when title is blank`() {
-  // Given
-  val invalidState = TaskState(
-   id = UUID.randomUUID(),
-   name = "",
-   projectId = UUID.randomUUID()
-  )
+    @Test
+    fun `should throw IllegalStateTitle when title is blank`() {
+        // Given
+        val invalidState = TaskState(
+            id = UUID.randomUUID(),
+            name = "",
+            projectId = UUID.randomUUID()
+        )
 
-  // When & Then
-  val exception = assertThrows<IllegalStateTitle> {
-   addStateUseCase(invalidState)
-  }
+        // When & Then
+        val exception = assertThrows<IllegalStateTitle> {
+            addStateUseCase(invalidState)
+        }
 
-  assertEquals("Task state title cannot be blank", exception.message)
-  verify(exactly = 0) { stateRepository.addTaskState(any(), any()) }
- }
+        assertEquals("Task state title cannot be blank", exception.message)
+        verify(exactly = 0) { stateRepository.addTaskState(any(), any()) }
+    }
 
- @Test
- fun `should throw IllegalStateTitle when title is too long`() {
-  // Given
-  val longTitle = "a".repeat(101)
-  val invalidState = TaskState(
-   id = UUID.randomUUID(),
-   name = longTitle,
-   projectId = UUID.randomUUID()
-  )
+    @Test
+    fun `should throw IllegalStateTitle when title is too long`() {
+        // Given
+        val longTitle = "a".repeat(101)
+        val invalidState = TaskState(
+            id = UUID.randomUUID(),
+            name = longTitle,
+            projectId = UUID.randomUUID()
+        )
 
-  // When & Then
-  val exception = assertThrows<IllegalStateTitle> {
-   addStateUseCase(invalidState)
-  }
+        // When & Then
+        val exception = assertThrows<IllegalStateTitle> {
+            addStateUseCase(invalidState)
+        }
 
-  assertTrue(exception.message!!.contains("title"))
-  verify(exactly = 0) { stateRepository.addTaskState(any(), any()) }
- }
+        assertTrue(exception.message!!.contains("title"))
+        verify(exactly = 0) { stateRepository.addTaskState(any(), any()) }
+    }
 
- @Test
- fun `should throw when repository fails to add`() {
-  // Given
-  val validState = TaskState(
-   id = UUID.randomUUID(),
-   name = "Valid",
-   projectId = UUID.randomUUID()
-  )
+    @Test
+    fun `should throw when repository fails to add`() {
+        // Given
+        val validState = TaskState(
+            id = UUID.randomUUID(),
+            name = "Valid",
+            projectId = UUID.randomUUID()
+        )
 
-  every { stateRepository.addTaskState(validState.projectId, validState) } returns false
+        every { stateRepository.addTaskState(validState.projectId, validState) } returns false
 
-  // When & Then
-  assertThrows<IllegalStateException> {
-   addStateUseCase(validState)
-  }
+        // When & Then
+        assertThrows<IllegalStateException> {
+            addStateUseCase(validState)
+        }
 
-  verify(exactly = 1) { stateRepository.addTaskState(validState.projectId, validState) }
- }
+        verify(exactly = 1) { stateRepository.addTaskState(validState.projectId, validState) }
+    }
+
+    @Test
+    fun `should accept titles at boundary conditions`() {
+        // Given
+        val minLengthState = TaskState(
+            id = UUID.randomUUID(),
+            name = "a",
+            projectId = UUID.randomUUID()
+        )
+
+        val maxLengthState = TaskState(
+            id = UUID.randomUUID(),
+            name = "a".repeat(100),
+            projectId = UUID.randomUUID()
+        )
+
+        every { stateRepository.addTaskState(any(), any()) } returns true
+
+        // When & Then
+
+        assertTrue(addStateUseCase(minLengthState))
+        verify(exactly = 1) { stateRepository.addTaskState(minLengthState.projectId, minLengthState) }
+
+
+        assertTrue(addStateUseCase(maxLengthState))
+        verify(exactly = 1) { stateRepository.addTaskState(maxLengthState.projectId, maxLengthState) }
+    }
 }
