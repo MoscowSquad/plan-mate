@@ -54,7 +54,7 @@ class AuthenticationUITest {
     }
 
     @Test
-    fun `should display error message for invalid input`() {
+    fun `should display error message when the user enter invalid input`() {
         // Given
         every { consoleIO.read() } returns "invalid"
 
@@ -70,7 +70,7 @@ class AuthenticationUITest {
     }
 
     @Test
-    fun `should display error message for out of range input`() {
+    fun `should display error message when the user enter input out of range`() {
         // Given
         every { consoleIO.read() } returns "4"
 
