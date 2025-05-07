@@ -1,12 +1,8 @@
 package di
 
 import data.csv_data.csv_parser.*
-import data.csv_data.datasource.AuditLogDataSource
-import data.csv_data.datasource.TaskDataSource
-import data.csv_data.datasource.TaskStateDataSource
-import data.csv_data.datasource.UserDataSource
+import data.csv_data.datasource.*
 import data.csv_data.util.*
-import data.mongodb_data.datasource.ProjectDataSource
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.qualifier.named
 import org.koin.dsl.module

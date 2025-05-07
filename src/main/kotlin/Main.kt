@@ -1,19 +1,12 @@
-import data.mongodb_data.datasource.AuditLogDataSource
-import data.mongodb_data.dto.AuditLogDto
 import di.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
 import logic.models.UserRole
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
-import org.koin.mp.KoinPlatform.getKoin
 import presentation.PlanMateConsoleUI
 
 
 fun main() {
-    startKoin {
+    val koinApp = startKoin {
         modules(
             mongoModule,
             dataSourceModule,
@@ -23,28 +16,8 @@ fun main() {
         )
     }
 
-
-    val dataSource: AuditLogDataSource = getKoin().get()
-
-    val deferred = CoroutineScope(Dispatchers.IO).async {
-        dataSource.addLog(
-            AuditLogDto(
-                id = "123456",
-                userId = "userId",
-                entityId = "entityId",
-                action = "action",
-                auditType = "",
-                timestamp = "timestamp",
-            )
-        )
-    }
-
-    runBlocking {
-        print(deferred.await())
-    }
-
-//    val mainUi: PlanMateConsoleUI = getKoin().get()
-//    mainUi.start()
+    koinApp.koin.get<SessionManager>().setCurrentUser(UserRole.ADMIN)
+    koinApp.koin.get<PlanMateConsoleUI>().start()
 
     stopKoin()
 }
