@@ -16,7 +16,7 @@ class AuthenticationRepositoryImpl(
     private val dataSource: UserDataSource,
 ) : AuthenticationRepository {
 
-    private val users = mutableListOf<User>()
+    val users = mutableListOf<User>()
 
     init {
         users.addAll(dataSource.fetch().map { it.toUser() })

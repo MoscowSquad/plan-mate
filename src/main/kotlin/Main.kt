@@ -5,9 +5,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
+import logic.models.UserRole
 import org.koin.core.context.startKoin
 import org.koin.core.context.stopKoin
 import org.koin.mp.KoinPlatform.getKoin
+import presentation.PlanMateConsoleUI
 
 
 fun main() {
@@ -21,10 +23,11 @@ fun main() {
         )
     }
 
+
     val dataSource: AuditLogDataSource = getKoin().get()
 
     val deferred = CoroutineScope(Dispatchers.IO).async {
-        dataSource.add(
+        dataSource.addLog(
             AuditLogDto(
                 id = "123456",
                 userId = "userId",
@@ -34,7 +37,6 @@ fun main() {
                 timestamp = "timestamp",
             )
         )
-        dataSource.getAll()
     }
 
     runBlocking {

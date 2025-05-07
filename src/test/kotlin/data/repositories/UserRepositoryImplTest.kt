@@ -1,10 +1,12 @@
 package data.repositories
 
-import data.csv_data.csv_parser.CsvHandler
-import data.csv_data.csv_parser.UserCsvParser
-import data.csv_data.datasource.UserDataSource
-import data.csv_data.repositories.UserRepositoryImpl
+import data.csv_parser.CsvHandler
+import data.csv_parser.UserCsvParser
+import data.datasource.UserDataSource
+import data.dto.UserDto
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import logic.models.User
 import logic.models.UserRole
 import org.junit.jupiter.api.Assertions.*
@@ -158,7 +160,6 @@ class UserRepositoryImplTest {
         assertEquals("User with id $fakeId not found", exception.message)
     }
 
-
     @Test
     fun `getAll returns all users`() {
         val user2 = user.copy(id = UUID.randomUUID(), name = "Second")
@@ -168,5 +169,33 @@ class UserRepositoryImplTest {
         assertEquals(2, allUsers.size)
         assertTrue(allUsers.contains(user))
         assertTrue(allUsers.contains(user2))
+    }
+
+    @Test
+    fun `getAllUsers loads data from data source when users list is empty`() {
+        repository = UserRepositoryImpl(dataSource) // Fresh repository with empty users list
+
+        val userData = listOf(user.copy(), user.copy(id = UUID.randomUUID(), name = "Other User"))
+        every { dataSource.fetch() } returns userData.map {
+            UserDto(
+                it.id.toString(),
+                it.name,
+                it.hashedPassword,
+                it.role.toString(),
+                it.projectIds.map { id -> id.toString() })
+        }
+        val result = repository.getAllUsers()
+
+        verify { dataSource.fetch() }
+        assertEquals(2, result.size)
+    }
+
+    @Test
+    fun `getAllUsers returns cached data when users list is not empty`() {
+        repository.addUser(user)
+
+        repository.getAllUsers()
+
+        verify(exactly = 0) { dataSource.fetch() }
     }
 }
