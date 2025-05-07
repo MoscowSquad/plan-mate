@@ -5,7 +5,8 @@ import org.bson.types.ObjectId
 
 data class TaskStateDto(
     @BsonId
-    val id: ObjectId,
+    val objectId: ObjectId= ObjectId(),
+    val id :String,
     val name: String,
     val projectId: String,
 )

@@ -5,6 +5,7 @@ import org.bson.types.ObjectId
 
 data class ProjectDto(
     @BsonId
-    val id: ObjectId,
+    val objectId: ObjectId= ObjectId(),
+    val id :String,
     val name: String,
 )
