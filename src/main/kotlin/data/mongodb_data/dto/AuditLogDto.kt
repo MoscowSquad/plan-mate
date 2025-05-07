@@ -5,7 +5,8 @@ import org.bson.types.ObjectId
 
 data class AuditLogDto(
     @BsonId
-    val id: ObjectId,
+    val objectId: ObjectId= ObjectId(),
+    val id :String,
     val action: String,
     val auditType: String,
     val timestamp: String,
