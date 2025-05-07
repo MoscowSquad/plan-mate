@@ -28,9 +28,9 @@ class AddAuditLogUI(
                 """.trimIndent()
             )
 
-            when (read().toIntOrNull()) {
-                1 -> createNewAuditLog()
-                2 -> return
+            when (val input = read()) {
+                "1" -> createNewAuditLog()
+                "2" -> return
                 else -> write("\nInvalid input. Please enter 1 or 2.")
             }
         }
