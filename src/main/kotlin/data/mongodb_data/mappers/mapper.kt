@@ -79,7 +79,7 @@ fun TaskState.toDto(): TaskStateDto {
     )
 }
 
-fun AuditLogDto.toAudiLog(): AuditLog {
+fun AuditLogDto.toAuditLog(): AuditLog {
     return AuditLog(
         id = UUID.fromString(id),
         action = action,

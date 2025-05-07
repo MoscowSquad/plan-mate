@@ -17,7 +17,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.*
 
-class AuditLogDataSourceTest {
+class AuditLogDataSourceImplTest {
     private lateinit var csvHandler: CsvHandler
     private lateinit var auditLogCsvParser: AuditLogCsvParser
     private lateinit var dataSource: AuditLogDataSource
