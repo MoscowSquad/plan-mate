@@ -27,7 +27,7 @@ fun main() {
     val deferred = CoroutineScope(Dispatchers.IO).async {
         dataSource.add(
             AuditLogDto(
-                id = ObjectId(),
+                id = "123456",
                 userId = "userId",
                 entityId = "entityId",
                 action = "action",
