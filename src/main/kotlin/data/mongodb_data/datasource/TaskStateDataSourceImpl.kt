@@ -30,7 +30,8 @@ class TaskStateDataSourceImpl(
     }
 
     override suspend fun addTaskState(projectId: UUID, state: TaskState){
-        collection.insertOne(state)
+        val stateWithProject = state.copy(projectId = projectId)
+        collection.insertOne(stateWithProject)
     }
 
     override suspend fun deleteTaskState(projectId: UUID, stateId: UUID){
