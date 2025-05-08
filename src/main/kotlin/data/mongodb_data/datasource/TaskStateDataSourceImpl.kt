@@ -5,6 +5,7 @@ import com.mongodb.kotlin.client.coroutine.MongoCollection
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
 import logic.models.TaskState
+import logic.util.NoStateExistException
 import java.util.*
 
 class TaskStateDataSourceImpl(
@@ -14,7 +15,7 @@ class TaskStateDataSourceImpl(
     override suspend fun getTaskStateById(id: UUID): TaskState {
         val filter = Filters.eq("id", id.toString())
         return collection.find(filter).firstOrNull()
-            ?: throw NoSuchElementException("Task state not found")
+            ?: throw NoStateExistException("Task state not found")
     }
 
     override suspend fun getTaskStateByProjectId(projectId: UUID): List<TaskState> {
