@@ -15,10 +15,6 @@ val repositoryModule = module {
     single<ProjectsRepository> { ProjectsRepositoryImpl(get()) }
     single<AuditRepository> { AuditRepositoryImpl(get()) }
 
-    single<AuditRepository> { AuditLogRepositoryImpl(get()) }
-    single<TasksRepository> { TaskRepositoryImpl(get()) }
-    single<UserRepository> { UserRepositoryImpl(get()) }
-    single<StateRepository> { StateRepositoryImpl(get()) }
 
 
 }
