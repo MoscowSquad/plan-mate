@@ -14,7 +14,9 @@ class UserDataSourceImpl(private val collection: MongoCollection<User>):UserData
     }
 
     override suspend fun deleteUser(id: UUID): Boolean {
-        TODO("Not yet implemented")
+        val filter = Filters.eq("id", id.toString())
+        collection.deleteOne(filter)
+        return true
     }
 
     override suspend fun assignUserToProject(projectId: UUID, userId: UUID): Boolean {
