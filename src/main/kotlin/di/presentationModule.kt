@@ -83,6 +83,12 @@ val presentationModule = module {
             consoleIO = get()
         )
     }
+    factory {
+        GetUserByIdUI(
+            getUserByIdUseCase = get(),
+            consoleIO = get()
+        )
+    }
 
     factory {
         UserUI(
@@ -90,7 +96,8 @@ val presentationModule = module {
             getAllUserUI = get(),
             assignProjectToUserUI = get(),
             deleteUserUI = get(),
-            consoleIO = get()
+            consoleIO = get(),
+            getUserByIdUI = get()
         )
     }
 
@@ -99,4 +106,5 @@ val presentationModule = module {
     factoryOf(::ViewAuditLogsByTaskUI)
     factoryOf(::AuditUI)
     factoryOf(::PlanMateConsoleUI)
+    factoryOf(::GetUserByIdUI)
 }
