@@ -1,6 +1,8 @@
 package data.mongodb_data.datasource
 
+import com.mongodb.client.model.Filters
 import com.mongodb.kotlin.client.coroutine.MongoCollection
+import kotlinx.coroutines.flow.firstOrNull
 import logic.models.TaskState
 import org.bson.AbstractBsonReader.State
 import java.util.*
@@ -10,7 +12,9 @@ class StateDataSourceImpl(
 
 ):StateDataSource {
     override suspend fun getById(id: UUID): TaskState {
-        TODO("Not yet implemented")
+        val filter = Filters.eq("id", id.toString())
+        return collection.find(filter).firstOrNull()
+            ?: throw NoSuchElementException("state not found")
     }
 
     override suspend fun getByProjectId(projectId: UUID): List<TaskState> {
