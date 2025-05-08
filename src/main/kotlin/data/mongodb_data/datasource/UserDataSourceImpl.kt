@@ -1,11 +1,14 @@
 package data.mongodb_data.datasource
 
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import logic.models.User
 import java.util.*
 
-class UserDataSourceImpl():UserDataSource {
+class UserDataSourceImpl(private val collection: MongoCollection<User>):UserDataSource {
+
     override suspend fun addUser(user: User): Boolean {
-        TODO("Not yet implemented")
+        collection.insertOne(user)
+        return true
     }
 
     override suspend fun deleteUser(id: UUID): Boolean {
