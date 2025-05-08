@@ -18,9 +18,9 @@ class ProjectsDataSourceImpl(
     }
 
     override suspend fun deleteProject(id: UUID) {
-        TODO("Not yet implemented")
+        val filter = Filters.eq("id", id.toString())
+        collection.deleteOne(filter)
     }
-
     override suspend fun getAllProjects(): List<Project> {
         TODO("Not yet implemented")
     }
