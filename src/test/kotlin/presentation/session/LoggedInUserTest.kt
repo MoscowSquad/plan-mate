@@ -1,62 +1,66 @@
 package presentation.session
 
 import logic.models.UserRole
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.UUID
 
-class LoggedInUserTest {
+class SessionManagerTest {
 
-    private lateinit var loggedInUser: LoggedInUser
+    private val testUser = LoggedInUser(
+        id = UUID.fromString("123e4567-e89b-12d3-a456-426614174000"),
+        name = "testUser",
+        role = UserRole.MATE,
+        projectIds = emptyList()
+    )
 
     @BeforeEach
     fun setUp() {
-        loggedInUser = LoggedInUser(
-            id = UUID.fromString("123e4567-e89b-12d3-a456-426614174000"),
-            name = "testUser",
-            role = UserRole.MATE,
-            projectIds = emptyList()
-        )    }
+        SessionManager.currentUser = null
+    }
 
-    @Test
-    fun `should return correct user id`() {
-        assertEquals(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"), loggedInUser.id)
+    @AfterEach
+    fun tearDown() {
+        SessionManager.currentUser = null
     }
 
     @Test
-    fun `should return correct username`() {
-        assertEquals("testUser", loggedInUser.name)
+    fun `currentUser should be null by default`() {
+        assertNull(SessionManager.currentUser)
     }
 
     @Test
-    fun `should detect if user has specific role`() {
-        val userWithRoles = LoggedInUser(
-            id = UUID.fromString("123e4567-e89b-12d3-a456-426614174000"),
-            name = "testUser",
+    fun `should be able to set and get currentUser`() {
+        SessionManager.currentUser = testUser
+
+        assertEquals(testUser, SessionManager.currentUser)
+    }
+
+    @Test
+    fun `should be able to update currentUser`() {
+        SessionManager.currentUser = testUser
+
+        val newUser = LoggedInUser(
+            id = UUID.fromString("bcd23456-f89a-12d3-b456-426614174000"),
+            name = "anotherUser",
             role = UserRole.ADMIN,
-            projectIds = emptyList()
+            projectIds = listOf(UUID.randomUUID())
         )
 
-        assertTrue(userWithRoles.role == UserRole.ADMIN)
-        assertTrue(UserRole.ADMIN.toString() == "ADMIN")
+        SessionManager.currentUser = newUser
+
+        assertEquals(newUser, SessionManager.currentUser)
+        assertNotEquals(testUser, SessionManager.currentUser)
     }
-    @Test
-    fun `should detect equality based on user id`() {
-        val sameUser = LoggedInUser(
-            id = UUID.fromString("123e4567-e89b-12d3-a456-426614174000"),
-            name = "differentName",
-            role = UserRole.MATE,
-            projectIds = emptyList()
-        )
-        val differentUser = LoggedInUser(
-            id = UUID.randomUUID(),
-            name = "testUser",
-            role = UserRole.MATE,
-            projectIds = emptyList()
-        )
 
-        assertNotEquals(loggedInUser, sameUser)
-        assertNotEquals(loggedInUser, differentUser)
+    @Test
+    fun `should be able to clear currentUser`() {
+        SessionManager.currentUser = testUser
+
+        SessionManager.currentUser = null
+
+        assertNull(SessionManager.currentUser)
     }
 }
