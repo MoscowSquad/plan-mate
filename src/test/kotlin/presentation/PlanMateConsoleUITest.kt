@@ -33,7 +33,7 @@ class PlanMateConsoleUITest {
         every { consoleIO.write(any()) } just Runs
 
         // When
-        planMateConsoleUI.start(stopImminently = true)
+        planMateConsoleUI.start(isStopped = true)
 
         // Then
         verify {
@@ -48,7 +48,7 @@ class PlanMateConsoleUITest {
         every { consoleIO.read() } returns "0" // Exit option
 
         // When
-        planMateConsoleUI.start(stopImminently = true)
+        planMateConsoleUI.start(isStopped = true)
 
         // Then
         verify {
@@ -65,7 +65,7 @@ class PlanMateConsoleUITest {
         every { consoleIO.read() } returns "1"
 
         // When
-        planMateConsoleUI.start(stopImminently = true)
+        planMateConsoleUI.start(isStopped = true)
 
         // Then
         verify {
@@ -80,7 +80,7 @@ class PlanMateConsoleUITest {
         every { consoleIO.read() } returns invalidOption
 
         // When
-        planMateConsoleUI.start(stopImminently = true)
+        planMateConsoleUI.start(isStopped = true)
 
         // Then
         verify {
@@ -94,7 +94,7 @@ class PlanMateConsoleUITest {
         every { consoleIO.read() } returns "1"
 
         // When
-        planMateConsoleUI.start(stopImminently = true)
+        planMateConsoleUI.start(isStopped = true)
 
         // Then
         verify(exactly = 1) {
@@ -109,7 +109,7 @@ class PlanMateConsoleUITest {
         every { consoleIO.read() } returns outOfRangeOption
 
         // When
-        planMateConsoleUI.start(stopImminently = true)
+        planMateConsoleUI.start(isStopped = true)
 
         // Then
         verify {
@@ -123,7 +123,7 @@ class PlanMateConsoleUITest {
         every { consoleIO.read() } returns "1" // Return option 1 (projects)
 
         // When
-        planMateConsoleUI.start(stopImminently = true)
+        planMateConsoleUI.start(isStopped = true)
 
         // Then
 
@@ -142,7 +142,7 @@ class PlanMateConsoleUITest {
         every { consoleIO.read() } returns "3"
 
         // When
-        planMateConsoleUI.start(stopImminently = true)
+        planMateConsoleUI.start(isStopped = true)
 
         // Then
         verify {
@@ -156,7 +156,7 @@ class PlanMateConsoleUITest {
         every { consoleIO.read() } returns "2"
 
         // When
-        planMateConsoleUI.start(stopImminently = true)
+        planMateConsoleUI.start(isStopped = true)
 
         // Then
         verify {
