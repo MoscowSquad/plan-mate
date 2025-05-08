@@ -48,7 +48,7 @@ Enter your option:""".trimIndent()
         )
     }
 
-     private fun goToScreen() {
+    private fun goToScreen() {
         val input = read().toIntOrNull()
         when (input) {
             1 -> projectsUI()
