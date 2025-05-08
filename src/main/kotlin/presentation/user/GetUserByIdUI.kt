@@ -11,8 +11,6 @@ class GetUserByIdUI(
 
     operator fun invoke() {
         write("\nEnter user ID:")
-
-        // Validate UUID format
         val id = try {
             UUID.fromString(read().trim())
         } catch (e: IllegalArgumentException) {

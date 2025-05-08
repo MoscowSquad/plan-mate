@@ -14,29 +14,22 @@ class CreateUserUI(
 ) : ConsoleIO by consoleIO {
 
     operator fun invoke() {
-        // Check permissions first
         if (currentUserRole != UserRole.ADMIN) {
             write("\nError: Only ADMIN users can create new accounts.")
             return
         }
 
         write("\n=== Create New User ===")
-
-        // Get username
         write("Enter username:")
         val username = read().takeIf { it.isNotBlank() } ?: run {
             write("Username cannot be empty.")
             return
         }
-
-        // Get password
         write("Enter password:")
         val password = read().takeIf { it.isNotBlank() } ?: run {
             write("Password cannot be empty.")
             return
         }
-
-        // Get role with validation
         write("Select role (ADMIN or MATE):")
         val roleInput = read().uppercase()
         val newUserRole = try {
@@ -45,8 +38,6 @@ class CreateUserUI(
             write("Invalid role. Please enter either 'ADMIN' or 'MATE'.")
             return
         }
-
-        // Create user object
         val newUser = User(
             id = UUID.randomUUID(),
             role = newUserRole,
@@ -54,8 +45,6 @@ class CreateUserUI(
             hashedPassword = password.toMD5Hash(),
             projectIds = listOf()
         )
-
-        // Attempt creation
         val success = createUserUseCase(currentUserRole, newUser)
 
         when {

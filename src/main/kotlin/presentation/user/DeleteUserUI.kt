@@ -13,7 +13,6 @@ class DeleteUserUI(
 ) : ConsoleIO by consoleIO {
 
     operator fun invoke() {
-        // Check permissions first
         if (currentUserRole() != UserRole.ADMIN) {
             write("\nError: Only ADMIN users can delete accounts.")
             return
@@ -25,8 +24,6 @@ class DeleteUserUI(
 
         write("Enter user ID to delete:")
         val input = read().trim()
-
-        // Validate UUID format
         val userId = try {
             UUID.fromString(input)
         } catch (e: IllegalArgumentException) {
