@@ -1,16 +1,36 @@
 package logic.usecases.auth
 
-import logic.repositories.AuthenticationRepository
 import logic.util.toMD5Hash
-import presentation.session.LoggedInUser
+import logic.util.UserNotFoundException
+import java.io.File
 
-class LoginUseCase(
-    private val authRepository: AuthenticationRepository
-) {
-    operator fun invoke(name: String, plainPassword: String): Boolean {
-        require(name.isNotBlank()) { "Username cannot be blank" }
+class LoginUseCase {
+
+    private val usersFile = File("src/main/resources/users.csv")
+
+    operator fun invoke(username: String, plainPassword: String): Boolean {
+        require(username.isNotBlank()) { "Username cannot be blank" }
         require(plainPassword.isNotBlank()) { "Password cannot be blank" }
 
-        return authRepository.login(name, plainPassword.toMD5Hash())
+        val hashedPassword = plainPassword.toMD5Hash()
+
+        if (!usersFile.exists()) {
+            throw IllegalStateException("users.csv not found at: ${usersFile.absolutePath}")
+        }
+
+        usersFile.useLines { lines ->
+            lines.drop(1).forEach { line ->
+                val columns = line.split(",").map { it.trim() }
+                if (columns.size >= 3) {
+                    val csvUsername = columns[1]
+                    val csvHashedPassword = columns[2]
+                    if (csvUsername.equals(username, ignoreCase = true) && csvHashedPassword == hashedPassword) {
+                        return true
+                    }
+                }
+            }
+        }
+
+        throw UserNotFoundException(username)
     }
 }
