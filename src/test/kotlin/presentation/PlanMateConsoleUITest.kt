@@ -99,6 +99,7 @@ class PlanMateConsoleUITest {
 
         // Then
         verify {
+            //اع
             authenticationUI.invoke()
             consoleIO.write(match { it.contains("Invalid input") })
         }
