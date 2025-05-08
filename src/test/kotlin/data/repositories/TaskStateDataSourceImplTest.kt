@@ -1,7 +1,8 @@
 package data.repositories
 
 import com.google.common.truth.Truth.assertThat
-import data.datasource.TaskStateDataSource
+import data.csv_data.datasource.TaskStateDataSource
+import data.csv_data.repositories.TaskStateRepositoryImpl
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -12,7 +13,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.util.*
 
-class TaskStateRepositoryImplTest {
+class TaskStateDataSourceImplTest {
 
     private lateinit var dataSource: TaskStateDataSource
     private lateinit var repository: TaskStateRepositoryImpl

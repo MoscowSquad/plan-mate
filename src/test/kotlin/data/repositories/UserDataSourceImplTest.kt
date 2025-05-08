@@ -1,9 +1,10 @@
 package data.repositories
 
-import data.csv_parser.CsvHandler
-import data.csv_parser.UserCsvParser
-import data.datasource.UserDataSource
-import data.dto.UserDto
+import data.csv_data.csv_parser.CsvHandler
+import data.csv_data.csv_parser.UserCsvParser
+import data.csv_data.datasource.UserDataSource
+import data.csv_data.dto.UserDto
+import data.csv_data.repositories.UserRepositoryImpl
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -15,7 +16,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.util.*
 
-class UserRepositoryImplTest {
+class UserDataSourceImplTest {
 
     private lateinit var csvHandler: CsvHandler
     private lateinit var csvParser: UserCsvParser
