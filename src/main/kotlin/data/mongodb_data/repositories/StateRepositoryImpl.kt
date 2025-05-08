@@ -1,6 +1,6 @@
 package data.mongodb_data.repositories
 
-import data.mongodb_data.datasource.StateDataSource
+import data.data_source.StateDataSource
 import data.mongodb_data.mappers.toDto
 import data.mongodb_data.mappers.toTaskState
 import kotlinx.coroutines.CoroutineScope

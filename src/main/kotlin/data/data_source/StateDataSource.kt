@@ -1,8 +1,7 @@
-package data.mongodb_data.datasource
-
+package data.data_source
 
 import data.mongodb_data.dto.TaskStateDto
-import java.util.*
+import java.util.UUID
 
 interface StateDataSource {
     suspend fun getById(id: UUID): TaskStateDto

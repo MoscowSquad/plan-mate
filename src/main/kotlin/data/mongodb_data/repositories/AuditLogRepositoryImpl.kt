@@ -1,6 +1,6 @@
 package data.mongodb_data.repositories
 
-import data.mongodb_data.datasource.AuditLogDataSource
+import data.data_source.AuditLogDataSource
 import data.mongodb_data.mappers.toAuditLog
 import data.mongodb_data.mappers.toDto
 import kotlinx.coroutines.*

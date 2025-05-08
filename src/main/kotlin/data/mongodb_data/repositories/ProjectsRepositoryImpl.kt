@@ -1,7 +1,7 @@
 package data.mongodb_data.repositories
 
 
-import data.mongodb_data.datasource.ProjectsDataSource
+import data.data_source.ProjectsDataSource
 import data.mongodb_data.mappers.toDto
 import data.mongodb_data.mappers.toProject
 import kotlinx.coroutines.CoroutineScope

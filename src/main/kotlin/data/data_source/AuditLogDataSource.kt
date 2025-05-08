@@ -1,7 +1,7 @@
-package data.mongodb_data.datasource
+package data.data_source
 
 import data.mongodb_data.dto.AuditLogDto
-import java.util.*
+import java.util.UUID
 
 interface AuditLogDataSource {
     suspend fun addLog(log: AuditLogDto)

@@ -2,6 +2,7 @@ package data.mongodb_data.datasource
 
 import com.mongodb.client.model.Filters
 import com.mongodb.kotlin.client.coroutine.MongoCollection
+import data.data_source.StateDataSource
 import data.mongodb_data.dto.TaskStateDto
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
@@ -12,7 +13,7 @@ import java.util.*
 class StateDataSourceImpl(
     private val collection: MongoCollection<TaskStateDto>
 
-):StateDataSource {
+): StateDataSource {
     override suspend fun getById(id: UUID): TaskStateDto {
         val filter = Filters.eq("id", id.toString())
         return collection.find(filter).firstOrNull()

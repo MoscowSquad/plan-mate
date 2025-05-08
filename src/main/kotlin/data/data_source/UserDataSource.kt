@@ -1,8 +1,7 @@
-package data.mongodb_data.datasource
-
+package data.data_source
 
 import data.csv_data.dto.UserDto
-import java.util.*
+import java.util.UUID
 
 interface UserDataSource {
     suspend fun addUser(user: UserDto): Boolean

@@ -2,16 +2,16 @@ package di
 
 import com.mongodb.kotlin.client.coroutine.MongoClient
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
-import data.mongodb_data.datasource.UserDataSource
-import data.mongodb_data.datasource.AuditLogDataSource
+import data.data_source.UserDataSource
+import data.data_source.AuditLogDataSource
 import data.mongodb_data.datasource.AuditLogDataSourceImpl
-import data.mongodb_data.datasource.ProjectsDataSource
+import data.data_source.ProjectsDataSource
 import data.mongodb_data.datasource.ProjectsDataSourceImpl
-import data.mongodb_data.datasource.StateDataSource
+import data.data_source.StateDataSource
 import data.mongodb_data.datasource.StateDataSourceImpl
-import data.mongodb_data.datasource.TaskDataSource
+import data.data_source.TaskDataSource
 import data.mongodb_data.datasource.TaskDataSourceImpl
-import data.mongodb_data.datasource.TaskStateDataSource
+import data.data_source.TaskStateDataSource
 import data.mongodb_data.datasource.TaskStateDataSourceImpl
 import data.mongodb_data.datasource.UserDataSourceImpl
 import data.mongodb_data.dto.AuditLogDto
