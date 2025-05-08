@@ -2,22 +2,22 @@ package data.mongodb_data.datasource
 
 import com.mongodb.client.model.Filters
 import com.mongodb.kotlin.client.coroutine.MongoCollection
+import data.mongodb_data.dto.ProjectDto
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
-import logic.models.Project
 import logic.util.ProjectNotFoundException
 import java.util.*
 
 class ProjectsDataSourceImpl(
-    private val collection: MongoCollection<Project>
+    private val collection: MongoCollection<ProjectDto>
 
-): ProjectsDataSource{
-    override suspend fun addProject(project: Project):Boolean {
+) : ProjectsDataSource {
+    override suspend fun addProject(project: ProjectDto): Boolean {
         return collection.insertOne(project).wasAcknowledged()
     }
 
 
-    override suspend fun updateProject(project: Project):Boolean {
+    override suspend fun updateProject(project: ProjectDto): Boolean {
         val filter = Filters.eq("id", project.id)
         return collection.replaceOne(filter, project).modifiedCount>0
     }
@@ -27,11 +27,11 @@ class ProjectsDataSourceImpl(
         return collection.deleteOne(filter).deletedCount>0
     }
 
-    override suspend fun getAllProjects(): List<Project> {
+    override suspend fun getAllProjects(): List<ProjectDto> {
         return collection.find().toList()
     }
 
-    override suspend fun getProjectById(id: UUID): Project {
+    override suspend fun getProjectById(id: UUID): ProjectDto {
         val filter = Filters.eq("entityId", id.toString())
         return collection.find(filter).firstOrNull()?:throw ProjectNotFoundException(id)
     }
