@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.util.*
 
-class UserRepositoryImplTest {
+class UserDataSourceImplTest {
 
     private lateinit var csvHandler: CsvHandler
     private lateinit var csvParser: UserCsvParser
