@@ -32,7 +32,19 @@ class UserDataSourceImpl(private val collection: MongoCollection<User>):UserData
     }
 
     override suspend fun unassignUserFromProject(projectId: UUID, userId: UUID): Boolean {
-        TODO("Not yet implemented")
+        val filter = Filters.eq("id", userId)
+        val user = collection.find(filter).firstOrNull() ?: return false
+
+        if (!user.projectIds.contains(projectId)) {
+            return false
+        }
+
+        val updatedProjectIds = user.projectIds.filterNot { it == projectId }
+
+        val updatedUser = user.copy(projectIds = updatedProjectIds)
+
+        val updateResult = collection.replaceOne(filter, updatedUser)
+        return updateResult.modifiedCount > 0
     }
 
     override suspend fun getUserById(id: UUID): User {
