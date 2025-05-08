@@ -34,7 +34,8 @@ class StateDataSourceImpl(
     }
 
     override suspend fun delete(projectId: UUID, stateId: UUID) {
-        TODO("Not yet implemented")
+        val filter = Filters.eq("id", projectId.toString())
+        collection.deleteOne(filter)
     }
 
 
