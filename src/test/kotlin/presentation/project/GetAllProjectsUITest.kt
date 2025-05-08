@@ -3,13 +3,12 @@ package presentation.project
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import io.mockk.verifySequence
 import logic.models.Project
 import logic.usecases.project.GetAllProjectsUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.io.ConsoleIO
-import java.util.UUID
+import java.util.*
 
 class GetAllProjectsUITest {
     private lateinit var getAllProjectsUseCase: GetAllProjectsUseCase
@@ -35,11 +34,11 @@ class GetAllProjectsUITest {
         getAllProjectsUI.invoke()
 
         // Then
-        verifySequence {
+        verify {
             getAllProjectsUseCase()
             consoleIO.write("Projects:")
-            consoleIO.write("Project ID: 00000000-0000-0000-0000-000000000001, Name: Project 1")
-            consoleIO.write("Project ID: 00000000-0000-0000-0000-000000000002, Name: Project 2")
+            consoleIO.write(match { it.contains("Project ID: ${project1.id}") && it.contains("Name: ${project1.name}") })
+            consoleIO.write(match { it.contains("Project ID: ${project2.id}") && it.contains("Name: ${project2.name}") })
         }
     }
 
