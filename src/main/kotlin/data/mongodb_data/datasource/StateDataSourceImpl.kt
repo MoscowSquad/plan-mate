@@ -5,6 +5,7 @@ import com.mongodb.kotlin.client.coroutine.MongoCollection
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
 import logic.models.TaskState
+import logic.util.NoStateExistException
 import java.util.*
 
 class StateDataSourceImpl(
@@ -14,7 +15,7 @@ class StateDataSourceImpl(
     override suspend fun getById(id: UUID): TaskState {
         val filter = Filters.eq("id", id.toString())
         return collection.find(filter).firstOrNull()
-            ?: throw NoSuchElementException("state not found")
+            ?: throw NoStateExistException("state not found")
     }
 
     override suspend fun getByProjectId(projectId: UUID): List<TaskState> {
@@ -24,20 +25,18 @@ class StateDataSourceImpl(
 
     override suspend fun update(state: TaskState): Boolean {
         val filter = Filters.eq("id", state.id)
-       val updateState= collection.replaceOne(filter, state)
-        return updateState.modifiedCount>0
+        return collection.replaceOne(filter, state).modifiedCount>0
+
     }
 
     override suspend fun add(projectId: UUID, state: TaskState): Boolean {
         val stateWithProject = state.copy(projectId = projectId)
-        val addedState = collection.insertOne(stateWithProject)
-        return addedState.wasAcknowledged()
+        return collection.insertOne(stateWithProject).wasAcknowledged()
     }
 
     override suspend fun delete(projectId: UUID, stateId: UUID): Boolean {
         val filter = Filters.eq("id", projectId.toString())
-        val deletedState = collection.deleteOne(filter)
-        return deletedState.deletedCount>0
+        return collection.deleteOne(filter).deletedCount>0
     }
 
 
