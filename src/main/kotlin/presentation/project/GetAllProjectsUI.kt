@@ -18,7 +18,12 @@ class GetAllProjectsUI(
                 } else {
                     consoleIO.write("Projects:")
                     projects.forEach { project ->
-                        consoleIO.write("Project ID: ${project.id}, Name: ${project.name}")
+                        consoleIO.write("""
+                               |-------------------------------------------------------------------|
+                               | "Project ID: ${project.id}                    |
+                               |  Name: ${project.name}"                                               |
+                               |-------------------------------------------------------------------|
+                                """)
                     }
                 }
             }
