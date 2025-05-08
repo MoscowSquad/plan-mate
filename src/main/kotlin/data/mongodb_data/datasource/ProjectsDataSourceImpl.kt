@@ -11,8 +11,9 @@ class ProjectsDataSourceImpl(
 
 ): ProjectsDataSource{
     override suspend fun addProject(project: Project) {
-        TODO("Not yet implemented")
+        collection.insertOne(project)
     }
+
 
     override suspend fun updateProject(project: Project) {
         val filter = Filters.eq("id", project.id)
