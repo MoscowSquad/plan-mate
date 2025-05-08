@@ -2,6 +2,7 @@ package di
 
 import com.mongodb.kotlin.client.coroutine.MongoClient
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
+import data.mongodb_data.datasource.UserDataSource
 import data.mongodb_data.datasource.AuditLogDataSource
 import data.mongodb_data.datasource.AuditLogDataSourceImpl
 import data.mongodb_data.datasource.ProjectsDataSource
@@ -12,6 +13,7 @@ import data.mongodb_data.datasource.TaskDataSource
 import data.mongodb_data.datasource.TaskDataSourceImpl
 import data.mongodb_data.datasource.TaskStateDataSource
 import data.mongodb_data.datasource.TaskStateDataSourceImpl
+import data.mongodb_data.datasource.UserDataSourceImpl
 import data.mongodb_data.dto.AuditLogDto
 import data.mongodb_data.util.Constants
 import org.koin.dsl.module
@@ -38,7 +40,7 @@ val mongoModule = module {
     single<TaskDataSource> { TaskDataSourceImpl(get()) }
     single<ProjectsDataSource> { ProjectsDataSourceImpl(get()) }
     single<StateDataSource> { StateDataSourceImpl(get()) }
-    single<TaskDataSource> { TaskDataSourceImpl(get()) }
+    single<UserDataSource> { UserDataSourceImpl(get()) }
     single<TaskStateDataSource> { TaskStateDataSourceImpl(get()) }
 
 }
