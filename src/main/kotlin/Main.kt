@@ -1,17 +1,20 @@
 import di.*
+import logic.models.UserRole
 import org.koin.core.context.startKoin
-import org.koin.core.context.stopKoin
-import org.koin.mp.KoinPlatform.getKoin
 import presentation.PlanMateConsoleUI
 
 
 fun main() {
-    startKoin {
-        modules(dataSourceModule, repositoryModule, useCaseModule, presentationModule)
+    val koinApp = startKoin {
+        modules(
+            dataSourceModule,
+            repositoryModule,
+            useCaseModule,
+            presentationModule
+        )
     }
 
-    val mainUi: PlanMateConsoleUI = getKoin().get()
-    mainUi.start()
+    koinApp.koin.get<SessionManager>().setCurrentUser(UserRole.ADMIN)
 
-    stopKoin()
+    koinApp.koin.get<PlanMateConsoleUI>().start()
 }

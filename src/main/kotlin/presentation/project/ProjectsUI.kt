@@ -12,13 +12,13 @@ class ProjectsUI(
     operator fun invoke() {
         write(
             """
-📁 Projects Menu:
-1️. ➕ Create a New Project  
-2️. ✏️ Update an Existing Project  
-3️. ❌ Delete a Project  
-4️. 🔙 Back to Main Menu
+        📁 Projects Menu:
+        1️. ➕ Create a New Project  
+        2️. ✏️ Update an Existing Project  
+        3️. ❌ Delete a Project  
+        4️. 🔙 Back to Main Menu
 
-Enter an option:
+        Enter an option:
         """.trimIndent()
         )
         val input = read().toIntOrNull()

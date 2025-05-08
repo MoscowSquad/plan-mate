@@ -18,12 +18,14 @@ class UserCsvParser : CsvParser<UserDto> {
     }
 
     private fun String.toProjectIds(): List<String> {
+        if (this.isBlank() || this == "[]") {
+            return emptyList()
+        }
+
         return this.removeSurrounding("[", "]")
             .split(",")
-            .takeIf { it.isNotEmpty() }
-            ?.filter { it.isNotBlank() }
-            ?.map { it.trim() }
-            ?: return emptyList()
+            .filter { it.trim().isNotBlank() }
+            .map { it.trim() }
     }
 
     override fun serialize(data: List<UserDto>): List<String> {

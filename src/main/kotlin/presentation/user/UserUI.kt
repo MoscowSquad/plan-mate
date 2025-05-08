@@ -6,6 +6,7 @@ class UserUI(
     private val createUserUI: CreateUserUI,
     private val getAllUserUI: GetAllUserUI,
     private val assignProjectToUserUI: AssignProjectToUserUI,
+    private val getUserByIdUI: GetUserByIdUI,
     private val deleteUserUI: DeleteUserUI,
     private val consoleIO: ConsoleIO,
 ) : ConsoleIO by consoleIO {
@@ -27,7 +28,9 @@ Enter your option:
             1 -> createUserUI()
             2 -> deleteUserUI()
             3 -> assignProjectToUserUI()
-            4 -> return
+            4 -> getUserByIdUI()
+            5 -> getAllUserUI()
+            6 -> return
             else -> write("Wrong option enter a number between 1 and 6.")
         }
     }

@@ -88,6 +88,52 @@ class UserCsvParserTest {
         val csvLines = listOf("id,name,hashedPassword,role,projectIds")
         Truth.assertThat(result).isEqualTo(csvLines)
     }
+    @Test
+    fun `should return empty list when serialize and parse user with empty project ids string`() {
+        // Given
+        val user = createUser("test-id", "TestUser", "password123", MATE, emptyList())
+        val serialized = listOf("id,name,hashedPassword,role,projectIds", "test-id,TestUser,password123,${MATE},[]")
+
+        // When
+        val parsedResult = parser.parse(serialized)
+
+        // Then
+        Truth.assertThat(parsedResult).containsExactly(user)
+    }
+
+    @Test
+    fun `should handle blank project ids when parsing`() {
+        // Given
+        val csvLines = listOf(
+            "id,name,hashedPassword,role,projectIds",
+            "test-id,TestUser,password123,${MATE},[, ,  ]"
+        )
+
+        // When
+        val result = parser.parse(csvLines)
+
+        // Then
+        Truth.assertThat(result).containsExactly(
+            createUser("test-id", "TestUser", "password123", MATE, emptyList())
+        )
+    }
+    @Test
+    fun `should return empty list when parsing blank project ids`() {
+        // Given
+        val csvLines = listOf(
+            "id,name,hashedPassword,role,projectIds",
+            "test-id,TestUser,password123,${MATE},"
+        )
+
+        // When
+        val result = parser.parse(csvLines)
+
+        // Then
+        Truth.assertThat(result).containsExactly(
+            createUser("test-id", "TestUser", "password123", MATE, emptyList())
+        )
+    }
+
 
 
     private fun getUsers(): List<UserDto> {

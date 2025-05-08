@@ -84,4 +84,26 @@ class DeleteTaskStateUseCaseTest {
         assertEquals(expectedError, exception)
         verify(exactly = 0) { stateRepository.deleteTaskState(any(), any()) }
     }
+    @Test
+    fun `should throw IllegalStateException when deletion fails`() {
+        // Given
+        val projectId = UUID.fromString("00000000-0000-0000-0000-000000000001")
+        val stateId = UUID.fromString("00000000-0000-0000-0000-000000000002")
+
+        every { stateRepository.getTaskStateByProjectId(projectId) } returns listOf(
+            TaskState(stateId, "Test", projectId)
+        )
+        every { stateRepository.deleteTaskState(projectId, stateId) } returns false
+
+        // When/Then
+        val exception = assertThrows<IllegalStateException> {
+            deleteStateUseCase(stateId, projectId)
+        }
+
+        assertEquals("Deletion failed unexpectedly", exception.message)
+        verifyOrder {
+            stateRepository.getTaskStateByProjectId(projectId)
+            stateRepository.deleteTaskState(projectId, stateId)
+        }
+    }
 }
