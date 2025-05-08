@@ -120,14 +120,12 @@ class MapperKtTest {
 
     @Test
     fun `test TaskStateDto to TaskState conversion`() {
-        // Arrange
         val taskStateDto = TaskStateDto(
             id = "550e8400-e29b-41d4-a716-446655440000",
             name = "To Do",
             projectId = "550e8400-e29b-41d4-a716-446655440001"
         )
 
-        // Act
         val taskState = taskStateDto.toTaskState()
 
         assertEquals(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"), taskState.id)
@@ -137,7 +135,6 @@ class MapperKtTest {
 
     @Test
     fun `test TaskState to TaskStateDto conversion`() {
-        // Arrange
         val taskState = TaskState(
             id = UUID.fromString("550e8400-e29b-41d4-a716-446655440000"),
             name = "To Do",
