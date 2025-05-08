@@ -24,7 +24,8 @@ class StateDataSourceImpl(
     }
 
     override suspend fun update(state: TaskState) {
-        TODO("Not yet implemented")
+        val filter = Filters.eq("id", state.id)
+        collection.replaceOne(filter, state)
     }
 
     override suspend fun add(projectId: UUID, state: TaskState) {
