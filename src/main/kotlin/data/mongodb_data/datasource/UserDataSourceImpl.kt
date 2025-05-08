@@ -1,6 +1,8 @@
 package data.mongodb_data.datasource
 
+import com.mongodb.client.model.Filters
 import com.mongodb.kotlin.client.coroutine.MongoCollection
+import kotlinx.coroutines.flow.firstOrNull
 import logic.models.User
 import java.util.*
 
@@ -24,7 +26,9 @@ class UserDataSourceImpl(private val collection: MongoCollection<User>):UserData
     }
 
     override suspend fun getUserById(id: UUID): User {
-        TODO("Not yet implemented")
+        val filter = Filters.eq("id", id.toString())
+        return collection.find(filter).firstOrNull()
+            ?: throw NoSuchElementException("User is not found")
     }
 
     override suspend fun getAllUsers(): List<User> {
