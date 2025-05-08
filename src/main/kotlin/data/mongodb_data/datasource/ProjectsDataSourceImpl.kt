@@ -1,11 +1,11 @@
+import com.mongodb.client.model.Filters
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.mongodb_data.datasource.ProjectsDataSource
-import data.mongodb_data.dto.AuditLogDto
 import logic.models.Project
 import java.util.*
 
 class ProjectsDataSourceImpl(
-    private val collection: MongoCollection<AuditLogDto>
+    private val collection: MongoCollection<Project>
 
 ): ProjectsDataSource{
     override suspend fun addProject(project: Project) {
@@ -13,7 +13,8 @@ class ProjectsDataSourceImpl(
     }
 
     override suspend fun updateProject(project: Project) {
-        TODO("Not yet implemented")
+        val filter = Filters.eq("id", project.id)
+        collection.replaceOne(filter, project)
     }
 
     override suspend fun deleteProject(id: UUID) {
