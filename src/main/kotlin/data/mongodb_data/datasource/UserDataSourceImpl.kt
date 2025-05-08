@@ -3,6 +3,7 @@ package data.mongodb_data.datasource
 import com.mongodb.client.model.Filters
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.toList
 import logic.models.User
 import java.util.*
 
@@ -34,7 +35,7 @@ class UserDataSourceImpl(private val collection: MongoCollection<User>):UserData
     }
 
     override suspend fun getAllUsers(): List<User> {
-        TODO("Not yet implemented")
+        return collection.find().toList()
     }
 
 }
