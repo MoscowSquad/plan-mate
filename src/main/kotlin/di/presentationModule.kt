@@ -66,7 +66,23 @@ val presentationModule = module {
         )
     }
 
-    factoryOf(::DeleteUserUI)
+    factory {
+        GetAllUserUI(
+            getAllUsersUseCase = get(),
+            currentUserRole = { get<SessionManager>().getCurrentUserRole()
+                ?: error("No user role set") },  // This is a Function0 type
+            consoleIO = get()
+        )
+    }
+
+    factory {
+        DeleteUserUI(
+            deleteUserUseCase = get(),
+            currentUserRole = { get<SessionManager>().getCurrentUserRole()
+                ?: error("No user role set") },
+            consoleIO = get()
+        )
+    }
 
     factory {
         UserUI(

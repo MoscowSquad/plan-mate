@@ -2,8 +2,8 @@ package presentation.user
 
 import di.SessionManager
 import logic.models.UserRole
-import presentation.io.ConsoleIO
 import logic.usecases.user.AssignProjectToUserUseCase
+import presentation.io.ConsoleIO
 import java.util.UUID
 
 class AssignProjectToUserUI(

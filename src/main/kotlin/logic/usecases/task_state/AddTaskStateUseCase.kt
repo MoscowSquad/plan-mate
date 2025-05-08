@@ -20,6 +20,6 @@ class AddTaskStateUseCase(
     }
 
     private fun isValidTitle(title: String): Boolean {
-        return title.isNotBlank() && title.length in 1..100
+        return title.isNotBlank() && title.length <= 100
     }
 }

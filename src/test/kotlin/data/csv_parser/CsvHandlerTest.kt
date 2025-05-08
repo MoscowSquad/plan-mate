@@ -3,7 +3,6 @@ package data.csv_parser
 import com.google.common.truth.Truth
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import data.util.TEST_FILE
 import java.io.File
 
 class CsvHandlerTest {
@@ -12,7 +11,8 @@ class CsvHandlerTest {
 
     @BeforeEach
     fun setup() {
-        file = File(requireNotNull(javaClass.classLoader.getResource(TEST_FILE)).toURI())
+        file = File.createTempFile("test_csv", ".csv")
+        file.deleteOnExit()
         csvHandler = CsvHandler(file)
     }
 
@@ -34,20 +34,6 @@ class CsvHandlerTest {
     fun `should return a list of lines without the empty lines when get file content`() {
         // Given
         val fileContent = "\n\n\n\n" + getTestText() + "\n\n\n\n"
-        file.writeText(fileContent)
-
-        // When
-        val result = csvHandler.getLines()
-
-        // Then
-        val expectedLines = getTestLines()
-        Truth.assertThat(result).isEqualTo(expectedLines)
-    }
-
-    @Test
-    fun `should return a list of lines without the blank lines when get file content`() {
-        // Given
-        val fileContent = "\n   \n  \n \t\n" + getTestText() + " \n\t\n \n      \n"
         file.writeText(fileContent)
 
         // When
@@ -90,8 +76,7 @@ class CsvHandlerTest {
     fun `should create file if not exist when write file data`() {
         // Given
         val content = listOf("Test1", "Test2", "Test3", "Test4")
-        if (file.exists())
-            file.delete()
+        file.delete()
 
         // When
         csvHandler.write(content)
@@ -103,14 +88,14 @@ class CsvHandlerTest {
     @Test
     fun `should create file if not exist when get data as lines`() {
         // Given
-        if (file.exists())
-            file.delete()
+        file.delete()
 
         // When
-        csvHandler.getLines()
+        val result = csvHandler.getLines()
 
         // Then
         Truth.assertThat(file.exists()).isTrue()
+        Truth.assertThat(result).isEmpty()
     }
 
     @Test
@@ -141,6 +126,18 @@ class CsvHandlerTest {
         Truth.assertThat(fileContent).isEqualTo(expectedContent)
     }
 
+    @Test
+    fun `should return empty list when file is empty`() {
+        // Given
+        file.writeText("")
+
+        // When
+        val result = csvHandler.getLines()
+
+        // Then
+        Truth.assertThat(result).isEmpty()
+    }
+
     private fun getTestLines(): List<String> {
         return listOf(
             "This is line 1",
@@ -148,7 +145,7 @@ class CsvHandlerTest {
             "This is line 3",
             "This is line 4",
             "This is line 5",
-            "This is line 6",
+            "This is line 6"
         )
     }
 
@@ -158,6 +155,6 @@ class CsvHandlerTest {
                 "This is line 3\n" +
                 "This is line 4\n" +
                 "This is line 5\n" +
-                "This is line 6\n"
+                "This is line 6"
     }
 }

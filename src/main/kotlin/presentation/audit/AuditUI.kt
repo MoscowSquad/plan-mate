@@ -28,8 +28,8 @@ class AuditUI(
 
             when (read().toIntOrNull()) {
                 1 -> addAuditLogUI()
-                2 -> viewAuditLogsByProjectUI
-                3 -> viewAuditLogsByTaskUI
+                2 -> viewAuditLogsByProjectUI()
+                3 -> viewAuditLogsByTaskUI()
                 4 -> return
                 else -> write("\nInvalid input. Please enter a number between 1 and 4.")
             }
