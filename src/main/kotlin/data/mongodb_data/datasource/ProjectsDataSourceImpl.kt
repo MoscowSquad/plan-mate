@@ -1,6 +1,7 @@
 import com.mongodb.client.model.Filters
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.mongodb_data.datasource.ProjectsDataSource
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
 import logic.models.Project
 import java.util.*
@@ -28,7 +29,8 @@ class ProjectsDataSourceImpl(
     }
 
     override suspend fun getProjectById(id: UUID): Project {
-        TODO("Not yet implemented")
+        val filter = Filters.eq("entityId", id.toString())
+        return collection.find(filter).first()
     }
 
 }
