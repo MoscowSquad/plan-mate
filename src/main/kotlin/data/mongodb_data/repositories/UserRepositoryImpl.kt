@@ -1,5 +1,7 @@
 package data.mongodb_data.repositories
 
+import data.csv_data.mappers.toDto
+import data.csv_data.mappers.toUser
 import data.mongodb_data.datasource.UserDataSource
 import kotlinx.coroutines.*
 import logic.models.User
@@ -9,10 +11,10 @@ import java.util.*
 class UserRepositoryImpl (private val userDataSource: UserDataSource): UserRepository {
     private val scope = CoroutineScope(Dispatchers.IO)
 
-
     override fun addUser(user: User): Boolean {
         val deferred = scope.async {
-            userDataSource.addUser(user) }
+            userDataSource.addUser(user.toDto())
+        }
         return deferred.getCompleted()
     }
 
@@ -37,13 +39,15 @@ class UserRepositoryImpl (private val userDataSource: UserDataSource): UserRepos
     override fun getUserById(id: UUID): User {
         val deferred = scope.async {
             userDataSource.getUserById(id) }
-        return deferred.getCompleted()
+
+        return deferred.getCompleted().toUser()
     }
 
     override fun getAllUsers(): List<User> {
         val deferred = scope.async {
-            userDataSource.getAllUsers() }
-        return deferred.getCompleted()
+            userDataSource.getAllUsers().toList() }
+        return deferred.getCompleted().map { it.toUser()
+        }
     }
 
 }
