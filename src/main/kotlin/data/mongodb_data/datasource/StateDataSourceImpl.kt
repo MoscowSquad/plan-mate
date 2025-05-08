@@ -22,19 +22,22 @@ class StateDataSourceImpl(
         return collection.find(filter).toList()
     }
 
-    override suspend fun update(state: TaskState) {
+    override suspend fun update(state: TaskState): Boolean {
         val filter = Filters.eq("id", state.id)
-        collection.replaceOne(filter, state)
+       val updateState= collection.replaceOne(filter, state)
+        return updateState.modifiedCount>0
     }
 
-    override suspend fun add(projectId: UUID, state: TaskState) {
+    override suspend fun add(projectId: UUID, state: TaskState): Boolean {
         val stateWithProject = state.copy(projectId = projectId)
-        collection.insertOne(stateWithProject)
+        val addedState = collection.insertOne(stateWithProject)
+        return addedState.wasAcknowledged()
     }
 
-    override suspend fun delete(projectId: UUID, stateId: UUID) {
+    override suspend fun delete(projectId: UUID, stateId: UUID): Boolean {
         val filter = Filters.eq("id", projectId.toString())
-        collection.deleteOne(filter)
+        val deletedState = collection.deleteOne(filter)
+        return deletedState.deletedCount>0
     }
 
 
