@@ -13,21 +13,23 @@ class ProjectsUI(
         write(
             """
 📁 Projects Menu:
-1️. ➕ Create a New Project  
-2️. ✏️ Update an Existing Project  
-3️. ❌ Delete a Project  
-4️. 🔙 Back to Main Menu
+1. 📜 show all projects
+2. ➕ Create a New Project  
+3. ✏️ Update an Existing Project  
+4️. ❌ Delete a Project  
+5️. 🔙 Back to Main Menu
 
 Enter an option:
         """.trimIndent()
         )
         val input = read().toIntOrNull()
-        getAllProjectsUI()
+
         when (input) {
-            1 -> createProjectUI()
-            2 -> updateProjectUI()
-            3 -> deleteProjectUI()
-            4 -> {
+            1 -> getAllProjectsUI()
+            2 -> createProjectUI()
+            3 -> updateProjectUI()
+            4 -> deleteProjectUI()
+            5 -> {
                 write("Going back to the main menu...")
                 return
             }

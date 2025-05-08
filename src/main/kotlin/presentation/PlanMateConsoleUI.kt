@@ -39,7 +39,7 @@ Let's set up the app. Please sign up as the admin user.
         write(
             """
 🏠 Main Menu:
-1. 📁 Show projects
+1. 📁 projects section 
 2. 👥 User management
 3. 📜 View audit-log
 4. ❌ Exit
