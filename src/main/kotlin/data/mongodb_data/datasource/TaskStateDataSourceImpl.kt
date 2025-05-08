@@ -2,10 +2,8 @@ package data.mongodb_data.datasource
 
 import com.mongodb.client.model.Filters
 import com.mongodb.kotlin.client.coroutine.MongoCollection
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
-import logic.models.Project
 import logic.models.TaskState
 import java.util.*
 
