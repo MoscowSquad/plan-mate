@@ -3,6 +3,7 @@ package data.mongodb_data.datasource
 import com.mongodb.client.model.Filters
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.toList
 import logic.models.TaskState
 import org.bson.AbstractBsonReader.State
 import java.util.*
@@ -18,7 +19,8 @@ class StateDataSourceImpl(
     }
 
     override suspend fun getByProjectId(projectId: UUID): List<TaskState> {
-        TODO("Not yet implemented")
+        val filter = Filters.eq("entityId", projectId.toString())
+        return collection.find(filter).toList()
     }
 
     override suspend fun update(state: TaskState) {
