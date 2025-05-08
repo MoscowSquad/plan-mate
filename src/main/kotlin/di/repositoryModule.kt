@@ -2,6 +2,7 @@ package di
 
 import data.csv_data.repositories.*
 import data.mongodb_data.repositories.AuditLogRepositoryImpl
+import data.mongodb_data.repositories.StateRepositoryImpl
 import data.mongodb_data.repositories.TaskRepositoryImpl
 import logic.repositories.*
 import org.koin.dsl.module
@@ -16,4 +17,8 @@ val repositoryModule = module {
 
     single<AuditRepository> { AuditLogRepositoryImpl(get()) }
     single<TasksRepository> { TaskRepositoryImpl(get()) }
+    single<UserRepository> { UserRepositoryImpl(get()) }
+    single<StateRepository> { StateRepositoryImpl(get()) }
+
+
 }
