@@ -1,9 +1,14 @@
 package data.mongodb_data.datasource
 
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import logic.models.TaskState
+import org.bson.AbstractBsonReader.State
 import java.util.*
 
-class StateDataSourceImpl():StateDataSource {
+class StateDataSourceImpl(
+    private val collection: MongoCollection<TaskState>
+
+):StateDataSource {
     override suspend fun getById(id: UUID): TaskState {
         TODO("Not yet implemented")
     }
@@ -12,15 +17,16 @@ class StateDataSourceImpl():StateDataSource {
         TODO("Not yet implemented")
     }
 
-    override suspend fun update(state: TaskState): Boolean {
+    override suspend fun update(state: TaskState) {
         TODO("Not yet implemented")
     }
 
-    override suspend fun add(projectId: UUID, state: TaskState): Boolean {
-        TODO("Not yet implemented")
+    override suspend fun add(projectId: UUID, state: TaskState) {
+        val stateWithProject = state.copy(projectId = projectId)
+        collection.insertOne(stateWithProject)
     }
 
-    override suspend fun delete(projectId: UUID, stateId: UUID): Boolean {
+    override suspend fun delete(projectId: UUID, stateId: UUID) {
         TODO("Not yet implemented")
     }
 
