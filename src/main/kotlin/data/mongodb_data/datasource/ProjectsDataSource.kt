@@ -1,14 +1,14 @@
 package data.mongodb_data.datasource
 
-import logic.models.Project
+import data.mongodb_data.dto.ProjectDto
 import java.util.*
 
 interface ProjectsDataSource {
-    suspend fun addProject(project: Project): Boolean
-    suspend fun updateProject(project: Project): Boolean
+    suspend fun addProject(project: ProjectDto): Boolean
+    suspend fun updateProject(project: ProjectDto): Boolean
     suspend fun deleteProject(id: UUID): Boolean
-    suspend fun getAllProjects(): List<Project>
-    suspend fun getProjectById(id: UUID): Project
+    suspend fun getAllProjects(): List<ProjectDto>
+    suspend fun getProjectById(id: UUID): ProjectDto
 }
 
 
