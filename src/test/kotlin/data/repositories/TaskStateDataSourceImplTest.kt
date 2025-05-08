@@ -1,7 +1,8 @@
 package data.repositories
 
 import com.google.common.truth.Truth.assertThat
-import data.datasource.TaskStateDataSource
+import data.csv_data.datasource.TaskStateDataSource
+import data.csv_data.repositories.TaskStateRepositoryImpl
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
