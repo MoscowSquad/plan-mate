@@ -4,16 +4,9 @@ import data.mongodb_data.mappers.toUUID
 import logic.models.*
 import logic.usecases.project.GetProjectByIdUseCase
 import logic.usecases.project.UpdateProjectUseCase
-import logic.usecases.task.AddTaskUseCase
-import logic.usecases.task.DeleteTaskUseCase
-import logic.usecases.task.EditTaskUseCase
-import logic.usecases.task.GetTaskByProjectIdUseCase
-import logic.usecases.task_state.AddTaskStateUseCase
-import logic.usecases.task_state.DeleteTaskStateUseCase
-import logic.usecases.task_state.GetTaskStatesByProjectIdUseCase
-import logic.usecases.user.AssignProjectToUserUseCase
-import logic.usecases.user.GetAllUsersUseCase
-import logic.usecases.user.RemoveFromProjectUserUseCase
+import logic.usecases.task.*
+import logic.usecases.task_state.*
+import logic.usecases.user.*
 import presentation.io.ConsoleIO
 import presentation.session.SessionManager
 import java.util.*
@@ -36,280 +29,275 @@ class UpdateProjectUI(
 
     operator fun invoke() {
         consoleIO.write("Enter the project ID to update:")
-        var projectId: UUID? = null
-        runCatching {
-            projectId = consoleIO.read().trimIndent().toUUID()
-        }.onFailure {
-            consoleIO.write("❌ please enter correct ID ")
-        }
-        consoleIO.write(
-            """
-            please select the type of operation 
-            1️⃣- update project name 
-            2️⃣- add new task 
-            3️⃣- get all tasks 
-            4️⃣- edit task 
-            5️⃣- get task states 
-            6️⃣- add task state 
-            7️⃣- delete task 
-            8️⃣- delete task state
-            9️⃣- assign specific user to project 
-            🔟- remove user form project
-            1️⃣1️⃣- back to previous list 
-        """.trimIndent()
-        )
+        val projectId = readProjectId() ?: return
 
-        val selectedProjectOption = consoleIO.read().trimIndent()
-        when (selectedProjectOption) {
-            "1" -> projectId?.let { updateProjectName(it) }
-            "2" -> projectId?.let { addNewTask(projectId = it, stateId = UUID.randomUUID()/*temporary*/) }
-            "3" -> projectId?.let { getAllTasksByProjectId(it) }
-            "4" -> projectId?.let { editTask(it) }
-            "5" -> projectId?.let { getTaskStates(projectId = it) }
-            "6" -> projectId?.let { addTaskState(projectId = it) }
-            "7" -> deleteTask()
-            "8" -> projectId?.let { deleteTaskState(it) }
-            "9" -> projectId?.let { assignProjectToUser(it) }
-            "10" -> projectId?.let { removeUserFromProject(it) }
-            "11" -> System.gc()
-            else -> {
-                consoleIO.write("❌please choose correct option")
-                invoke()
+        while (true) {
+            consoleIO.write(
+                """
+                Please select the type of operation:
+                1️⃣ - Update project name 
+                2️⃣ - Add new task 
+                3️⃣ - View all tasks 
+                4️⃣ - Edit task 
+                5️⃣ - View task states 
+                6️⃣ - Add task state 
+                7️⃣ - Delete task 
+                8️⃣ - Delete task state
+                9️⃣ - Assign user to project 
+                🔟 - Remove user from project
+                1️⃣1️⃣ - Back to previous menu
+            """.trimIndent()
+            )
+
+            when (consoleIO.read().trim()) {
+                "1" -> updateProjectName(projectId)
+                "2" -> addNewTask(projectId)
+                "3" -> viewAllTasks(projectId)
+                "4" -> editTask(projectId)
+                "5" -> viewTaskStates(projectId)
+                "6" -> addTaskState(projectId)
+                "7" -> deleteTask(projectId)
+                "8" -> deleteTaskState(projectId)
+                "9" -> assignProjectToUser(projectId)
+                "10" -> removeUserFromProject(projectId)
+                "11" -> return
+                else -> consoleIO.write("❌ Please choose a valid option")
             }
+        }
+    }
+
+    private fun readProjectId(): UUID? {
+        return runCatching {
+            consoleIO.read().trim().toUUID()
+        }.getOrElse {
+            consoleIO.write("❌ Invalid project ID format")
+            null
         }
     }
 
     private fun updateProjectName(projectId: UUID) {
-        consoleIO.write("Please Enter the new project name")
-        val newProjectName = consoleIO.read()
+        consoleIO.write("Enter the new project name:")
+        val newName = consoleIO.read()
+
         runCatching {
             updateProjectUseCase(
                 id = projectId,
-                name = newProjectName,
+                name = newName,
                 isAdmin = SessionManager.currentUser?.role == UserRole.ADMIN
             )
         }.onSuccess {
-            consoleIO.write("Project updated successfully.")
-        }.onFailure { exception ->
-            consoleIO.write("Error updating project: ${exception.message}")
+            consoleIO.write("✅ Project updated successfully")
+        }.onFailure {
+            consoleIO.write("❌ Error updating project: ${it.message}")
         }
     }
 
-    private fun addNewTask(projectId: UUID, stateId: UUID) {
-        val taskId = UUID.randomUUID()
-        consoleIO.write("please enter the name of task")
+    private fun addNewTask(projectId: UUID) {
+        consoleIO.write("Enter task name:")
+        val name = consoleIO.read()
 
-        val taskName = consoleIO.read()
-        consoleIO.write("please enter the description of task")
+        consoleIO.write("Enter task description:")
+        val description = consoleIO.read()
 
-        val taskDescription = consoleIO.read()
+        // Get available states and let user select one
+        val states = getTaskStateByProjectIdUseCase(projectId)
+        if (states.isEmpty()) {
+            consoleIO.write("❌ No task states available. Please create one first.")
+            return
+        }
 
-        var projectName: Project? = null
+        consoleIO.write("Available task states:")
+        states.forEachIndexed { index, state ->
+            consoleIO.write("${index + 1}. ${state.name} (ID: ${state.id})")
+        }
+
+        consoleIO.write("Select task state (number):")
+        val stateIndex = consoleIO.read().toIntOrNull()?.minus(1)
+        val stateId = stateIndex?.let { states.getOrNull(it)?.id } ?: run {
+            consoleIO.write("❌ Invalid selection")
+            return
+        }
 
         val newTask = Task(
-            id = taskId,
-            name = taskName,
-            description = taskDescription,
+            id = UUID.randomUUID(),
+            name = name,
+            description = description,
             projectId = projectId,
             stateId = stateId
         )
 
         runCatching {
-            if (projectName == null)
-                projectName = getProjectByIdUseCase(projectId)
             addTaskUseCase(newTask)
-        }.onSuccess {
-            consoleIO.write("✅ Task Added for $projectName ")
-        }.onFailure { error ->
-            consoleIO.write("❌ Please enter valid information there are $error")
+            consoleIO.write("✅ Task added successfully")
+        }.onFailure {
+            consoleIO.write("❌ Error adding task: ${it.message}")
         }
     }
 
-    private fun getAllTasksByProjectId(projectId: UUID) {
-        var tasks: List<Task>? = null
-        runCatching {
-            tasks = getTaskByProjectIdUseCase(projectId)
-        }.onSuccess {
-            tasks?.forEach { task ->
-                consoleIO.write(
-                    """
-                -------------------------------------------------------
-                | task name is : ${task.name}                         |      
-                | task description is : ${task.description}           |
-                | task id : ${task.id}                                |
-                -------------------------------------------------------
-                    
+    private fun viewAllTasks(projectId: UUID) {
+        val tasks = getTaskByProjectIdUseCase(projectId)
+
+        if (tasks.isEmpty()) {
+            consoleIO.write("ℹ️ No tasks found for this project")
+            return
+        }
+
+        consoleIO.write("Tasks in project:")
+        tasks.forEach { task ->
+            consoleIO.write(
+                """
+                ------------------------------
+                Name: ${task.name}
+                Description: ${task.description}
+                ID: ${task.id}
+                State ID: ${task.stateId}
+                ------------------------------
                 """.trimIndent()
-                )
-            }
-        }.onFailure { error ->
-            consoleIO.write("❌ $error")
+            )
         }
     }
 
     private fun editTask(projectId: UUID) {
-        consoleIO.write("please enter task id")
-        val taskId = consoleIO.read().toUUID()
+        viewAllTasks(projectId)
+        consoleIO.write("Enter task ID to edit:")
+        val taskId = readProjectId() ?: return
 
-        consoleIO.write("please enter state id")
-        val stateId = consoleIO.read().toUUID()
+        consoleIO.write("Enter new task name (leave empty to keep current):")
+        val name = consoleIO.read().takeIf { it.isNotBlank() }
 
-        consoleIO.write("please enter the name of task")
-        val taskName = consoleIO.read()
+        consoleIO.write("Enter new description (leave empty to keep current):")
+        val description = consoleIO.read().takeIf { it.isNotBlank() }
 
-        consoleIO.write("please enter the description of task")
-        val taskDescription = consoleIO.read()
+        // Get current task to preserve unchanged values
+        val currentTask = getTaskByProjectIdUseCase(projectId)
+            .firstOrNull { it.id == taskId } ?: run {
+            consoleIO.write("❌ Task not found")
+            return
+        }
 
-        val newTask = Task(
-            id = taskId,
-            name = taskName,
-            description = taskDescription,
-            projectId = projectId,
-            stateId = stateId
+        val updatedTask = currentTask.copy(
+            name = name ?: currentTask.name,
+            description = description ?: currentTask.description
         )
 
         runCatching {
-            editTaskUseCase(newTask)
-        }.onSuccess {
-            consoleIO.write("✅ task edited successfully")
-        }.onFailure { error ->
-            consoleIO.write("❌fail : $error")
+            editTaskUseCase(updatedTask)
+            consoleIO.write("✅ Task updated successfully")
+        }.onFailure {
+            consoleIO.write("❌ Error updating task: ${it.message}")
         }
     }
 
-    private fun getTaskStates(projectId: UUID) {
-        var taskStates: List<TaskState>? = null
-        runCatching {
-            taskStates = getTaskStateByProjectIdUseCase(projectId)
-        }.onSuccess {
-            taskStates?.forEach { taskState ->
-                consoleIO.write("$taskState \n")
-            }
-        }.onFailure { error ->
-            consoleIO.write("❌ $error")
+    private fun viewTaskStates(projectId: UUID) {
+        val states = getTaskStateByProjectIdUseCase(projectId)
+
+        if (states.isEmpty()) {
+            consoleIO.write("ℹ️ No task states defined for this project")
+            return
+        }
+
+        consoleIO.write("Task states:")
+        states.forEach { state ->
+            consoleIO.write(
+                """
+                ------------------------------
+                Name: ${state.name}
+                ID: ${state.id}
+                ------------------------------
+                """.trimIndent()
+            )
         }
     }
-
 
     private fun addTaskState(projectId: UUID) {
-        val taskStateId = UUID.randomUUID()
+        consoleIO.write("Enter new task state name:")
+        val name = consoleIO.read()
 
-        consoleIO.write("please enter the name of State")
-        val nameOfTaskState = consoleIO.read()
-
-        val newTaskState = TaskState(
-            id = taskStateId,
-            name = nameOfTaskState,
+        val newState = TaskState(
+            id = UUID.randomUUID(),
+            name = name,
             projectId = projectId
         )
 
         runCatching {
-            addTaskStateUseCase(newTaskState)
-        }.onSuccess {
-            consoleIO.write("✅ correctly updated")
-        }.onFailure { error ->
-            consoleIO.write("❌ not added task $error")
+            addTaskStateUseCase(newState)
+            consoleIO.write("✅ Task state added successfully")
+        }.onFailure {
+            consoleIO.write("❌ Error adding task state: ${it.message}")
         }
-
     }
 
-    private fun deleteTask() {
-        consoleIO.write("please enter task ID ")
-        var taskId: UUID? = null
-        runCatching {
-            taskId = consoleIO.read().trimIndent().toUUID()
-        }.onFailure {
-            consoleIO.write("❌ please enter the valid id")
-        }
+    private fun deleteTask(projectId: UUID) {
+        viewAllTasks(projectId)
+        consoleIO.write("Enter task ID to delete:")
+        val taskId = readProjectId() ?: return
 
         runCatching {
-            taskId?.let { deleteTaskUseCase(it) }
-        }.onSuccess {
-            consoleIO.write("✅ correctly deleted ")
-        }.onFailure { error ->
-            consoleIO.write("❌ fail: $error")
+            deleteTaskUseCase(taskId)
+            consoleIO.write("✅ Task deleted successfully")
+        }.onFailure {
+            consoleIO.write("❌ Error deleting task: ${it.message}")
         }
     }
 
     private fun deleteTaskState(projectId: UUID) {
-        consoleIO.write("please enter task state id ")
-        var taskStateId: UUID? = null
-        runCatching {
-            taskStateId = consoleIO.read().trimIndent().toUUID()
-        }.onFailure {
-            consoleIO.write("❌ please enter the valid id")
-        }
+        viewTaskStates(projectId)
+        consoleIO.write("Enter task state ID to delete:")
+        val stateId = readProjectId() ?: return
 
         runCatching {
-            taskStateId?.let { deleteTaskStateUseCase(stateId = it, projectId = projectId) }
-        }.onSuccess {
-            consoleIO.write("✅ correctly deleted state")
-        }.onFailure { error ->
-            consoleIO.write("❌fail: $error")
+            deleteTaskStateUseCase(stateId, projectId)
+            consoleIO.write("✅ Task state deleted successfully")
+        }.onFailure {
+            consoleIO.write("❌ Error deleting task state: ${it.message}")
         }
     }
 
     private fun assignProjectToUser(projectId: UUID) {
         showUsers(UserRole.ADMIN)
-        var userId: UUID? = null
-        consoleIO.write("please user the user id ")
-        runCatching {
-            userId = consoleIO.read().trimIndent().toUUID()
-        }.onFailure {
-            consoleIO.write("❌ please enter the valid id")
-        }
+        consoleIO.write("Enter user ID to assign:")
+        val userId = readProjectId() ?: return
 
         runCatching {
-            userId?.let { assignProjectToSpecificUser(UserRole.MATE, projectId = projectId, userId = it) }
-        }.onSuccess {
-            consoleIO.write("✅ Assigned successfully")
-        }.onFailure { error ->
-            consoleIO.write("❌ Assigned Failed $error")
+            assignProjectToSpecificUser(UserRole.MATE, projectId, userId)
+            consoleIO.write("✅ User assigned to project successfully")
+        }.onFailure {
+            consoleIO.write("❌ Error assigning user: ${it.message}")
         }
     }
 
     private fun removeUserFromProject(projectId: UUID) {
         showUsers(UserRole.ADMIN)
-        var userId: UUID? = null
-        consoleIO.write("please user the user id ")
+        consoleIO.write("Enter user ID to remove:")
+        val userId = readProjectId() ?: return
+
         runCatching {
-            userId = consoleIO.read().trimIndent().toUUID()
+            removeUserFromProject(UserRole.MATE, projectId, userId)
+            consoleIO.write("✅ User removed from project successfully")
         }.onFailure {
-            consoleIO.write("❌ please enter the valid id")
-        }
-        runCatching {
-            userId?.let { removeUserFromProject(UserRole.MATE, projectId = projectId, userId = it) }
-        }.onSuccess {
-            consoleIO.write("✅ removed successfully")
-        }.onFailure { error ->
-            consoleIO.write("❌ removed Failed $error")
+            consoleIO.write("❌ Error removing user: ${it.message}")
         }
     }
 
-    private fun showUsers(userRole: UserRole) {
-        var users: List<User>? = null
-        runCatching {
-            users = getAllUserUseCase(userRole)
-        }.onSuccess {
-            if (users?.isEmpty() == true) {
-                consoleIO.write("No Users Exist")
-            } else {
-                users?.forEach { user ->
-                    consoleIO.write(
-                        """
-               |-----------------------------|           
-               |   username : ${user.name}   |
-               |   id: ${user.id}            |
-               |   role : ${user.role}       |
-               |-----------------------------|
+    private fun showUsers(role: UserRole) {
+        val users = getAllUserUseCase(role)
+
+        if (users.isEmpty()) {
+            consoleIO.write("ℹ️ No users found")
+            return
+        }
+
+        consoleIO.write("Available users:")
+        users.forEach { user ->
+            consoleIO.write(
+                """
+                ------------------------------
+                Name: ${user.name}
+                ID: ${user.id}
+                Role: ${user.role}
+                ------------------------------
                 """.trimIndent()
-                    )
-                }
-            }
-
-        }.onFailure { error ->
-            consoleIO.write("❌ fail: $error ")
+            )
         }
     }
-
 }
