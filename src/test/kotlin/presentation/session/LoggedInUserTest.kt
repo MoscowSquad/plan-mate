@@ -63,4 +63,49 @@ class SessionManagerTest {
 
         assertNull(SessionManager.currentUser)
     }
+    @Test
+    fun `should have correct UUID id property`() {
+        val expectedId = UUID.fromString("123e4567-e89b-12d3-a456-426614174000")
+        assertEquals(expectedId, testUser.id)
+    }
+
+    @Test
+    fun `should have correct name property`() {
+        assertEquals("testUser", testUser.name)
+    }
+
+    @Test
+    fun `should have correct projectIds property when empty`() {
+        assertTrue(testUser.projectIds.isEmpty())
+    }
+
+    @Test
+    fun `should have correct projectIds property with multiple values`() {
+        val projectId1 = UUID.randomUUID()
+        val projectId2 = UUID.randomUUID()
+        val userWithProjects = LoggedInUser(
+            id = UUID.fromString("123e4567-e89b-12d3-a456-426614174000"),
+            name = "testUser",
+            role = UserRole.MATE,
+            projectIds = listOf(projectId1, projectId2)
+        )
+
+        assertEquals(2, userWithProjects.projectIds.size)
+        assertTrue(userWithProjects.projectIds.contains(projectId1))
+        assertTrue(userWithProjects.projectIds.contains(projectId2))
+    }
+
+    @Test
+    fun `should create user with different projectIds`() {
+        val projectId = UUID.randomUUID()
+        val userWithProject = LoggedInUser(
+            id = testUser.id,
+            name = testUser.name,
+            role = testUser.role,
+            projectIds = listOf(projectId)
+        )
+
+        assertEquals(testUser.id, userWithProject.id)
+        assertNotEquals(testUser.projectIds, userWithProject.projectIds)
+    }
 }
