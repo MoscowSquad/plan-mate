@@ -13,4 +13,6 @@ object Constants {
     const val STATE_COLLECTION = "states"
     const val PROJECT_COLLECTION = "projects"
     const val AUDIT_LOG_COLLECTION = "audit_log"
+    const val USER_COLLECTION = "user"
+    const val TASK_STATE_COLLECTION = "task_state"
 }
