@@ -10,7 +10,6 @@ import logic.repositories.UserRepository
 import java.util.*
 
 class UserRepositoryImpl(private val userDataSource: UserDataSource) : UserRepository {
-    private val scope = CoroutineScope(Dispatchers.IO)
 
     override fun addUser(user: User): Boolean =
         executeInIO { userDataSource.addUser(user.toDto()) }
