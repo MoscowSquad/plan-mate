@@ -37,6 +37,14 @@ val mongodbDataSourceModule = module {
         val database: MongoDatabase = get()
         database.getCollection<TaskDto>(Constants.TASK_COLLECTION)
     }
+    single {
+        val database: MongoDatabase = get()
+        database.getCollection<TaskDto>(Constants.USER_COLLECTION)
+    }
+    single {
+        val database: MongoDatabase = get()
+        database.getCollection<TaskDto>(Constants.TASK_STATE_COLLECTION)
+    }
 
     single<AuditLogDataSource> { AuditLogDataSourceImpl(get()) }
     single<TaskDataSource> { TaskDataSourceImpl(get()) }
