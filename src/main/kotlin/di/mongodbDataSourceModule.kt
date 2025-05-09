@@ -21,34 +21,34 @@ val mongodbDataSourceModule = module {
         client.getDatabase(Constants.DATABASE_NAME)
     }
 
-    single {
-        val database: MongoDatabase = get()
-        database.getCollection<AuditLogDto>(Constants.AUDIT_LOG_COLLECTION)
+    single<AuditLogDataSource> {
+        val db: MongoDatabase = get()
+        val collection = db.getCollection<AuditLogDto>(Constants.AUDIT_LOG_COLLECTION)
+        AuditLogDataSourceImpl(collection)
     }
 
-    single {
-        val database: MongoDatabase = get()
-        database.getCollection<ProjectDto>(Constants.PROJECT_COLLECTION)
+    single<TaskDataSource> {
+        val db: MongoDatabase = get()
+        val collection = db.getCollection<TaskDto>(Constants.TASK_COLLECTION)
+        TaskDataSourceImpl(collection)
     }
 
-    single {
-        val database: MongoDatabase = get()
-        database.getCollection<TaskDto>(Constants.TASK_COLLECTION)
-    }
-    single {
-        val database: MongoDatabase = get()
-        database.getCollection<UserDto>(Constants.USER_COLLECTION)
-    }
-    single {
-        val database: MongoDatabase = get()
-        database.getCollection<TaskStateDto>(Constants.TASK_STATE_COLLECTION)
+    single<ProjectsDataSource> {
+        val db: MongoDatabase = get()
+        val collection = db.getCollection<ProjectDto>(Constants.PROJECT_COLLECTION)
+        ProjectsDataSourceImpl(collection)
     }
 
+    single<UserDataSource> {
+        val db: MongoDatabase = get()
+        val collection = db.getCollection<UserDto>(Constants.USER_COLLECTION)
+        UserDataSourceImpl(collection)
+    }
 
-    single<AuditLogDataSource> { AuditLogDataSourceImpl(get()) }
-    single<TaskDataSource> { TaskDataSourceImpl(get()) }
-    single<ProjectsDataSource> { ProjectsDataSourceImpl(get()) }
-    single<UserDataSource> { UserDataSourceImpl(get()) }
-    single<TaskStateDataSource> { TaskStateDataSourceImpl(get()) }
+    single<TaskStateDataSource> {
+        val db: MongoDatabase = get()
+        val collection = db.getCollection<TaskStateDto>(Constants.TASK_STATE_COLLECTION)
+        TaskStateDataSourceImpl(collection)
+    }
 
 }
