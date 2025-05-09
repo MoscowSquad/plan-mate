@@ -1,12 +1,13 @@
 package data.datasource
 
 import com.google.common.truth.Truth
-import data.csv_parser.CsvHandler
-import data.csv_parser.TaskStateCsvParser
+import data.csv_data.csv_parser.CsvHandler
+import data.csv_data.csv_parser.TaskStateCsvParser
+import data.csv_data.datasource.TaskStateDataSource
+import data.mongodb_data.dto.TaskStateDto
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import data.dto.TaskStateDto
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.*

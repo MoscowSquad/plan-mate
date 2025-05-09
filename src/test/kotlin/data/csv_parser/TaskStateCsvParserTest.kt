@@ -1,7 +1,9 @@
 package data.csv_parser
 
 import com.google.common.truth.Truth
-import data.dto.TaskStateDto
+import data.csv_data.csv_parser.CsvHandler
+import data.csv_data.csv_parser.TaskStateCsvParser
+import data.mongodb_data.dto.TaskStateDto
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach

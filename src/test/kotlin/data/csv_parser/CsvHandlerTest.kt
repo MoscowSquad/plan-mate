@@ -1,6 +1,8 @@
 package data.csv_parser
 
 import com.google.common.truth.Truth
+import data.csv_data.csv_parser.CsvHandler
+import data.csv_data.util.TEST_FILE
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File

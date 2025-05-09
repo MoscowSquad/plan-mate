@@ -1,10 +1,11 @@
 package data.csv_parser
 
 import com.google.common.truth.Truth
-import data.dto.AuditLogDto
-import data.mappers.toDto
-import data.util.PROJECT
-import data.util.TASK
+import data.csv_data.csv_parser.AuditLogCsvParser
+import data.csv_data.mappers.toDto
+import data.csv_data.util.PROJECT
+import data.csv_data.util.TASK
+import data.mongodb_data.dto.AuditLogDto
 import logic.models.AuditLog
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
