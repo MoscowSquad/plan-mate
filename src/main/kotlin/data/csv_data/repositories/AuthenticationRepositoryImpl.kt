@@ -30,12 +30,12 @@ class AuthenticationRepositoryImpl(
         return user
     }
 
-    override fun login(name: String, password: String): Boolean {
+    override fun login(name: String, password: String): User {
         val hashedPassword = password.toMD5Hash()
         val user = users.find { it.name == name && it.hashedPassword == hashedPassword }
             ?: throw UserNotFoundException(name)
         SessionManager.currentUser = LoggedInUser(user.id, user.name, user.role, user.projectIds)
-        return true
+        return user
     }
 
     fun createDefaultAdmin() {
