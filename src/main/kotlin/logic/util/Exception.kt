@@ -1,6 +1,6 @@
 package logic.util
 
-import java.util.UUID
+import java.util.*
 
 class UnauthorizedAccessException(message: String) : Exception(message)
 class NoExistProjectException(projectId: UUID) : Exception("Project '$projectId' does not exist")
@@ -13,4 +13,5 @@ class IllegalStateTitle(message: String) : Exception(message)
 class TaskIsNotFoundException(taskId: UUID) : Exception("Task '$taskId' does not exist")
 class TaskIsExist(taskId: UUID) : Exception("Task '$taskId' is exist")
 class UserNotFoundException(name: String) : Exception("User '$name' does not exist")
+class InvalidUserCreation(name: String) : Exception("User $name cannot be created")
 
