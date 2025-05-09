@@ -4,10 +4,7 @@ package data.mongodb_data.repositories
 import data.data_source.ProjectsDataSource
 import data.mongodb_data.mappers.toDto
 import data.mongodb_data.mappers.toProject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.async
+import data.mongodb_data.util.executeInIO
 import logic.models.Project
 import logic.repositories.ProjectsRepository
 import java.util.*
@@ -17,49 +14,22 @@ class ProjectsRepositoryImpl(
     private val projectsDataSource: ProjectsDataSource
 ) : ProjectsRepository {
 
-    private val scope = CoroutineScope(Dispatchers.IO)
+    override fun addProject(project: Project) =
+        executeInIO { projectsDataSource.addProject(project.toDto()) }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override fun addProject(project: Project): Boolean {
-        val deferred = scope.async {
-            projectsDataSource.addProject(project.toDto())
-        }
-        return deferred.getCompleted()
-    }
+    override fun updateProject(project: Project) =
+        executeInIO { projectsDataSource.updateProject(project.toDto()) }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override fun updateProject(project: Project): Boolean {
-        val deferred = scope.async {
-            projectsDataSource.updateProject(project.toDto())
-        }
-        return deferred.getCompleted()
-    }
+    override fun deleteProject(id: UUID) =
+        executeInIO { projectsDataSource.deleteProject(id) }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override fun deleteProject(id: UUID): Boolean {
-        val deferred = scope.async {
-            projectsDataSource.deleteProject(id)
-        }
-        return deferred.getCompleted()
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getAllProjects(): List<Project> {
-        val deferred = scope.async {
+    override fun getAllProjects() =
+        executeInIO {
             projectsDataSource.getAllProjects().map {
                 it.toProject()
             }
         }
-        return deferred.getCompleted()
-    }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getProjectById(id: UUID): Project {
-        val deferred = scope.async {
-            projectsDataSource.getProjectById(id).toProject()
-        }
-        return deferred.getCompleted()
-    }
-
-
+    override fun getProjectById(id: UUID) =
+        executeInIO { projectsDataSource.getProjectById(id).toProject() }
 }
