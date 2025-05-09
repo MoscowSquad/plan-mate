@@ -247,4 +247,21 @@ class ViewAuditLogsByProjectUITest {
             consoleIO.read()
         }
     }
+    @Test
+    fun `should handle invalid numeric menu option`() {
+        // Given
+        every { consoleIO.read() } returnsMany listOf("4", "3")
+
+        // When
+        viewAuditLogsByProjectUI.invoke()
+
+        // Then
+        verifySequence {
+            consoleIO.write(match { it.contains("VIEW AUDIT LOGS BY PROJECT") })
+            consoleIO.read()
+            consoleIO.write(match { it.contains("❌ Invalid input") })
+            consoleIO.write(match { it.contains("VIEW AUDIT LOGS BY PROJECT") })
+            consoleIO.read()
+        }
+    }
 }

@@ -240,4 +240,21 @@ class ViewAuditLogsByTaskUITest {
             consoleIO.read()
         }
     }
+    @Test
+    fun `should handle invalid numeric menu option`() {
+        // Given
+        every { consoleIO.read() } returnsMany listOf("4", "3")
+
+        // When
+        viewAuditLogsByTaskUI.invoke()
+
+        // Then
+        verifySequence {
+            consoleIO.write(match { it.contains("TASK AUDIT LOG VIEWER") })
+            consoleIO.read()
+            consoleIO.write("\n❌ Invalid input. Please enter 1, 2, or 3.")
+            consoleIO.write(match { it.contains("TASK AUDIT LOG VIEWER") })
+            consoleIO.read()
+        }
+    }
 }

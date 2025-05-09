@@ -15,7 +15,7 @@ class CreateUserUITest {
     private lateinit var consoleIO: ConsoleIO
     private lateinit var createUserUI: CreateUserUI
     private val currentUserRole = UserRole.ADMIN
-    private val username = "john"
+    private val username = "yasser"
     private val password = "password123"
 
     @BeforeEach
@@ -89,7 +89,69 @@ class CreateUserUITest {
             consoleIO.read()
             consoleIO.write("Select role (ADMIN or MATE):")
             consoleIO.read()
-            consoleIO.write("Invalid role. Please enter 'ADMIN' or 'MATE'.")
+            consoleIO.write("Invalid role. Please enter either 'ADMIN' or 'MATE'.")
+        }
+
+        verify(exactly = 0) {
+            createUserUseCase(any(), any())
+        }
+    }
+
+    @Test
+    fun `should prevent non-admin users from creating users`() {
+        // Given
+        val nonAdminUI = CreateUserUI(createUserUseCase, UserRole.MATE, consoleIO)
+
+        // When
+        nonAdminUI.invoke()
+
+        // Then
+        verifySequence {
+            consoleIO.write("\nError: Only ADMIN users can create new accounts.")
+        }
+
+        verify(exactly = 0) {
+            createUserUseCase(any(), any())
+        }
+    }
+
+    @Test
+    fun `should validate username is not empty`() {
+        // Given
+        every { consoleIO.read() } returnsMany listOf("", password, "ADMIN")
+
+        // When
+        createUserUI.invoke()
+
+        // Then
+        verifySequence {
+            consoleIO.write("\n=== Create New User ===")
+            consoleIO.write("Enter username:")
+            consoleIO.read()
+            consoleIO.write("Username cannot be empty.")
+        }
+
+        verify(exactly = 0) {
+            createUserUseCase(any(), any())
+        }
+    }
+
+    @Test
+    fun `should validate password is not empty`() {
+        // Given
+        every { consoleIO.read() } returnsMany listOf(username, "", "ADMIN")
+
+        // When
+        createUserUI.invoke()
+
+        // Then
+        verifySequence {
+            consoleIO.write("\n=== Create New User ===")
+            consoleIO.write("Enter username:")
+            consoleIO.read()
+            consoleIO.write("Enter password:")
+            consoleIO.read()
+            consoleIO.write("Password cannot be empty.")
         }
 
         verify(exactly = 0) {

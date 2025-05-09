@@ -4,6 +4,7 @@ import com.google.common.truth.Truth.assertThat
 import data.csv_parser.CsvHandler
 import data.csv_parser.TaskCsvParser
 import data.datasource.TaskDataSource
+import data.mappers.toDto
 import io.mockk.mockk
 import logic.models.Task
 import logic.util.TaskIsExist
@@ -204,5 +205,25 @@ class TasksRepositoryImplTest {
 
         // Then
         assertThat(result).isEmpty()
+    }
+    @Test
+    fun `init block should load tasks from data source`() {
+        // Given
+        val task1 = Task(UUID.randomUUID(), "Task 1", "Description 1", projectId1, UUID.randomUUID())
+        val task2 = Task(UUID.randomUUID(), "Task 2", "Description 2", projectId2, UUID.randomUUID())
+        val taskDtos = listOf(task1.toDto(), task2.toDto())
+
+        io.mockk.clearAllMocks()
+
+        val testDataSource = mockk<TaskDataSource>(relaxed = false)
+        io.mockk.every { testDataSource.fetch() } returns taskDtos
+
+        val repository = TasksRepositoryImpl(testDataSource)
+
+        val allTasks = repository.getAllTasks()
+        assertThat(allTasks).hasSize(2)
+        assertThat(allTasks[0].id).isEqualTo(task1.id)
+        assertThat(allTasks[1].id).isEqualTo(task2.id)
+        io.mockk.verify { testDataSource.fetch() }
     }
 }
