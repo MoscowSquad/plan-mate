@@ -12,7 +12,7 @@ class StateRepositoryImpl(
     private val stateDataSource: StateDataSource
 ):StateRepository {
 
-    override fun getById(id: UUID) = executeInIO { stateDataSource.getById(id).toTaskState() }
+    override fun getStateById(id: UUID) = executeInIO { stateDataSource.getById(id).toTaskState() }
 
     override fun getByProjectId(projectId: UUID) = executeInIO {
         stateDataSource.getByProjectId(projectId).map {
@@ -20,15 +20,15 @@ class StateRepositoryImpl(
         }
     }
 
-    override fun update(state: TaskState) = executeInIO {
+    override fun updateState(state: TaskState) = executeInIO {
         stateDataSource.update(state.toDto())
     }
 
-    override fun add(projectId: UUID, state: TaskState) = executeInIO {
+    override fun addState(projectId: UUID, state: TaskState) = executeInIO {
         stateDataSource.add(projectId, state.toDto())
     }
 
-    override fun delete(projectId: UUID, stateId: UUID) = executeInIO {
+    override fun deleteState(projectId: UUID, stateId: UUID) = executeInIO {
         stateDataSource.delete(projectId, stateId)
     }
 }
