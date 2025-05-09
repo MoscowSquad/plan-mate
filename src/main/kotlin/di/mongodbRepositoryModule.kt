@@ -10,4 +10,5 @@ val mongodbRepositoryModule = module {
     single<ProjectsRepository> { ProjectsRepositoryImpl(get()) }
     single<AuditRepository> { AuditLogRepositoryImpl(get()) }
     single<TaskStateRepository> { TaskStateRepositoryImpl(get()) }
+    single<AuthenticationRepository> { UserRepositoryImpl(get()) }
 }

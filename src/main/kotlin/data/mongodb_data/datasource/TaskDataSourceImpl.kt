@@ -16,18 +16,18 @@ class TaskDataSourceImpl(
         return collection.find().toList()
     }
 
-    override suspend fun addTask(task: TaskDto) {
-        collection.insertOne(task)
+    override suspend fun addTask(task: TaskDto): Boolean {
+        return collection.insertOne(task).wasAcknowledged()
     }
 
-    override suspend fun editTask(updatedTask: TaskDto) {
+    override suspend fun editTask(updatedTask: TaskDto): Boolean {
         val filter = Filters.eq("id", updatedTask.id)
-        collection.replaceOne(filter, updatedTask)
+        return collection.replaceOne(filter, updatedTask).wasAcknowledged()
     }
 
-    override suspend fun deleteTask(taskId: UUID) {
+    override suspend fun deleteTask(taskId: UUID): Boolean {
         val filter = Filters.eq("id", taskId.toString())
-        collection.deleteOne(filter)
+        return collection.deleteOne(filter).wasAcknowledged()
     }
 
     override suspend fun getTaskById(taskId: UUID): TaskDto {

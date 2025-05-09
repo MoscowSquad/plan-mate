@@ -5,10 +5,14 @@ import data.csv_data.mappers.toUser
 import data.data_source.UserDataSource
 import data.mongodb_data.util.executeInIO
 import logic.models.User
+import logic.repositories.AuthenticationRepository
 import logic.repositories.UserRepository
+import presentation.session.LoggedInUser
+import presentation.session.SessionManager
 import java.util.*
 
-class UserRepositoryImpl(private val userDataSource: UserDataSource) : UserRepository {
+class UserRepositoryImpl(private val userDataSource: UserDataSource) :
+    UserRepository, AuthenticationRepository {
 
     override fun addUser(user: User): Boolean =
         executeInIO { userDataSource.addUser(user.toDto()) }
@@ -35,4 +39,16 @@ class UserRepositoryImpl(private val userDataSource: UserDataSource) : UserRepos
             }
         }
 
+    override fun register(user: User) =
+        executeInIO { userDataSource.register(user.toDto()).toUser() }.also {
+            SessionManager.currentUser = LoggedInUser(
+                id = user.id,
+                role = user.role,
+                name = user.name,
+                projectIds = listOf()
+            )
+        }
+
+    override fun login(name: String, password: String) =
+        executeInIO { userDataSource.login(name, password).toUser() }
 }

@@ -6,6 +6,7 @@ import data.csv_data.dto.UserDto
 import data.data_source.UserDataSource
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
+import logic.util.InvalidUserCreation
 import logic.util.ProjectNotFoundException
 import logic.util.UserNotFoundException
 import java.util.*
@@ -13,10 +14,21 @@ import java.util.*
 class UserDataSourceImpl(
     private val collection: MongoCollection<UserDto>
 ) : UserDataSource {
+    override suspend fun register(user: UserDto): UserDto {
+        return if (collection.insertOne(user).wasAcknowledged()) user
+        else throw InvalidUserCreation(user.name)
+    }
+
+    override suspend fun login(name: String, password: String): UserDto {
+        val filter = Filters.and(
+            Filters.eq(UserDto::name.name, name),
+            Filters.eq(UserDto::hashedPassword.name, password)
+        )
+        return collection.find(filter).firstOrNull() ?: throw UserNotFoundException(name)
+    }
 
     override suspend fun addUser(user: UserDto): Boolean {
-        collection.insertOne(user)
-        return true
+        return collection.insertOne(user).wasAcknowledged()
     }
 
     override suspend fun deleteUser(id: UUID): Boolean {
