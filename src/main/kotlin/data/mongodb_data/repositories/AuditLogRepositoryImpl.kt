@@ -3,7 +3,9 @@ package data.mongodb_data.repositories
 import data.data_source.AuditLogDataSource
 import data.mongodb_data.mappers.toAuditLog
 import data.mongodb_data.mappers.toDto
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import logic.models.AuditLog
 import logic.repositories.AuditRepository
 import java.util.*
@@ -11,31 +13,32 @@ import java.util.*
 class AuditLogRepositoryImpl(
     private val auditLogDataSource: AuditLogDataSource
 ) : AuditRepository {
-    private val scope = CoroutineScope(Dispatchers.IO)
 
     override fun addLog(log: AuditLog) {
-        scope.launch {
-            auditLogDataSource.addLog(log.toDto())
+        return runBlocking(Dispatchers.IO) {
+            async {
+                auditLogDataSource.addLog(log.toDto())
+            }.await()
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun getAllLogsByTaskId(taskId: UUID): List<AuditLog> {
-        val deferred = scope.async {
-            auditLogDataSource.getAllLogsByTaskId(taskId).map {
-                it.toAuditLog()
-            }
+        return runBlocking(Dispatchers.IO) {
+            async {
+                auditLogDataSource.getAllLogsByTaskId(taskId).map {
+                    it.toAuditLog()
+                }
+            }.await()
         }
-        return deferred.getCompleted()
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     override fun getAllLogsByProjectId(projectId: UUID): List<AuditLog> {
-        val deferred = scope.async {
-            auditLogDataSource.getAllLogsByTaskId(projectId).map {
-                it.toAuditLog()
-            }
+        return runBlocking(Dispatchers.IO) {
+            async {
+                auditLogDataSource.getAllLogsByTaskId(projectId).map {
+                    it.toAuditLog()
+                }
+            }.await()
         }
-        return deferred.getCompleted()
     }
 }
