@@ -1,11 +1,13 @@
 package data.repositories
 
 import com.google.common.truth.Truth.assertThat
-import data.csv_data.csv_parser.CsvHandler
-import data.csv_data.csv_parser.ProjectCsvParser
-import data.csv_data.repositories.ProjectsRepositoryImpl
-import data.mongodb_data.datasource.ProjectDataSource
+import data.csv_parser.CsvHandler
+import data.csv_parser.ProjectCsvParser
+import data.datasource.ProjectDataSource
+import data.mappers.toDto
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import logic.models.Project
 import logic.util.ProjectNotFoundException
 import org.junit.jupiter.api.BeforeEach
@@ -165,5 +167,64 @@ class ProjectsRepositoryImplTest {
 
         // Then - internal repository should be unchanged
         assertThat(projectsRepository.getAllProjects()).containsExactly(testProject1)
+    }
+
+    @Test
+    fun `add should save to data source when project is added`() {
+        // Given
+        val mockDataSource = mockk<ProjectDataSource>(relaxed = true)
+        projectsRepository = ProjectsRepositoryImpl(mockDataSource)
+
+        // When
+        val result = projectsRepository.addProject(testProject1)
+
+        // Then
+        assertThat(result).isTrue()
+        verify(exactly = 1) { mockDataSource.save(any()) }
+    }
+
+    @Test
+    fun `add should not save to data source when project cannot be added`() {
+        // Given
+        val mockDataSource = mockk<ProjectDataSource>(relaxed = true)
+        val mockedProjects = mockk<MutableList<Project>> {
+            every { add(any()) } returns false
+        }
+        // Use reflection to replace the projects field with our mock
+        val projectsField = ProjectsRepositoryImpl::class.java.getDeclaredField("projects")
+        projectsField.isAccessible = true
+
+        projectsRepository = ProjectsRepositoryImpl(mockDataSource)
+        projectsField.set(projectsRepository, mockedProjects)
+
+        // When
+        val result = projectsRepository.addProject(testProject1)
+
+        // Then
+        assertThat(result).isFalse()
+        verify(exactly = 0) { mockDataSource.save(any()) }
+    }
+
+    @Test
+    fun `init block should load projects from data source`() {
+        // Given
+        val projectDto1 = testProject1.toDto()
+        val projectDto2 = testProject2.toDto()
+        val projectDtos = listOf(projectDto1, projectDto2)
+
+        io.mockk.clearAllMocks()
+
+        val testDataSource = mockk<ProjectDataSource>(relaxed = false)
+        every { testDataSource.fetch() } returns projectDtos
+
+        // When
+        val repository = ProjectsRepositoryImpl(testDataSource)
+
+        // Then
+        val allProjects = repository.getAllProjects()
+        assertThat(allProjects).hasSize(2)
+        assertThat(allProjects[0].id).isEqualTo(testProject1.id)
+        assertThat(allProjects[1].id).isEqualTo(testProject2.id)
+        verify { testDataSource.fetch() }
     }
 }

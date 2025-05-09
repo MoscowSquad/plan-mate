@@ -7,7 +7,7 @@ import presentation.project.ProjectsUI
 import presentation.user.UserUI
 import kotlin.system.exitProcess
 
-class PlanMateConsoleUI(
+open class PlanMateConsoleUI(
     private val authenticationUI: AuthenticationUI,
     private val projectsUI: ProjectsUI,
     private val userUI: UserUI,
@@ -15,7 +15,7 @@ class PlanMateConsoleUI(
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
 
-    fun start(stopImminently: Boolean = false) {
+    fun start(isStopped: Boolean = false) {
         write(
             """
 🔷 Welcome to PlanMate v1.0 🔷
@@ -23,14 +23,14 @@ Let's set up the app. Please sign up as the admin user.
         """.trimIndent()
         )
         authenticationUI()
-        menuLoop(stopImminently)
+        menuLoop(isStopped)
     }
 
-    private fun menuLoop(stopImminently: Boolean = false) {
+    private fun menuLoop(isStopped: Boolean = false) {
         while (true) {
             showOptions()
             goToScreen()
-            if (stopImminently)
+            if (isStopped)
                 break
         }
     }
@@ -39,7 +39,7 @@ Let's set up the app. Please sign up as the admin user.
         write(
             """
 🏠 Main Menu:
-1. 📁 Show projects
+1. 📁 Projects Management
 2. 👥 User management
 3. 📜 View audit-log
 4. ❌ Exit

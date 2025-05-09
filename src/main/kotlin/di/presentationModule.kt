@@ -66,7 +66,29 @@ val presentationModule = module {
         )
     }
 
-    factoryOf(::DeleteUserUI)
+    factory {
+        GetAllUserUI(
+            getAllUsersUseCase = get(),
+            currentUserRole = { get<SessionManager>().getCurrentUserRole()
+                ?: error("No user role set") },  // This is a Function0 type
+            consoleIO = get()
+        )
+    }
+
+    factory {
+        DeleteUserUI(
+            deleteUserUseCase = get(),
+            currentUserRole = { get<SessionManager>().getCurrentUserRole()
+                ?: error("No user role set") },
+            consoleIO = get()
+        )
+    }
+    factory {
+        GetUserByIdUI(
+            getUserByIdUseCase = get(),
+            consoleIO = get()
+        )
+    }
 
     factory {
         UserUI(
@@ -74,7 +96,8 @@ val presentationModule = module {
             getAllUserUI = get(),
             assignProjectToUserUI = get(),
             deleteUserUI = get(),
-            consoleIO = get()
+            consoleIO = get(),
+            getUserByIdUI = get()
         )
     }
 
@@ -83,4 +106,5 @@ val presentationModule = module {
     factoryOf(::ViewAuditLogsByTaskUI)
     factoryOf(::AuditUI)
     factoryOf(::PlanMateConsoleUI)
+    factoryOf(::GetUserByIdUI)
 }

@@ -9,6 +9,7 @@ class UserUITest {
     private lateinit var createUserUI: CreateUserUI
     private lateinit var getAllUserUI: GetAllUserUI
     private lateinit var assignProjectToUserUI: AssignProjectToUserUI
+    private lateinit var getUserByIdUI: GetUserByIdUI
     private lateinit var deleteUserUI: DeleteUserUI
     private lateinit var consoleIO: ConsoleIO
     private lateinit var userUI: UserUI
@@ -18,9 +19,10 @@ class UserUITest {
         createUserUI = mockk(relaxed = true)
         getAllUserUI = mockk(relaxed = true)
         assignProjectToUserUI = mockk(relaxed = true)
+        getUserByIdUI = mockk(relaxed = true)
         deleteUserUI = mockk(relaxed = true)
         consoleIO = mockk(relaxed = true)
-        userUI = UserUI(createUserUI, getAllUserUI, assignProjectToUserUI, deleteUserUI, consoleIO)
+        userUI = UserUI(createUserUI, getAllUserUI, assignProjectToUserUI, getUserByIdUI, deleteUserUI, consoleIO)
     }
 
     @Test
@@ -72,9 +74,41 @@ class UserUITest {
     }
 
     @Test
-    fun `should display menu and handle option 4 - just return`() {
+    fun `should display menu and handle option 4 - get user details by id`() {
         // Given
         every { consoleIO.read() } returns "4"
+
+        // When
+        userUI.invoke()
+
+        // Then
+        verifySequence {
+            consoleIO.write(any())
+            consoleIO.read()
+            getUserByIdUI()
+        }
+    }
+
+    @Test
+    fun `should display menu and handle option 5 - get all users`() {
+        // Given
+        every { consoleIO.read() } returns "5"
+
+        // When
+        userUI.invoke()
+
+        // Then
+        verifySequence {
+            consoleIO.write(any())
+            consoleIO.read()
+            getAllUserUI()
+        }
+    }
+
+    @Test
+    fun `should display menu and handle option 6 - back`() {
+        // Given
+        every { consoleIO.read() } returns "6"
 
         // When
         userUI.invoke()
@@ -87,6 +121,7 @@ class UserUITest {
         verify(exactly = 0) { createUserUI() }
         verify(exactly = 0) { deleteUserUI() }
         verify(exactly = 0) { assignProjectToUserUI() }
+        verify(exactly = 0) { getUserByIdUI() }
         verify(exactly = 0) { getAllUserUI() }
     }
 

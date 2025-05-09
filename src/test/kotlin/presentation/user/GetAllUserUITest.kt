@@ -43,20 +43,20 @@ class GetAllUserUITest {
 
         // Then
         verifySequence {
-            consoleIO.write("\n========================")
-            consoleIO.write("║      ALL USERS        ║")
-            consoleIO.write("========================")
+            consoleIO.write("\n╔══════════════════════════════╗")
+            consoleIO.write("║        USER DIRECTORY        ║")
+            consoleIO.write("╚══════════════════════════════╝")
             currentUserRole()
             getAllUsersUseCase(adminRole)
-            consoleIO.write("\nList of Users:\n")
-            consoleIO.write("1. ID: ${user1.id}")
-            consoleIO.write("  Username: ${user1.name}")
-            consoleIO.write(" Role: ${user1.role}")
-            consoleIO.write("-------------------------------")
-            consoleIO.write("2. ID: ${user2.id}")
-            consoleIO.write("  Username: ${user2.name}")
-            consoleIO.write(" Role: ${user2.role}")
-            consoleIO.write("-------------------------------")
+            consoleIO.write("\n┌───────────────────────────────┐")
+            consoleIO.write("│        REGISTERED USERS       │")
+            consoleIO.write("├───────┬───────────────┬───────┤")
+            consoleIO.write("│ Index │ Username      │ Role  │")
+            consoleIO.write("├───────┼───────────────┼───────┤")
+            consoleIO.write("│ 1     │ user1         │ ADMIN │")
+            consoleIO.write("│ 2     │ user2         │ MATE  │")
+            consoleIO.write("└───────┴───────────────┴───────┘")
+            consoleIO.write("\nTotal registered users: 2\n")
         }
     }
 
@@ -71,12 +71,12 @@ class GetAllUserUITest {
 
         // Then
         verifySequence {
-            consoleIO.write("\n========================")
-            consoleIO.write("║      ALL USERS        ║")
-            consoleIO.write("========================")
+            consoleIO.write("\n╔══════════════════════════════╗")
+            consoleIO.write("║        USER DIRECTORY        ║")
+            consoleIO.write("╚══════════════════════════════╝")
             currentUserRole()
             getAllUsersUseCase(adminRole)
-            consoleIO.write("ℹ️  No users found.")
+            consoleIO.write("\nℹ️  No users found in the system")
         }
     }
 
@@ -110,16 +110,39 @@ class GetAllUserUITest {
 
         // Then
         verifySequence {
-            consoleIO.write("\n========================")
-            consoleIO.write("║      ALL USERS        ║")
-            consoleIO.write("========================")
+            consoleIO.write("\n╔══════════════════════════════╗")
+            consoleIO.write("║        USER DIRECTORY        ║")
+            consoleIO.write("╚══════════════════════════════╝")
             currentUserRole()
             getAllUsersUseCase(adminRole)
-            consoleIO.write("\nList of Users:\n")
-            consoleIO.write("1. ID: ${user.id}")
-            consoleIO.write("  Username: ${user.name}")
-            consoleIO.write(" Role: ${user.role}")
-            consoleIO.write("-------------------------------")
+            consoleIO.write("\n┌───────────────────────────────┐")
+            consoleIO.write("│        REGISTERED USERS       │")
+            consoleIO.write("├───────┬───────────────┬───────┤")
+            consoleIO.write("│ Index │ Username      │ Role  │")
+            consoleIO.write("├───────┼───────────────┼───────┤")
+            consoleIO.write("│ 1     │ singleUser    │ ADMIN │")
+            consoleIO.write("└───────┴───────────────┴───────┘")
+            consoleIO.write("\nTotal registered users: 1\n")
+        }
+    }
+
+    @Test
+    fun `should handle exceptions when retrieving users`() {
+        // Given
+        val errorMessage = "Database connection failed"
+        every { getAllUsersUseCase(adminRole) } throws Exception(errorMessage)
+
+        // When
+        getAllUserUI.invoke()
+
+        // Then
+        verifySequence {
+            consoleIO.write("\n╔══════════════════════════════╗")
+            consoleIO.write("║        USER DIRECTORY        ║")
+            consoleIO.write("╚══════════════════════════════╝")
+            currentUserRole()
+            getAllUsersUseCase(adminRole)
+            consoleIO.write("\n❌ Unexpected error: $errorMessage")
         }
     }
 }

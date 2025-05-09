@@ -1,8 +1,8 @@
 package data.repositories
 
 import com.google.common.truth.Truth.assertThat
-import data.csv_data.datasource.TaskStateDataSource
-import data.csv_data.repositories.TaskStateRepositoryImpl
+import data.datasource.TaskStateDataSource
+import data.mappers.toDto
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.util.*
 
-class TaskStateDataSourceImplTest {
+class TaskStateRepositoryImplTest {
 
     private lateinit var dataSource: TaskStateDataSource
     private lateinit var repository: TaskStateRepositoryImpl
@@ -267,5 +267,27 @@ class TaskStateDataSourceImplTest {
         // Then
         assertThat(result).isFalse()
         verify(exactly = 0) { mockDataSource.save(any()) }
+    }
+    @Test
+    fun `init block should load states from data source`() {
+        // Given
+        val stateDto1 = testState1.toDto()
+        val stateDto2 = testState2.toDto()
+        val stateDtos = listOf(stateDto1, stateDto2)
+
+        io.mockk.clearAllMocks()
+
+        val testDataSource = mockk<TaskStateDataSource>()
+        every { testDataSource.fetch() } returns stateDtos
+
+        // When
+        val repository = TaskStateRepositoryImpl(testDataSource)
+
+        // Then
+        val allStates = repository.getTaskStateByProjectId(projectId1)
+        assertThat(allStates).hasSize(2)
+        assertThat(allStates[0].id).isEqualTo(testState1.id)
+        assertThat(allStates[1].id).isEqualTo(testState2.id)
+        verify { testDataSource.fetch() }
     }
 }
