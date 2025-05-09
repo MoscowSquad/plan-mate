@@ -8,7 +8,7 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.io.File
 
-val dataSourceModule = module {
+val csvDataSourceModule = module {
 
     single(named(USERS_FILE)) { File(USERS_FILE) }
     single(named(PROJECTS_FILE)) { File(PROJECTS_FILE) }

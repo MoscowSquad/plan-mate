@@ -2,23 +2,13 @@ package di
 
 import com.mongodb.kotlin.client.coroutine.MongoClient
 import com.mongodb.kotlin.client.coroutine.MongoDatabase
-import data.data_source.UserDataSource
-import data.data_source.AuditLogDataSource
-import data.mongodb_data.datasource.AuditLogDataSourceImpl
-import data.data_source.ProjectsDataSource
-import data.mongodb_data.datasource.ProjectsDataSourceImpl
-import data.data_source.StateDataSource
-import data.mongodb_data.datasource.StateDataSourceImpl
-import data.data_source.TaskDataSource
-import data.mongodb_data.datasource.TaskDataSourceImpl
-import data.data_source.TaskStateDataSource
-import data.mongodb_data.datasource.TaskStateDataSourceImpl
-import data.mongodb_data.datasource.UserDataSourceImpl
+import data.data_source.*
+import data.mongodb_data.datasource.*
 import data.mongodb_data.dto.AuditLogDto
 import data.mongodb_data.util.Constants
 import org.koin.dsl.module
 
-val mongoModule = module {
+val mongodbDataSourceModule = module {
 
     single<MongoClient> {
         val connectionString = System.getenv(Constants.MONGODB_URI)
@@ -34,6 +24,11 @@ val mongoModule = module {
     single {
         val database: MongoDatabase = get()
         database.getCollection<AuditLogDto>("audit_log")
+    }
+
+    single {
+        val database: MongoDatabase = get()
+        database.getCollection<AuditLogDto>("task")
     }
 
     single<AuditLogDataSource> { AuditLogDataSourceImpl(get()) }
