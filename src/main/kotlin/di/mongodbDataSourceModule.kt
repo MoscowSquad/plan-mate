@@ -5,6 +5,8 @@ import com.mongodb.kotlin.client.coroutine.MongoDatabase
 import data.data_source.*
 import data.mongodb_data.datasource.*
 import data.mongodb_data.dto.AuditLogDto
+import data.mongodb_data.dto.ProjectDto
+import data.mongodb_data.dto.TaskDto
 import data.mongodb_data.util.Constants
 import org.koin.dsl.module
 
@@ -28,7 +30,12 @@ val mongodbDataSourceModule = module {
 
     single {
         val database: MongoDatabase = get()
-        database.getCollection<AuditLogDto>(Constants.TASK_COLLECTION)
+        database.getCollection<ProjectDto>(Constants.PROJECT_COLLECTION)
+    }
+
+    single {
+        val database: MongoDatabase = get()
+        database.getCollection<TaskDto>(Constants.TASK_COLLECTION)
     }
 
     single<AuditLogDataSource> { AuditLogDataSourceImpl(get()) }
