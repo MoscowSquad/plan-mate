@@ -1,6 +1,6 @@
 package data.data_source
 
-import data.csv_data.dto.UserDto
+import data.mongodb_data.dto.UserDto
 import java.util.*
 
 interface UserDataSource {
