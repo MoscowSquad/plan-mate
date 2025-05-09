@@ -2,7 +2,7 @@ package presentation.user
 
 import logic.usecases.user.GetUserByIdUseCase
 import presentation.io.ConsoleIO
-import java.util.UUID
+import java.util.*
 
 class GetUserByIdUI(
     private val getUserByIdUseCase: GetUserByIdUseCase,
@@ -12,12 +12,23 @@ class GetUserByIdUI(
     operator fun invoke() {
         write("\nEnter user ID:")
         val id = try {
-            UUID.fromString(read())
-        } catch (e: Exception) {
-            write("Invalid UUID"); return
+            UUID.fromString(read().trim())
+        } catch (e: IllegalArgumentException) {
+            write("Error: Invalid UUID format")
+            return
         }
-        val user = getUserByIdUseCase(id)
-        write("Found: ${user.name}, Role: ${user.role}")
 
+        try {
+            val user = getUserByIdUseCase(id)
+            write("\n=== User Details ===")
+            write("ID: ${user.id}")
+            write("Name: ${user.name}")
+            write("Role: ${user.role}")
+            write("Projects: ${user.projectIds.joinToString()}")
+        } catch (e: NoSuchElementException) {
+            write("Error: User with ID $id not found")
+        } catch (e: Exception) {
+            write("Error: An unexpected error occurred while fetching user details")
+        }
     }
 }
