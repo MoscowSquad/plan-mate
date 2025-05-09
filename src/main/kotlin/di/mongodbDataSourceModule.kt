@@ -48,7 +48,6 @@ val mongodbDataSourceModule = module {
     single<AuditLogDataSource> { AuditLogDataSourceImpl(get()) }
     single<TaskDataSource> { TaskDataSourceImpl(get()) }
     single<ProjectsDataSource> { ProjectsDataSourceImpl(get()) }
-    single<StateDataSource> { StateDataSourceImpl(get()) }
     single<UserDataSource> { UserDataSourceImpl(get()) }
     single<TaskStateDataSource> { TaskStateDataSourceImpl(get()) }
 
