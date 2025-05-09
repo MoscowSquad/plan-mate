@@ -44,6 +44,7 @@ val mongodbDataSourceModule = module {
         database.getCollection<TaskStateDto>(Constants.TASK_STATE_COLLECTION)
     }
 
+
     single<AuditLogDataSource> { AuditLogDataSourceImpl(get()) }
     single<TaskDataSource> { TaskDataSourceImpl(get()) }
     single<ProjectsDataSource> { ProjectsDataSourceImpl(get()) }

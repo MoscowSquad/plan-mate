@@ -4,10 +4,10 @@ import logic.models.TaskState
 import java.util.*
 
 interface StateRepository {
-    fun getById(id: UUID): TaskState
+    fun getStateById(id: UUID): TaskState
     fun getByProjectId(projectId: UUID): List<TaskState>
-    fun update(state: TaskState): Boolean
-    fun add(projectId: UUID, state: TaskState): Boolean
-    fun delete(projectId: UUID, stateId: UUID): Boolean
+    fun updateState(state: TaskState): Boolean
+    fun addState(projectId: UUID, state: TaskState): Boolean
+    fun deleteState(projectId: UUID, stateId: UUID): Boolean
 
 }

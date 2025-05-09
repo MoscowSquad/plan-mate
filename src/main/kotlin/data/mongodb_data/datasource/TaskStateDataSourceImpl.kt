@@ -26,7 +26,7 @@ class TaskStateDataSourceImpl(
 
     override suspend fun updateTaskState(state: TaskStateDto): Boolean {
         val filter = Filters.eq("id", state.id)
-        return collection.replaceOne(filter, state).modifiedCount>0
+        return collection.replaceOne(filter, state).wasAcknowledged()
     }
 
     override suspend fun addTaskState(projectId: UUID, state: TaskStateDto): Boolean {
@@ -36,8 +36,7 @@ class TaskStateDataSourceImpl(
 
     override suspend fun deleteTaskState(projectId: UUID, stateId: UUID): Boolean{
         val filter = Filters.eq("id", projectId.toString())
-        return collection.deleteOne(filter).deletedCount>0
-
+        return collection.deleteOne(filter).wasAcknowledged()
     }
 
 }
