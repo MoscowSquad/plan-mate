@@ -5,6 +5,7 @@ import data.data_source.TaskDataSource
 import data.mongodb_data.mappers.toDto
 import data.mongodb_data.mappers.toTask
 import data.mongodb_data.util.executeInIO
+import kotlinx.coroutines.runBlocking
 import logic.models.Task
 import logic.repositories.TasksRepository
 import java.util.*
@@ -21,18 +22,39 @@ class TaskRepositoryImpl(
         }
     }
 
-    override fun addTask(task: Task) = executeInIO {
-        taskDataSource.addTask(task.toDto())
+    override fun addTask(task: Task): Boolean {
+        return executeInIO {
+            try {
+                taskDataSource.addTask(task.toDto())
+                true
+            } catch (e: Exception) {
+                false
+            }
+        }
     }
 
 
-    override fun editTask(updatedTask: Task) = executeInIO {
-        taskDataSource.editTask(updatedTask.toDto())
+    override fun editTask(updatedTask: Task): Boolean {
+        return runBlocking {
+            try {
+                taskDataSource.editTask(updatedTask.toDto())
+                true
+            } catch (e: Exception) {
+                false
+            }
+        }
     }
 
 
-    override fun deleteTask(taskId: UUID) = executeInIO {
-        taskDataSource.deleteTask(taskId)
+    override fun deleteTask(taskId: UUID): Boolean {
+        return executeInIO {
+            try {
+                taskDataSource.deleteTask(taskId)
+                true
+            } catch (e: Exception) {
+                false
+            }
+        }
     }
 
 
