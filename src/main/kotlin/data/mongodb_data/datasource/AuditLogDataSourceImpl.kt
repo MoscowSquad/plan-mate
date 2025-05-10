@@ -15,12 +15,12 @@ class AuditLogDataSourceImpl(
     }
 
     override suspend fun getAllLogsByTaskId(taskId: UUID): List<AuditLogDto> {
-        val filter = Filters.eq("entityId", taskId.toString())
+        val filter = Filters.eq(AuditLogDto::entityId.name, taskId.toString())
         return collection.find(filter).toList()
     }
 
     override suspend fun getAllLogsByProjectId(projectId: UUID): List<AuditLogDto> {
-        val filter = Filters.eq("entityId", projectId.toString())
+        val filter = Filters.eq(AuditLogDto::entityId.name, projectId.toString())
         return collection.find(filter).toList()
     }
 }
