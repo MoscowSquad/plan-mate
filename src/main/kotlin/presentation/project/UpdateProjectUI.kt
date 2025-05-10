@@ -1,7 +1,10 @@
 package presentation.project
 
 import data.mongodb_data.mappers.toUUID
-import logic.models.*
+import logic.models.Task
+import logic.models.TaskState
+import logic.models.User
+import logic.models.UserRole
 import logic.usecases.project.GetProjectByIdUseCase
 import logic.usecases.project.UpdateProjectUseCase
 import logic.usecases.task.AddTaskUseCase
@@ -98,13 +101,10 @@ class UpdateProjectUI(
     private fun addNewTask(projectId: UUID, stateId: UUID) {
         val taskId = UUID.randomUUID()
         consoleIO.write("please enter the name of task")
-
         val taskName = consoleIO.read()
+
         consoleIO.write("please enter the description of task")
-
         val taskDescription = consoleIO.read()
-
-        var projectName: Project? = null
 
         val newTask = Task(
             id = taskId,
@@ -115,13 +115,11 @@ class UpdateProjectUI(
         )
 
         runCatching {
-            if (projectName == null)
-                projectName = getProjectByIdUseCase(projectId)
+            val project = getProjectByIdUseCase(projectId)
             addTaskUseCase(newTask)
-        }.onSuccess {
-            consoleIO.write("✅ Task Added for $projectName ")
+            consoleIO.write("✅ Task Added for ${project.name}")
         }.onFailure { error ->
-            consoleIO.write("❌ Please enter valid information there are $error")
+            consoleIO.write("❌ Please enter valid information: $error")
         }
     }
 
