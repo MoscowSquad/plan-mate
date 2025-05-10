@@ -12,7 +12,7 @@ class ProjectsRepositoryImpl(
     private val projectDataSource: ProjectDataSource
 ) : ProjectsRepository {
 
-    private val projects = mutableListOf<Project>()
+    val projects = mutableListOf<Project>()
 
     init {
         projects.addAll(projectDataSource.fetch().map { it.toProject() })
