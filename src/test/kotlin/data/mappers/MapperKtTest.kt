@@ -1,15 +1,16 @@
 package data.mappers
 
-import data.dto.*
-import data.util.ADMIN
-import data.util.MATE
-import data.util.PROJECT
-import data.util.TASK
+import data.csv_data.dto.*
+import data.csv_data.util.ADMIN
+import data.csv_data.util.MATE
+import data.csv_data.util.PROJECT
+import data.csv_data.util.TASK
 import kotlinx.datetime.LocalDateTime
 import logic.models.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.util.*
+import data.csv_data.mappers.*
 
 class MapperKtTest {
 
@@ -22,7 +23,6 @@ class MapperKtTest {
             role = ADMIN,
             projectIds = listOf("550e8400-e29b-41d4-a716-446655440001")
         )
-
 
         val user = userDto.toUser()
 
@@ -156,8 +156,7 @@ class MapperKtTest {
             action = "Created",
             auditType = PROJECT,
             timestamp = timestamp,
-            entityId = "550e8400-e29b-41d4-a716-446655440001",
-            userId = "550e8400-e29b-41d4-a716-446655440002"
+            entityId = "550e8400-e29b-41d4-a716-446655440001"
         )
 
         val auditLog = auditLogDto.toAudiLog()
@@ -167,7 +166,6 @@ class MapperKtTest {
         assertEquals(AuditType.PROJECT, auditLog.auditType)
         assertEquals(LocalDateTime.parse(timestamp), auditLog.timestamp)
         assertEquals(UUID.fromString("550e8400-e29b-41d4-a716-446655440001"), auditLog.entityId)
-        assertEquals(UUID.fromString("550e8400-e29b-41d4-a716-446655440002"), auditLog.userId)
     }
 
     @Test
@@ -178,8 +176,7 @@ class MapperKtTest {
             action = "Created",
             auditType = AuditType.TASK,
             timestamp = timestamp,
-            entityId = UUID.fromString("550e8400-e29b-41d4-a716-446655440001"),
-            userId = UUID.fromString("550e8400-e29b-41d4-a716-446655440002")
+            entityId = UUID.fromString("550e8400-e29b-41d4-a716-446655440001")
         )
 
         val auditLogDto = auditLog.toDto()
@@ -189,7 +186,6 @@ class MapperKtTest {
         assertEquals(TASK, auditLogDto.auditType)
         assertEquals(timestamp.toString(), auditLogDto.timestamp)
         assertEquals("550e8400-e29b-41d4-a716-446655440001", auditLogDto.entityId)
-        assertEquals("550e8400-e29b-41d4-a716-446655440002", auditLogDto.userId)
     }
 
     @Test
@@ -205,9 +201,104 @@ class MapperKtTest {
     fun `test String to LocalDateTime conversion`() {
         val dateTimeString = "2023-01-01T12:00:00"
 
-
         val dateTime = dateTimeString.toTimeStamp()
 
         assertEquals(LocalDateTime.parse(dateTimeString), dateTime)
+    }
+    @Test
+    fun `test UserDto to User role conversion with different roles`() {
+        val adminDto = UserDto(
+            id = "550e8400-e29b-41d4-a716-446655440000",
+            name = "Admin User",
+            hashedPassword = "hashed123",
+            role = ADMIN,
+            projectIds = listOf()
+        )
+        assertEquals(UserRole.ADMIN, adminDto.toUser().role)
+
+        // Test MATE conversion
+        val mateDto = UserDto(
+            id = "550e8400-e29b-41d4-a716-446655440000",
+            name = "Mate User",
+            hashedPassword = "hashed123",
+            role = MATE,
+            projectIds = listOf()
+        )
+        assertEquals(UserRole.MATE, mateDto.toUser().role)
+
+        val unknownRoleDto = UserDto(
+            id = "550e8400-e29b-41d4-a716-446655440000",
+            name = "Unknown Role User",
+            hashedPassword = "hashed123",
+            role = "UNKNOWN_ROLE",
+            projectIds = listOf()
+        )
+        assertEquals(UserRole.MATE, unknownRoleDto.toUser().role)
+    }
+    @Test
+    fun `test User to UserDto role conversion with different roles`() {
+        val adminUser = User(
+            id = UUID.fromString("550e8400-e29b-41d4-a716-446655440000"),
+            name = "Admin User",
+            hashedPassword = "hashed123",
+            role = UserRole.ADMIN,
+            projectIds = listOf()
+        )
+        assertEquals(ADMIN, adminUser.toDto().role)
+
+        val mateUser = User(
+            id = UUID.fromString("550e8400-e29b-41d4-a716-446655440000"),
+            name = "Mate User",
+            hashedPassword = "hashed123",
+            role = UserRole.MATE,
+            projectIds = listOf()
+        )
+        assertEquals(MATE, mateUser.toDto().role)
+    }
+
+    @Test
+    fun `test AuditLogDto to AuditLog auditType conversion with different types`() {
+        val timestamp = "2023-01-01T12:00:00"
+
+        val projectAuditLogDto = AuditLogDto(
+            id = "550e8400-e29b-41d4-a716-446655440000",
+            action = "Created",
+            auditType = PROJECT,
+            timestamp = timestamp,
+            entityId = "550e8400-e29b-41d4-a716-446655440001"
+        )
+        assertEquals(AuditType.PROJECT, projectAuditLogDto.toAudiLog().auditType)
+
+        val taskAuditLogDto = AuditLogDto(
+            id = "550e8400-e29b-41d4-a716-446655440000",
+            action = "Created",
+            auditType = TASK,
+            timestamp = timestamp,
+            entityId = "550e8400-e29b-41d4-a716-446655440001"
+        )
+        assertEquals(AuditType.TASK, taskAuditLogDto.toAudiLog().auditType)
+    }
+
+    @Test
+    fun `test AuditLog to AuditLogDto auditType conversion with different types`() {
+        val timestamp = LocalDateTime.parse("2023-01-01T12:00:00")
+
+        val projectAuditLog = AuditLog(
+            id = UUID.fromString("550e8400-e29b-41d4-a716-446655440000"),
+            action = "Created",
+            auditType = AuditType.PROJECT,
+            timestamp = timestamp,
+            entityId = UUID.fromString("550e8400-e29b-41d4-a716-446655440001")
+        )
+        assertEquals(PROJECT, projectAuditLog.toDto().auditType)
+
+        val taskAuditLog = AuditLog(
+            id = UUID.fromString("550e8400-e29b-41d4-a716-446655440000"),
+            action = "Created",
+            auditType = AuditType.TASK,
+            timestamp = timestamp,
+            entityId = UUID.fromString("550e8400-e29b-41d4-a716-446655440001")
+        )
+        assertEquals(TASK, taskAuditLog.toDto().auditType)
     }
 }
