@@ -4,9 +4,16 @@ import data.mongodb_data.mappers.toUUID
 import logic.models.*
 import logic.usecases.project.GetProjectByIdUseCase
 import logic.usecases.project.UpdateProjectUseCase
-import logic.usecases.task.*
-import logic.usecases.task_state.*
-import logic.usecases.user.*
+import logic.usecases.task.AddTaskUseCase
+import logic.usecases.task.DeleteTaskUseCase
+import logic.usecases.task.EditTaskUseCase
+import logic.usecases.task.GetTaskByProjectIdUseCase
+import logic.usecases.task_state.AddTaskStateUseCase
+import logic.usecases.task_state.DeleteTaskStateUseCase
+import logic.usecases.task_state.GetTaskStatesByProjectIdUseCase
+import logic.usecases.user.AssignProjectToUserUseCase
+import logic.usecases.user.GetAllUsersUseCase
+import logic.usecases.user.RemoveFromProjectUserUseCase
 import presentation.io.ConsoleIO
 import presentation.session.SessionManager
 import java.util.*
@@ -60,7 +67,7 @@ class UpdateProjectUI(
             "4" -> projectId?.let { editTask(it) }
             "5" -> projectId?.let { getTaskStates(projectId = it) }
             "6" -> projectId?.let { addTaskState(projectId = it) }
-            "7" -> deleteTask()
+            "7" -> projectId?.let { deleteTask(it) }
             "8" -> projectId?.let { deleteTaskState(it) }
             "9" -> projectId?.let { assignProjectToUser(it) }
             "10" -> projectId?.let { removeUserFromProject(it) }
@@ -121,6 +128,10 @@ class UpdateProjectUI(
         var tasks: List<Task>? = null
         runCatching {
             tasks = getTaskByProjectIdUseCase(projectId)
+            if(tasks!!.isEmpty()) {
+                consoleIO.write("No Tasks exist ")
+                return
+            }
         }.onSuccess {
             tasks?.forEach { task ->
                 consoleIO.write(
@@ -182,7 +193,6 @@ class UpdateProjectUI(
         }
     }
 
-
     private fun addTaskState(projectId: UUID) {
         val taskStateId = UUID.randomUUID()
 
@@ -205,7 +215,8 @@ class UpdateProjectUI(
 
     }
 
-    private fun deleteTask() {
+    private fun deleteTask(projectId: UUID) {
+        getAllTasksByProjectId(projectId)
         consoleIO.write("please enter task ID ")
         var taskId: UUID? = null
         runCatching {
@@ -224,6 +235,7 @@ class UpdateProjectUI(
     }
 
     private fun deleteTaskState(projectId: UUID) {
+        getTaskStates(projectId)
         consoleIO.write("please enter task state id ")
         var taskStateId: UUID? = null
         runCatching {
