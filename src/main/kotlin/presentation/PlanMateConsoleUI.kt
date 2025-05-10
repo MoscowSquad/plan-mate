@@ -4,12 +4,16 @@ import presentation.audit.AuditUI
 import presentation.auth.AuthenticationUI
 import presentation.io.ConsoleIO
 import presentation.project.ProjectsUI
+import presentation.state.StateUI
+import presentation.task.TasksUI
 import presentation.user.UserUI
 import kotlin.system.exitProcess
 
 open class PlanMateConsoleUI(
     private val authenticationUI: AuthenticationUI,
     private val projectsUI: ProjectsUI,
+    private val tasksUI: TasksUI,
+    private val stateUI: StateUI,
     private val userUI: UserUI,
     private val auditUI: AuditUI,
     private val consoleIO: ConsoleIO
@@ -18,7 +22,7 @@ open class PlanMateConsoleUI(
     fun start(isStopped: Boolean = false) {
         write(
             """
-🔷 Welcome to PlanMate v1.0 🔷
+🔷 Welcome to PlanMate v2.0 🔷
 Let's set up the app. Please sign up as the admin user.
         """.trimIndent()
         )
@@ -40,9 +44,11 @@ Let's set up the app. Please sign up as the admin user.
             """
 🏠 Main Menu:
 1. 📁 Projects Management
-2. 👥 User management
-3. 📜 View audit-log
-4. ❌ Exit
+2. 👥 User Management
+3. 🗂️ Task Management
+4. 📊 State Management
+5. 📜 View Audit Log
+6. ❌ Exit
 
 Enter your option:""".trimIndent()
         )
@@ -53,9 +59,11 @@ Enter your option:""".trimIndent()
         when (input) {
             1 -> projectsUI()
             2 -> userUI()
-            3 -> auditUI()
-            4 -> exitProcess(0)
-            else -> write("\nInvalid input. Please enter a number between 1 and 4.")
+            3 -> tasksUI()
+            4 -> stateUI()
+            5 -> auditUI()
+            6 -> exitProcess(0)
+            else -> write("\nInvalid input. Please enter a number between 1 and 6.")
         }
     }
 }
