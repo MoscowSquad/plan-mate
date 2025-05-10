@@ -4,7 +4,7 @@ import com.google.common.truth.Truth
 import data.csv_data.csv_parser.CsvHandler
 import data.csv_data.csv_parser.TaskCsvParser
 import data.csv_data.datasource.TaskDataSource
-import data.mongodb_data.dto.TaskDto
+import data.csv_data.dto.TaskDto
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -28,12 +28,20 @@ class TaskDataSourceTest {
 
     @Test
     fun `fetch() should call TaskCsvParser to parse when return tasks data`() {
+        // Given
+        val csvLines = listOf("id,name,description,projectId,stateId", "1,Task1,Description,proj1,state1")
+        every { csvHandler.getLines() } returns csvLines
+
+        // When
         dataSource.fetch()
-        verify { taskCsvParser.parse(any()) }
+
+        // Then
+        verify { taskCsvParser.parse(csvLines) }
     }
 
     @Test
     fun `fetch() should return parsed tasks when there is tasks returned by task csv-parser`() {
+        // Given
         val projectId = UUID.randomUUID().toString()
         val stateId = UUID.randomUUID().toString()
         val description = "Watch all videos"
@@ -43,24 +51,44 @@ class TaskDataSourceTest {
             TaskDto(UUID.randomUUID().toString(), "Videos 301 to 210", description, projectId, stateId),
             TaskDto(UUID.randomUUID().toString(), "Videos 401 to 210", description, projectId, stateId),
         )
+        every { csvHandler.getLines() } returns listOf("id,name,description,projectId,stateId")
         every { taskCsvParser.parse(any()) } returns tasks
 
+        // When
         val result = dataSource.fetch()
+
+        // Then
         Truth.assertThat(result).isEqualTo(tasks)
     }
 
     @Test
     fun `fetch() should return empty list when there is no tasks returned by task csv-parser`() {
+        // Given
         val tasks = listOf<TaskDto>()
+        every { csvHandler.getLines() } returns listOf("id,name,description,projectId,stateId")
         every { taskCsvParser.parse(any()) } returns tasks
 
+        // When
         val result = dataSource.fetch()
+
+        // Then
         Truth.assertThat(result).isEqualTo(tasks)
     }
 
     @Test
-    fun `save() should call CsvHandler to parse when save tasks data`() {
-        dataSource.save(emptyList())
-        verify { csvHandler.write(any()) }
+    fun `save() should call CsvParser to serialize and CsvHandler to write when saving task data`() {
+        // Given
+        val projectId = UUID.randomUUID().toString()
+        val stateId = UUID.randomUUID().toString()
+        val tasks = listOf(TaskDto("1", "Task1", "Description", projectId, stateId))
+        val serializedData = listOf("id,name,description,projectId,stateId", "1,Task1,Description,$projectId,$stateId")
+        every { taskCsvParser.serialize(tasks) } returns serializedData
+
+        // When
+        dataSource.save(tasks)
+
+        // Then
+        verify { taskCsvParser.serialize(tasks) }
+        verify { csvHandler.write(serializedData) }
     }
 }
