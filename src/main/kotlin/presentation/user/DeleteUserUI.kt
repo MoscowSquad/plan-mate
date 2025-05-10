@@ -1,10 +1,10 @@
 package presentation.user
 
+import data.mongodb_data.mappers.toUUID
 import logic.models.UserRole
 import logic.usecases.user.DeleteUserUseCase
 import logic.util.UnauthorizedAccessException
 import presentation.io.ConsoleIO
-import java.util.UUID
 
 class DeleteUserUI(
     private val deleteUserUseCase: DeleteUserUseCase,
@@ -22,10 +22,10 @@ class DeleteUserUI(
         write("║      DELETE USER     ║")
         write("=======================\n")
 
-        write("Enter user ID to delete:")
+        write("Enter user ID to delete: ")
         val input = read().trim()
         val userId = try {
-            UUID.fromString(input)
+            input.toUUID()
         } catch (e: IllegalArgumentException) {
             write("Error: Invalid UUID format. Please provide a valid user ID.")
             return

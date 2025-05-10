@@ -1,5 +1,6 @@
 package presentation.audit
 
+import data.mongodb_data.mappers.toUUID
 import logic.models.AuditLog
 import logic.usecases.audit.ViewAuditLogsByTaskUseCase
 import presentation.io.ConsoleIO
@@ -78,7 +79,7 @@ class ViewAuditLogsByTaskUI(
         while (true) {
             write(prompt)
             try {
-                return UUID.fromString(read().trim())
+                return read().trim().toUUID()
             } catch (e: IllegalArgumentException) {
                 write("❌ Invalid UUID format. Please try again.")
             }

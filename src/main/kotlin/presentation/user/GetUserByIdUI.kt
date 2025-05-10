@@ -1,8 +1,8 @@
 package presentation.user
 
+import data.mongodb_data.mappers.toUUID
 import logic.usecases.user.GetUserByIdUseCase
 import presentation.io.ConsoleIO
-import java.util.*
 
 class GetUserByIdUI(
     private val getUserByIdUseCase: GetUserByIdUseCase,
@@ -12,7 +12,7 @@ class GetUserByIdUI(
     operator fun invoke() {
         write("\nEnter user ID:")
         val id = try {
-            UUID.fromString(read().trim())
+            read().trim().toUUID()
         } catch (e: IllegalArgumentException) {
             write("Error: Invalid UUID format")
             return

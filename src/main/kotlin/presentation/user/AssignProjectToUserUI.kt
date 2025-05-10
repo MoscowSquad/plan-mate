@@ -2,6 +2,7 @@ package presentation.user
 
 import data.mongodb_data.mappers.toUUID
 import di.SessionManager
+import logic.models.UserRole
 import logic.usecases.user.AssignProjectToUserUseCase
 import presentation.io.ConsoleIO
 
@@ -22,7 +23,13 @@ class AssignProjectToUserUI(
         val userIdInput = read()
         val userId = userIdInput.toUUID()
 
-        runCatching { sessionManager.getCurrentUserRole()?.let { assignProjectToUserUseCase(it, projectId, userId) } }
+        val isAdmin = sessionManager.getCurrentUserRole() == UserRole.ADMIN
+
+        runCatching {
+            if (isAdmin) {
+                assignProjectToUserUseCase(UserRole.ADMIN, projectId, userId)
+            }
+        }
             .onSuccess {
                 write("User successfully assigned to the project.")
             }.onFailure {

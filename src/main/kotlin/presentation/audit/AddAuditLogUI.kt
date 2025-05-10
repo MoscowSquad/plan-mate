@@ -1,13 +1,14 @@
 package presentation.audit
 
+import data.mongodb_data.mappers.toUUID
 import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import logic.models.AuditLog
 import logic.models.AuditType
 import logic.usecases.audit.AddAuditLogUseCase
 import presentation.io.ConsoleIO
 import java.util.*
-import kotlinx.datetime.TimeZone
 
 class AddAuditLogUI(
     private val addAuditLogUseCase: AddAuditLogUseCase,
@@ -66,7 +67,7 @@ class AddAuditLogUI(
         while (true) {
             write(prompt)
             try {
-                return UUID.fromString(read().trim())
+                return read().trim().toUUID()
             } catch (e: IllegalArgumentException) {
                 write("Invalid UUID format. Please try again.")
             }
