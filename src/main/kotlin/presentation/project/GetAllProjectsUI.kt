@@ -14,11 +14,12 @@ class GetAllProjectsUI(
         }
             .onSuccess { projects ->
                 if (projects.isEmpty()) {
-                    consoleIO.write("No projects found.")
+                    write("No projects found.")
                 } else {
-                    consoleIO.write("Projects:")
+                    write("Projects:")
                     projects.forEach { project ->
-                        consoleIO.write("""
+                        write(
+                            """
                                |-------------------------------------------------------------------|
                                | "Project ID: ${project.id}                    |
                                |  Name: ${project.name}"                                               |
@@ -28,7 +29,7 @@ class GetAllProjectsUI(
                 }
             }
             .onFailure { exception ->
-                consoleIO.write("Error retrieving projects: ${exception.message}")
+                write("Error retrieving projects: ${exception.message}")
             }
     }
 }
