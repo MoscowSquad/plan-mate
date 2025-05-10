@@ -1,10 +1,10 @@
 package data.repositories
 
 import com.google.common.truth.Truth.assertThat
-import data.csv_parser.CsvHandler
-import data.csv_parser.ProjectCsvParser
-import data.datasource.ProjectDataSource
-import data.mappers.toDto
+import data.csv_data.datasource.ProjectDataSource
+import data.csv_data.mappers.toDto
+import data.csv_data.mappers.toProject
+import data.csv_data.repositories.ProjectsRepositoryImpl
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -17,214 +17,200 @@ import java.util.*
 
 class ProjectsRepositoryImplTest {
 
-    private lateinit var csvHandler: CsvHandler
-    private lateinit var csvParser: ProjectCsvParser
     private lateinit var dataSource: ProjectDataSource
-    private lateinit var projectsRepository: ProjectsRepositoryImpl
+    private lateinit var repository: ProjectsRepositoryImpl
     private lateinit var testProject1: Project
     private lateinit var testProject2: Project
     private lateinit var testProject3: Project
 
     @BeforeEach
     fun setUp() {
-        csvHandler = mockk(relaxed = true)
-        csvParser = mockk(relaxed = true)
-        dataSource = ProjectDataSource(csvHandler, csvParser)
-        projectsRepository = ProjectsRepositoryImpl(dataSource)
+        dataSource = mockk(relaxed = true)
 
-        // Create test projects with fixed UUIDs for consistency
         testProject1 = Project(UUID.fromString("11111111-1111-1111-1111-111111111111"), "Project 1")
         testProject2 = Project(UUID.fromString("22222222-2222-2222-2222-222222222222"), "Project 2")
         testProject3 = Project(UUID.fromString("33333333-3333-3333-3333-333333333333"), "Project 3")
+
+        every { dataSource.fetch() } returns emptyList()
+
+        repository = ProjectsRepositoryImpl(dataSource)
     }
 
     @Test
-    fun `add should store project in repository`() {
+    fun `init should fetch projects from data source`() {
+        // Given
+        val projectDtos = listOf(testProject1.toDto(), testProject2.toDto())
+        every { dataSource.fetch() } returns projectDtos
+
         // When
-        val result = projectsRepository.addProject(testProject1)
+        val repository = ProjectsRepositoryImpl(dataSource)
+
+        // Then
+        verify { dataSource.fetch() }
+        assertThat(repository.projects.size).isEqualTo(2)
+        assertThat(repository.projects).contains(testProject1.toDto().toProject())
+        assertThat(repository.projects).contains(testProject2.toDto().toProject())
+    }
+
+    @Test
+    fun `addProject should store project in repository`() {
+        // When
+        val result = repository.addProject(testProject1)
 
         // Then
         assertThat(result).isTrue()
-        assertThat(projectsRepository.getAllProjects()).containsExactly(testProject1)
+        assertThat(repository.projects).contains(testProject1)
+        verify { dataSource.save(any()) }
     }
 
     @Test
-    fun `add should handle multiple projects`() {
+    fun `addProject should handle multiple projects`() {
         // When
-        projectsRepository.addProject(testProject1)
-        projectsRepository.addProject(testProject2)
+        repository.addProject(testProject1)
+        repository.addProject(testProject2)
 
         // Then
-        assertThat(projectsRepository.getAllProjects()).containsExactly(testProject1, testProject2)
+        assertThat(repository.projects).contains(testProject1)
+        assertThat(repository.projects).contains(testProject2)
+        verify(exactly = 2) { dataSource.save(any()) }
     }
 
     @Test
-    fun `update should modify existing project`() {
+    fun `updateProject should modify existing project`() {
         // Given
-        projectsRepository.addProject(testProject1)
+        repository.addProject(testProject1)
         val updatedProject = Project(testProject1.id, "Updated Project")
 
         // When
-        val result = projectsRepository.updateProject(updatedProject)
+        val result = repository.updateProject(updatedProject)
 
         // Then
         assertThat(result).isTrue()
-        assertThat(projectsRepository.getProjectById(testProject1.id)).isEqualTo(updatedProject)
+        assertThat(repository.getProjectById(testProject1.id)).isEqualTo(updatedProject)
+        verify(exactly = 2) { dataSource.save(any()) }
     }
 
     @Test
-    fun `update should return false when project does not exist`() {
+    fun `updateProject should return false when project does not exist`() {
         // Given
         val nonExistingProject = Project(UUID.randomUUID(), "Non-existing")
 
         // When
-        val result = projectsRepository.updateProject(nonExistingProject)
+        val result = repository.updateProject(nonExistingProject)
 
         // Then
         assertThat(result).isFalse()
+        verify(exactly = 0) { dataSource.save(any()) }
     }
 
     @Test
-    fun `delete should remove project from repository`() {
+    fun `deleteProject should remove project from repository`() {
         // Given
-        projectsRepository.addProject(testProject1)
-        projectsRepository.addProject(testProject2)
+        repository.addProject(testProject1)
+        repository.addProject(testProject2)
 
         // When
-        val result = projectsRepository.deleteProject(testProject1.id)
+        val result = repository.deleteProject(testProject1.id)
 
         // Then
         assertThat(result).isTrue()
-        assertThat(projectsRepository.getAllProjects()).containsExactly(testProject2)
+        assertThat(repository.projects).doesNotContain(testProject1)
+        assertThat(repository.projects).contains(testProject2)
+        verify(exactly = 3) { dataSource.save(any()) }
     }
 
     @Test
-    fun `delete should return false when project does not exist`() {
+    fun `deleteProject should return false when project does not exist`() {
         // When
-        val result = projectsRepository.deleteProject(UUID.randomUUID())
+        val result = repository.deleteProject(UUID.randomUUID())
 
         // Then
         assertThat(result).isFalse()
+        verify(exactly = 0) { dataSource.save(any()) }
     }
 
     @Test
-    fun `getAll should return empty list when repository is empty`() {
+    fun `getAllProjects should return empty list when repository is empty`() {
         // When
-        val result = projectsRepository.getAllProjects()
+        val result = repository.getAllProjects()
 
         // Then
         assertThat(result).isEmpty()
     }
 
     @Test
-    fun `getAll should return all projects in repository`() {
+    fun `getAllProjects should return all projects in repository`() {
         // Given
-        projectsRepository.addProject(testProject1)
-        projectsRepository.addProject(testProject2)
-        projectsRepository.addProject(testProject3)
+        repository.addProject(testProject1)
+        repository.addProject(testProject2)
+        repository.addProject(testProject3)
 
         // When
-        val result = projectsRepository.getAllProjects()
+        val result = repository.getAllProjects()
 
         // Then
         assertThat(result).containsExactly(testProject1, testProject2, testProject3)
     }
 
     @Test
-    fun `getById should return project when it exists`() {
+    fun `getProjectById should return project when it exists`() {
         // Given
-        projectsRepository.addProject(testProject1)
-        projectsRepository.addProject(testProject2)
+        repository.addProject(testProject1)
+        repository.addProject(testProject2)
 
         // When
-        val result = projectsRepository.getProjectById(testProject2.id)
+        val result = repository.getProjectById(testProject2.id)
 
         // Then
         assertThat(result).isEqualTo(testProject2)
     }
 
     @Test
-    fun `getById should throw ProjectNotFoundException when project does not exist`() {
+    fun `getProjectById should throw ProjectNotFoundException when project does not exist`() {
         // Given
         val nonExistingId = UUID.randomUUID()
 
         // When & Then
         val exception = assertThrows<ProjectNotFoundException> {
-            projectsRepository.getProjectById(nonExistingId)
+            repository.getProjectById(nonExistingId)
         }
 
         assertThat(exception.message).contains(nonExistingId.toString())
     }
 
     @Test
-    fun `getAll should return a copy of the internal list`() {
+    fun `getAllProjects should return a copy of the internal list`() {
         // Given
-        projectsRepository.addProject(testProject1)
+        repository.addProject(testProject1)
 
-        // When - modify the returned list
-        val projects = projectsRepository.getAllProjects()
+        // When
+        val projects = repository.getAllProjects()
         projects.toMutableList().add(testProject2)
 
-        // Then - internal repository should be unchanged
-        assertThat(projectsRepository.getAllProjects()).containsExactly(testProject1)
-    }
-
-    @Test
-    fun `add should save to data source when project is added`() {
-        // Given
-        val mockDataSource = mockk<ProjectDataSource>(relaxed = true)
-        projectsRepository = ProjectsRepositoryImpl(mockDataSource)
-
-        // When
-        val result = projectsRepository.addProject(testProject1)
-
         // Then
-        assertThat(result).isTrue()
-        verify(exactly = 1) { mockDataSource.save(any()) }
+        assertThat(repository.projects).doesNotContain(testProject2)
     }
 
     @Test
-    fun `add should not save to data source when project cannot be added`() {
+    fun `addProject should not save to data source when project cannot be added`() {
         // Given
-        val mockDataSource = mockk<ProjectDataSource>(relaxed = true)
-        val mockedProjects = mockk<MutableList<Project>> {
-            every { add(any()) } returns false
-        }
-        // Use reflection to replace the projects field with our mock
-        val projectsField = ProjectsRepositoryImpl::class.java.getDeclaredField("projects")
-        projectsField.isAccessible = true
+        val project = testProject1.copy()
 
-        projectsRepository = ProjectsRepositoryImpl(mockDataSource)
-        projectsField.set(projectsRepository, mockedProjects)
+
+        val mockList = mockk<MutableList<Project>>()
+        every { mockList.add(any()) } returns false
+
+
+        val field = repository.javaClass.getDeclaredField("projects")
+        field.isAccessible = true
+        field.set(repository, mockList)
 
         // When
-        val result = projectsRepository.addProject(testProject1)
+        val result = repository.addProject(project)
 
         // Then
         assertThat(result).isFalse()
-        verify(exactly = 0) { mockDataSource.save(any()) }
+        verify(exactly = 0) { dataSource.save(any()) }
     }
 
-    @Test
-    fun `init block should load projects from data source`() {
-        // Given
-        val projectDto1 = testProject1.toDto()
-        val projectDto2 = testProject2.toDto()
-        val projectDtos = listOf(projectDto1, projectDto2)
-
-        io.mockk.clearAllMocks()
-
-        val testDataSource = mockk<ProjectDataSource>(relaxed = false)
-        every { testDataSource.fetch() } returns projectDtos
-
-        // When
-        val repository = ProjectsRepositoryImpl(testDataSource)
-
-        // Then
-        val allProjects = repository.getAllProjects()
-        assertThat(allProjects).hasSize(2)
-        assertThat(allProjects[0].id).isEqualTo(testProject1.id)
-        assertThat(allProjects[1].id).isEqualTo(testProject2.id)
-        verify { testDataSource.fetch() }
-    }
 }
