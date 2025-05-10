@@ -32,12 +32,12 @@ class UserDataSourceImpl(
     }
 
     override suspend fun deleteUser(id: UUID): Boolean {
-        val filter = Filters.eq("id", id.toString())
+        val filter = Filters.eq(UserDto::id.name, id.toString())
         return collection.deleteOne(filter).wasAcknowledged()
     }
 
     override suspend fun assignUserToProject(projectId: UUID, userId: UUID): Boolean {
-        val filter = Filters.eq("id", userId.toString())
+        val filter = Filters.eq(UserDto::id.name, userId.toString())
         val user = collection.find(filter).firstOrNull() ?: return false
         val updatedProjectIds = user.projectIds.toMutableList().apply { add(projectId.toString()) }
         val updatedUser = user.copy(projectIds = updatedProjectIds)
@@ -46,7 +46,7 @@ class UserDataSourceImpl(
     }
 
     override suspend fun unassignUserFromProject(projectId: UUID, userId: UUID): Boolean {
-        val filter = Filters.eq("id", userId)
+        val filter = Filters.eq(UserDto::id.name, userId)
         val user = collection.find(filter).firstOrNull() ?: throw UserNotFoundException("User is not found")
 
         if (!user.projectIds.contains(projectId.toString())) {
@@ -61,7 +61,7 @@ class UserDataSourceImpl(
     }
 
     override suspend fun getUserById(id: UUID): UserDto {
-        val filter = Filters.eq("id", id.toString())
+        val filter = Filters.eq(UserDto::id.name, id.toString())
         return collection.find(filter).firstOrNull()
             ?: throw throw UserNotFoundException("User is not found")
     }
