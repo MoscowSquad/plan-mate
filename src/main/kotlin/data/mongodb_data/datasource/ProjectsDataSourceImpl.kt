@@ -12,7 +12,6 @@ import java.util.*
 
 class ProjectsDataSourceImpl(
     private val collection: MongoCollection<ProjectDto>
-
 ) : ProjectsDataSource {
     override suspend fun addProject(project: ProjectDto): Boolean {
         return collection.insertOne(project).wasAcknowledged()
