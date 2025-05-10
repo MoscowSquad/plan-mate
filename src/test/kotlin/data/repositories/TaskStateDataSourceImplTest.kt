@@ -1,8 +1,10 @@
 package data.repositories
 
 import com.google.common.truth.Truth.assertThat
-import data.datasource.TaskStateDataSource
-import data.mappers.toDto
+import data.csv_data.datasource.TaskStateDataSource
+import data.csv_data.mappers.toDto
+import data.csv_data.mappers.toTaskState
+import data.csv_data.repositories.TaskStateRepositoryImpl
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -27,7 +29,6 @@ class TaskStateRepositoryImplTest {
     fun setUp() {
         dataSource = mockk(relaxed = true)
         every { dataSource.fetch() } returns emptyList()
-        repository = TaskStateRepositoryImpl(dataSource)
 
         projectId1 = UUID.fromString("11111111-1111-1111-1111-111111111111")
         projectId2 = UUID.fromString("22222222-2222-2222-2222-222222222222")
@@ -47,6 +48,24 @@ class TaskStateRepositoryImplTest {
             name = "Done",
             projectId = projectId2
         )
+
+        repository = TaskStateRepositoryImpl(dataSource)
+    }
+
+    @Test
+    fun `init should fetch states from data source`() {
+        // Given
+        val stateDtos = listOf(testState1.toDto(), testState2.toDto())
+        every { dataSource.fetch() } returns stateDtos
+
+        // When
+        val repository = TaskStateRepositoryImpl(dataSource)
+
+        // Then
+        verify { dataSource.fetch() }
+        assertThat(repository.states.size).isEqualTo(2)
+        assertThat(repository.states).contains(testState1.toDto().toTaskState())
+        assertThat(repository.states).contains(testState2.toDto().toTaskState())
     }
 
     @Test
@@ -85,7 +104,7 @@ class TaskStateRepositoryImplTest {
         val result = repository.getTaskStateByProjectId(projectId1)
 
         // Then
-        assertThat(result).containsExactly(testState1, testState2)
+        assertThat(result).containsExactlyElementsIn(listOf(testState1, testState2))
     }
 
     @Test
@@ -113,7 +132,7 @@ class TaskStateRepositoryImplTest {
         // Then
         assertThat(result).isTrue()
         assertThat(repository.getTaskStateById(testState1.id)).isEqualTo(updatedState)
-        verify { dataSource.save(any()) }
+        verify(exactly = 2) { dataSource.save(any()) }
     }
 
     @Test
@@ -126,6 +145,7 @@ class TaskStateRepositoryImplTest {
 
         // Then
         assertThat(result).isFalse()
+        verify(exactly = 0) { dataSource.save(any()) }
     }
 
     @Test
@@ -147,7 +167,8 @@ class TaskStateRepositoryImplTest {
 
         // Then
         val states = repository.getTaskStateByProjectId(projectId1)
-        assertThat(states).containsExactly(testState1, testState2)
+        assertThat(states).containsExactlyElementsIn(listOf(testState1, testState2))
+        verify(exactly = 2) { dataSource.save(any()) }
     }
 
     @Test
@@ -161,8 +182,8 @@ class TaskStateRepositoryImplTest {
 
         // Then
         assertThat(result).isTrue()
-        assertThat(repository.getTaskStateByProjectId(projectId1)).containsExactly(testState2)
-        verify { dataSource.save(any()) }
+        assertThat(repository.getTaskStateByProjectId(projectId1)).containsExactlyElementsIn(listOf(testState2))
+        verify(exactly = 3) { dataSource.save(any()) }
     }
 
     @Test
@@ -175,6 +196,7 @@ class TaskStateRepositoryImplTest {
 
         // Then
         assertThat(result).isFalse()
+        verify(exactly = 0) { dataSource.save(any()) }
     }
 
     @Test
@@ -187,6 +209,7 @@ class TaskStateRepositoryImplTest {
 
         // Then
         assertThat(result).isFalse()
+        verify(exactly = 1) { dataSource.save(any()) } // Only from the initial addTaskState
     }
 
     @Test
@@ -204,7 +227,9 @@ class TaskStateRepositoryImplTest {
             repository.getTaskStateByProjectId(projectId2)
         }
         assertThat(repository.getTaskStateById(testState1.id)).isEqualTo(testState1)
+        verify(exactly = 3) { dataSource.save(any()) } // Two adds + one delete
     }
+
     @Test
     fun `getTaskStateById should find state after multiple additions and updates`() {
         // Given
@@ -247,47 +272,26 @@ class TaskStateRepositoryImplTest {
         assertThat(exception.message).contains(testState1.id.toString())
     }
     @Test
-    fun `addTaskState should return false when adding fails`() {
+    fun `addTaskState should check for existing state ID before adding`() {
         // Given
-        val mockDataSource = mockk<TaskStateDataSource>(relaxed = true)
-        every { mockDataSource.fetch() } returns emptyList()
+        repository.addTaskState(projectId1, testState1)
+        val stateWithDuplicateId = testState1.copy()
 
-        val mockList = mockk<MutableList<TaskState>>()
-        every { mockList.add(any()) } returns false
-        every { mockList.addAll(any()) } returns true
+        val mockStates = mockk<MutableList<TaskState>>(relaxed = true)
+        every { mockStates.add(any()) } returns false
+        every { dataSource.save(any()) } returns Unit
 
-        val testRepository = TaskStateRepositoryImpl(mockDataSource)
-        val statesField = TaskStateRepositoryImpl::class.java.getDeclaredField("states")
-        statesField.isAccessible = true
-        statesField.set(testRepository, mockList)
+
+        val field = repository.javaClass.getDeclaredField("states")
+        field.isAccessible = true
+        field.set(repository, mockStates)
 
         // When
-        val result = testRepository.addTaskState(projectId1, testState1)
+        val result = repository.addTaskState(projectId2, stateWithDuplicateId)
 
         // Then
         assertThat(result).isFalse()
-        verify(exactly = 0) { mockDataSource.save(any()) }
-    }
-    @Test
-    fun `init block should load states from data source`() {
-        // Given
-        val stateDto1 = testState1.toDto()
-        val stateDto2 = testState2.toDto()
-        val stateDtos = listOf(stateDto1, stateDto2)
-
-        io.mockk.clearAllMocks()
-
-        val testDataSource = mockk<TaskStateDataSource>()
-        every { testDataSource.fetch() } returns stateDtos
-
-        // When
-        val repository = TaskStateRepositoryImpl(testDataSource)
-
-        // Then
-        val allStates = repository.getTaskStateByProjectId(projectId1)
-        assertThat(allStates).hasSize(2)
-        assertThat(allStates[0].id).isEqualTo(testState1.id)
-        assertThat(allStates[1].id).isEqualTo(testState2.id)
-        verify { testDataSource.fetch() }
+        verify(exactly = 1) { dataSource.save(any()) } 
+        verify(exactly = 1) { mockStates.add(any()) }
     }
 }
