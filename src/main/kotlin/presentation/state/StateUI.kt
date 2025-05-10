@@ -17,33 +17,34 @@ class StateUI(
     operator fun invoke() {
         getAllProjectsUI()
         write("Enter the project ID:")
-        val id = runCatching { read().trimIndent().toUUID() }.getOrElse {
+        val projectId = runCatching { read().trimIndent().toUUID() }.getOrElse {
             write("❌ Invalid project ID format. Please enter a valid UUID.")
             invoke()
             return
         }
 
-        if (runCatching { getProjectByIdUseCase(id) }.isFailure) {
+        if (runCatching { getProjectByIdUseCase(projectId) }.isFailure) {
             write("❌ No project exists. Add a new project to manage tasks. Please try again")
             return
         }
+
+        getAllStatesUI(projectId)
+
         write(
             """
-            Select an operation:
-            1️⃣ - Create State
-            2️⃣ - Get All States
-            3️⃣ - Edit State
-            4️⃣ - Delete State
-            5️⃣ - Back
-            """.trimIndent()
+        Select an operation:
+        1️⃣ - Create State
+        2️⃣ - Edit State
+        3️⃣ - Delete State
+        4️⃣ - Back
+    """.trimIndent()
         )
 
         when (read().trim()) {
-            "1" -> createStateUI(id)
-            "2" -> getAllStatesUI(id)
-            "3" -> editStateUI(id)
-            "4" -> deleteStateUI(id)
-            "5" -> write("Navigating back...")
+            "1" -> createStateUI(projectId)
+            "2" -> editStateUI(projectId)
+            "3" -> deleteStateUI(projectId)
+            "4" -> write("Navigating back...")
             else -> {
                 write("❌ Invalid option.")
                 invoke()
