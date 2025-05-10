@@ -44,6 +44,7 @@ class UpdateProjectUI(
             projectId = consoleIO.read().trimIndent().toUUID()
         }.onFailure {
             consoleIO.write("❌ please enter correct ID ")
+            invoke()
         }
         consoleIO.write(
             """

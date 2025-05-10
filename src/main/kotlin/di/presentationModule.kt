@@ -8,14 +8,16 @@ import presentation.audit.AddAuditLogUI
 import presentation.audit.AuditUI
 import presentation.audit.ViewAuditLogsByProjectUI
 import presentation.audit.ViewAuditLogsByTaskUI
+import presentation.auth.AuthenticationUI
 import presentation.auth.LoginUserUI
 import presentation.auth.RegisterAdminUI
 import presentation.io.ConsoleIO
 import presentation.io.ConsoleIOImpl
-import java.util.*
-import presentation.auth.AuthenticationUI
 import presentation.project.*
+import presentation.state.*
+import presentation.task.*
 import presentation.user.*
+import java.util.*
 
 val presentationModule = module {
     single { Scanner(System.`in`) }
@@ -38,6 +40,20 @@ val presentationModule = module {
     factoryOf(::UpdateProjectUI)
     factoryOf(::GetAllProjectsUI)
     factoryOf(::ProjectsUI)
+
+    // Task UI
+    factoryOf(::CreateTaskUI)
+    factoryOf(::DeleteTaskUI)
+    factoryOf(::GetAllTasksUI)
+    factoryOf(::EditTaskUI)
+    factoryOf(::TasksUI)
+
+    // State UI
+    factoryOf(::CreateStateUI)
+    factoryOf(::DeleteStateUI)
+    factoryOf(::GetAllStatesUI)
+    factoryOf(::EditStateUI)
+    factoryOf(::StateUI)
 
     factory {
         val role = get<SessionManager>().getCurrentUserRole()
