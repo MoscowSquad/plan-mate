@@ -10,13 +10,14 @@ import java.util.*
 
 
 class TaskDataSourceImpl(
-    private val collection: MongoCollection<TaskDto>
+    private val collection: MongoCollection<TaskDto>,
 ) : TaskDataSource {
     override suspend fun getAllTasks(): List<TaskDto> {
         return collection.find().toList()
     }
 
     override suspend fun addTask(task: TaskDto): Boolean {
+
         return collection.insertOne(task).wasAcknowledged()
     }
 

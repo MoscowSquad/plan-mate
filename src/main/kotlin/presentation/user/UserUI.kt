@@ -15,7 +15,7 @@ class UserUI(
             """
 1. add user
 2. delete user
-3. change user role
+3. assign Project To User
 4. get user details by id
 5. get all users
 6. back
