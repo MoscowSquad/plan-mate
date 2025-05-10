@@ -22,7 +22,10 @@ Please choose an option:
             1 -> registerAdminUI()
             2 -> loginUserUI()
             3 -> exitProcess(0)
-            else -> write("\nInvalid input. Please enter a number between 1 and 3.")
+            else -> {
+                write("\nInvalid input. Please enter a number between 1 and 3.")
+                invoke()
+            }
         }
     }
 }
