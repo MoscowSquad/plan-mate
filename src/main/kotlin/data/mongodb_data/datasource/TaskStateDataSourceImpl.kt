@@ -19,8 +19,9 @@ class TaskStateDataSourceImpl(
             ?: throw NoStateExistException("Task state not found")
     }
 
+
     override suspend fun getTaskStateByProjectId(projectId: UUID): List<TaskStateDto> {
-        val filter = Filters.eq("entityId", projectId.toString())
+        val filter = Filters.eq("projectId", projectId.toString())
         return collection.find(filter).toList()
     }
 
@@ -31,12 +32,13 @@ class TaskStateDataSourceImpl(
 
     override suspend fun addTaskState(projectId: UUID, state: TaskStateDto): Boolean {
         val stateWithProject = state.copy(projectId = projectId.toString())
-       return collection.insertOne(stateWithProject).wasAcknowledged()
+        return collection.insertOne(stateWithProject).wasAcknowledged()
     }
 
-    override suspend fun deleteTaskState(projectId: UUID, stateId: UUID): Boolean{
-        val filter = Filters.eq("id", projectId.toString())
-        return collection.deleteOne(filter).wasAcknowledged()
+    override suspend fun deleteTaskState(projectId: UUID, stateId: UUID): Boolean {
+        val filter = Filters.eq("id", stateId.toString())
+        val result = collection.deleteOne(filter)
+        return result.deletedCount > 0
     }
 
 }
