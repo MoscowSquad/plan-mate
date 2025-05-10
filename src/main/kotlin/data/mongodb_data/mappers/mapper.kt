@@ -101,9 +101,14 @@ fun AuditLog.toDto(): AuditLogDto {
     )
 }
 
+fun isValidUUIDStrict(uuidString: String): Boolean {
+    val uuidRegex = Regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$")
+    return uuidRegex.matches(uuidString)
+}
 
 fun String.toUUID(): UUID {
-    return UUID.fromString(this)
+    return if (isValidUUIDStrict(this)) UUID.fromString(this)
+    else throw IllegalArgumentException("UUID $this isn't valid")
 }
 
 fun String.toTimeStamp(): LocalDateTime {

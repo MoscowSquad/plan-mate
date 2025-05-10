@@ -42,6 +42,7 @@ class UpdateProjectUI(
         var projectId: UUID? = null
         runCatching {
             projectId = consoleIO.read().trimIndent().toUUID()
+
         }.onFailure {
             consoleIO.write("❌ please enter correct ID ")
             invoke()
