@@ -78,18 +78,11 @@ val presentationModule = module {
         AssignProjectToUserUI(
             assignProjectToUserUseCase = get(),
             sessionManager = get(),
-            consoleIO = get()
+            consoleIO = get(),
+            getAllProjectsUI = get()
         )
     }
 
-    factory {
-        GetAllUserUI(
-            getAllUsersUseCase = get(),
-            currentUserRole = { get<SessionManager>().getCurrentUserRole()
-                ?: error("No user role set") },  // This is a Function0 type
-            consoleIO = get()
-        )
-    }
 
     factory {
         DeleteUserUI(
