@@ -37,7 +37,7 @@ class UserDataSourceImpl(
     }
 
     override suspend fun assignUserToProject(projectId: UUID, userId: UUID): Boolean {
-        val filter = Filters.eq("id", userId)
+        val filter = Filters.eq("id", userId.toString())
         val user = collection.find(filter).firstOrNull() ?: return false
         val updatedProjectIds = user.projectIds.toMutableList().apply { add(projectId.toString()) }
         val updatedUser = user.copy(projectIds = updatedProjectIds)
