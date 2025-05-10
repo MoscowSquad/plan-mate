@@ -5,7 +5,7 @@ import logic.models.UserRole
 import logic.usecases.user.CreateUserUseCase
 import logic.util.toMD5Hash
 import presentation.io.ConsoleIO
-import java.util.UUID
+import java.util.*
 
 class CreateUserUI(
     private val createUserUseCase: CreateUserUseCase,
@@ -15,41 +15,59 @@ class CreateUserUI(
 
     operator fun invoke() {
         if (currentUserRole != UserRole.ADMIN) {
-            write("\nError: Only ADMIN users can create new accounts.")
+            write("\n❌ Error: Only ADMIN users can create new accounts.")
             return
         }
 
-        write("\n=== Create New User ===")
-        write("Enter username:")
-        val username = read().takeIf { it.isNotBlank() } ?: run {
-            write("Username cannot be empty.")
-            return
-        }
-        write("Enter password:")
-        val password = read().takeIf { it.isNotBlank() } ?: run {
-            write("Password cannot be empty.")
-            return
-        }
-        write("Select role (ADMIN or MATE):")
-        val roleInput = read().uppercase()
-        val newUserRole = try {
-            UserRole.valueOf(roleInput)
-        } catch (e: IllegalArgumentException) {
-            write("Invalid role. Please enter either 'ADMIN' or 'MATE'.")
-            return
-        }
+        write("\n=== 👤 Create New User ===")
+
+        val username = promptForUsername()
+        val password = promptForPassword()
+        val role = promptForRole()
+
         val newUser = User(
             id = UUID.randomUUID(),
-            role = newUserRole,
+            role = role,
             name = username,
             hashedPassword = password.toMD5Hash(),
             projectIds = listOf()
         )
-        val success = createUserUseCase(currentUserRole, newUser)
 
-        when {
-            success -> write("User '$username' created successfully.")
-            else -> write("Failed to create user. Username might already exist.")
+        val success = createUserUseCase(currentUserRole, newUser)
+        if (success) {
+            write("✅ User '$username' created successfully.")
+        } else {
+            write("❌ Failed to create user. Username might already exist.")
+        }
+    }
+
+    private fun promptForUsername(): String {
+        while (true) {
+            write("Enter username:")
+            val input = read().trim()
+            if (input.isNotBlank()) return input
+            write("❌ Username cannot be empty.")
+        }
+    }
+
+    private fun promptForPassword(): String {
+        while (true) {
+            write("Enter password (at least 8 characters):")
+            val input = read()
+            if (input.length >= 8) return input
+            write("❌ Password must be at least 8 characters long.")
+        }
+    }
+
+    private fun promptForRole(): UserRole {
+        while (true) {
+            write("Select role (ADMIN or MATE):")
+            val input = read().trim().uppercase()
+            try {
+                return UserRole.valueOf(input)
+            } catch (e: IllegalArgumentException) {
+                write("❌ Invalid role. Please enter either 'ADMIN' or 'MATE'.")
+            }
         }
     }
 }

@@ -19,7 +19,7 @@ open class PlanMateConsoleUI(
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
 
-    fun start(isStopped: Boolean = false) {
+    fun start() {
         write(
             """
 🔷 Welcome to PlanMate v2.0 🔷
@@ -27,15 +27,13 @@ Let's set up the app. Please sign up as the admin user.
         """.trimIndent()
         )
         authenticationUI()
-        menuLoop(isStopped)
+        menuLoop()
     }
 
-    private fun menuLoop(isStopped: Boolean = false) {
+    private fun menuLoop() {
         while (true) {
             showOptions()
             goToScreen()
-            if (isStopped)
-                break
         }
     }
 
@@ -63,7 +61,9 @@ Enter your option:""".trimIndent()
             4 -> stateUI()
             5 -> auditUI()
             6 -> exitProcess(0)
-            else -> write("\nInvalid input. Please enter a number between 1 and 6.")
+            else -> {
+                write("\nInvalid input. Please enter a number between 1 and 6.")
+            }
         }
     }
 }

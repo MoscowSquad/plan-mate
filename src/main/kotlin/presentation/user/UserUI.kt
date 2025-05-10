@@ -10,28 +10,31 @@ class UserUI(
     private val deleteUserUI: DeleteUserUI,
     private val consoleIO: ConsoleIO,
 ) : ConsoleIO by consoleIO {
-    operator fun invoke() {
-        write(
-            """
-1. add user
-2. delete user
-3. assign Project To User
-4. get user details by id
-5. get all users
-6. back
 
-Enter your option:
-        """.trimIndent()
-        )
-        val option = read().toIntOrNull()
-        when (option) {
-            1 -> createUserUI()
-            2 -> deleteUserUI()
-            3 -> assignProjectToUserUI()
-            4 -> getUserByIdUI()
-            5 -> getAllUserUI()
-            6 -> return
-            else -> write("Wrong option enter a number between 1 and 6.")
+    operator fun invoke() {
+        getAllUserUI()
+        while (true) {
+            write("\n========== User Management ==========")
+            write("1. ➕ Add User")
+            write("2. 🗑️  Delete User")
+            write("3. 📎 Assign Project to User")
+            write("4. 🔍 Get User Details by ID")
+            write("5. 🔙 Back")
+            write("Enter your option (1–5): ")
+
+            val option = read().toIntOrNull()
+            when (option) {
+                1 -> createUserUI()
+                2 -> deleteUserUI()
+                3 -> assignProjectToUserUI()
+                4 -> getUserByIdUI()
+                5 -> {
+                    write("🔙 Returning to the previous menu...")
+                    return
+                }
+
+                else -> write("❌ Invalid input. Please enter a number between 1 and 5.")
+            }
         }
     }
 }
