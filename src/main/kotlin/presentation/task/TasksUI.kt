@@ -28,23 +28,23 @@ class TasksUI(
             return
         }
 
+        getAllTasksUI(projectId)
+
         write(
             """
-            Select an operation:
-            1️⃣ - Create Task
-            2️⃣ - Get All Tasks
-            3️⃣ - Edit Task
-            4️⃣ - Delete Task
-            5️⃣ - Back
-            """.trimIndent()
+        Select an operation:
+        1️⃣ - Create Task
+        2️⃣ - Edit Task
+        3️⃣ - Delete Task
+        4️⃣ - Back
+    """.trimIndent()
         )
 
         when (read().trim()) {
             "1" -> createTaskUI(projectId)
-            "2" -> getAllTasksUI(projectId)
-            "3" -> editTaskUI(projectId)
-            "4" -> deleteTaskUI()
-            "5" -> write("Navigating back...")
+            "2" -> editTaskUI(projectId)
+            "3" -> deleteTaskUI()
+            "4" -> write("Navigating back...")
             else -> {
                 write("❌ Invalid option.")
                 invoke()

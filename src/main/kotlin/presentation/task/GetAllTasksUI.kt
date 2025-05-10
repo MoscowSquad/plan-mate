@@ -21,6 +21,8 @@ class GetAllTasksUI(
                             | Task Name: ${task.name}
                             | Description: ${task.description}
                             | Task ID: ${task.id}
+                            | Task State ID: ${task.stateId}
+                            | Project ID: ${task.projectId}
                             -------------------------------------------------------
                             """.trimIndent()
                         )
