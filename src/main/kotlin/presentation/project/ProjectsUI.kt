@@ -5,16 +5,18 @@ import presentation.io.ConsoleIO
 class ProjectsUI(
     private val getAllProjectsUI: GetAllProjectsUI,
     private val createProjectUI: CreateProjectUI,
-    private val updateProjectUI: UpdateProjectUI,
+    private val updateProjectNameUI: UpdateProjectNameUI,
     private val deleteProjectUI: DeleteProjectUI,
     private val consoleIO: ConsoleIO,
 ) : ConsoleIO by consoleIO {
     operator fun invoke() {
+        getAllProjectsUI()
+
         write(
             """
         📁 Projects Menu:
         1️. ➕ Create a New Project  
-        2️. ✏️ Update an Existing Project  
+        2️. ✏️ Update Project Name
         3️. ❌ Delete a Project  
         4️. 🔙 Back to Main Menu
 
@@ -22,10 +24,10 @@ class ProjectsUI(
         """.trimIndent()
         )
         val input = read().toIntOrNull()
-        getAllProjectsUI()
+
         when (input) {
             1 -> createProjectUI()
-            2 -> updateProjectUI()
+            2 -> updateProjectNameUI()
             3 -> deleteProjectUI()
             4 -> {
                 write("Going back to the main menu...")

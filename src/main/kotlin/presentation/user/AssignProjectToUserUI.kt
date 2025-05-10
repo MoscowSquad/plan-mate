@@ -1,10 +1,9 @@
 package presentation.user
 
+import data.mongodb_data.mappers.toUUID
 import di.SessionManager
-import logic.models.UserRole
 import logic.usecases.user.AssignProjectToUserUseCase
 import presentation.io.ConsoleIO
-import java.util.UUID
 
 class AssignProjectToUserUI(
     private val assignProjectToUserUseCase: AssignProjectToUserUseCase,
@@ -17,11 +16,11 @@ class AssignProjectToUserUI(
 
         write("Enter Project ID:")
         val projectIdInput = read()
-        val projectId = UUID.fromString(projectIdInput)
+        val projectId = projectIdInput.toUUID()
 
         write("Enter User ID:")
         val userIdInput = read()
-        val userId = UUID.fromString(userIdInput)
+        val userId = userIdInput.toUUID()
 
         runCatching { sessionManager.getCurrentUserRole()?.let { assignProjectToUserUseCase(it, projectId, userId) } }
             .onSuccess {

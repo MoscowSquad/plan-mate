@@ -21,7 +21,7 @@ import presentation.session.LoggedInUser
 import presentation.session.SessionManager
 import java.util.*
 
-class UpdateProjectUITest {
+class UpdateProjectNameUITest {
     private lateinit var updateProjectUseCase: UpdateProjectUseCase
     private lateinit var addTaskUseCase: AddTaskUseCase
     private lateinit var deleteTaskUseCase: DeleteTaskUseCase
@@ -35,7 +35,7 @@ class UpdateProjectUITest {
     private lateinit var getAllUserUseCase: GetAllUsersUseCase
     private lateinit var removeUserFromProject: RemoveFromProjectUserUseCase
     private lateinit var consoleIO: ConsoleIO
-    private lateinit var updateProjectUI: UpdateProjectUI
+    private lateinit var updateProjectNameUI: UpdateProjectNameUI
 
     @BeforeEach
     fun setUp() {
@@ -53,7 +53,7 @@ class UpdateProjectUITest {
         removeUserFromProject = mockk(relaxed = true)
         consoleIO = mockk(relaxed = true)
 
-        updateProjectUI = UpdateProjectUI(
+        updateProjectNameUI = UpdateProjectNameUI(
             updateProjectUseCase,
             addTaskUseCase,
             deleteTaskUseCase,
@@ -82,7 +82,7 @@ class UpdateProjectUITest {
         every { consoleIO.read() } returnsMany listOf(projectId.toString(), "1", projectName)
         every { updateProjectUseCase(projectId, projectName, false) } returns true
 
-        updateProjectUI()
+        updateProjectNameUI()
 
         verifySequence {
             consoleIO.write("Enter the project ID to update:")
@@ -105,7 +105,7 @@ class UpdateProjectUITest {
         every { consoleIO.read() } returnsMany listOf(projectId.toString(), "1", projectName)
         every { updateProjectUseCase(projectId, projectName, true) } returns true
 
-        updateProjectUI()
+        updateProjectNameUI()
 
         verifySequence {
             consoleIO.write("Enter the project ID to update:")
@@ -129,7 +129,7 @@ class UpdateProjectUITest {
         every { consoleIO.read() } returnsMany listOf(projectId.toString(), "1", projectName)
         every { updateProjectUseCase(projectId, projectName, false) } throws IllegalArgumentException(errorMessage)
 
-        updateProjectUI()
+        updateProjectNameUI()
 
         verifySequence {
             consoleIO.write("Enter the project ID to update:")
@@ -155,7 +155,7 @@ class UpdateProjectUITest {
         every { getProjectByIdUseCase(projectId) } returns project
         every { addTaskUseCase(any()) } returns true
 
-        updateProjectUI()
+        updateProjectNameUI()
 
         verify {
             consoleIO.write("Enter the project ID to update:")
@@ -183,7 +183,7 @@ class UpdateProjectUITest {
         every { consoleIO.read() } returnsMany listOf(projectId.toString(), "3")
         every { getTaskByProjectIdUseCase(projectId) } returns tasks
 
-        updateProjectUI()
+        updateProjectNameUI()
 
         verify {
             consoleIO.write("Enter the project ID to update:")
@@ -209,7 +209,7 @@ class UpdateProjectUITest {
         )
         every { editTaskUseCase(any()) } returns true
 
-        updateProjectUI()
+        updateProjectNameUI()
 
         verify {
             consoleIO.write("Enter the project ID to update:")
@@ -240,7 +240,7 @@ class UpdateProjectUITest {
         every { consoleIO.read() } returnsMany listOf(projectId.toString(), "5")
         every { getTaskStateByProjectIdUseCase(projectId) } returns taskStates
 
-        updateProjectUI()
+        updateProjectNameUI()
 
         verify {
             consoleIO.write("Enter the project ID to update:")
@@ -261,7 +261,7 @@ class UpdateProjectUITest {
         every { consoleIO.read() } returnsMany listOf(projectId.toString(), "6", stateName)
         every { addTaskStateUseCase(any()) } returns true
 
-        updateProjectUI()
+        updateProjectNameUI()
 
         verify {
             consoleIO.write("Enter the project ID to update:")
@@ -282,7 +282,7 @@ class UpdateProjectUITest {
         every { consoleIO.read() } returnsMany listOf(UUID.randomUUID().toString(), "7", taskId.toString())
         every { deleteTaskUseCase(taskId) } returns true
 
-        updateProjectUI()
+        updateProjectNameUI()
 
         verify {
             consoleIO.write("Enter the project ID to update:")
@@ -304,7 +304,7 @@ class UpdateProjectUITest {
         every { consoleIO.read() } returnsMany listOf(projectId.toString(), "8", stateId.toString())
         every { deleteTaskStateUseCase(stateId, projectId) } returns true
 
-        updateProjectUI()
+        updateProjectNameUI()
 
         verify {
             consoleIO.write("Enter the project ID to update:")
@@ -328,7 +328,7 @@ class UpdateProjectUITest {
         every { getAllUserUseCase(UserRole.ADMIN) } returns users
         every { assignProjectToSpecificUser(UserRole.MATE, projectId, userId) } returns true
 
-        updateProjectUI()
+        updateProjectNameUI()
 
         verify {
             consoleIO.write("Enter the project ID to update:")
@@ -354,7 +354,7 @@ class UpdateProjectUITest {
         every { getAllUserUseCase(UserRole.ADMIN) } returns users
         every { removeUserFromProject(UserRole.MATE, projectId, userId) } returns true
 
-        updateProjectUI()
+        updateProjectNameUI()
 
         verify {
             consoleIO.write("Enter the project ID to update:")
@@ -376,7 +376,7 @@ class UpdateProjectUITest {
 
         every { consoleIO.read() } returnsMany listOf(projectId.toString(), "999", "11")
 
-        updateProjectUI()
+        updateProjectNameUI()
 
         verify {
             consoleIO.write("Enter the project ID to update:")
@@ -397,7 +397,7 @@ class UpdateProjectUITest {
         every { consoleIO.read() } returnsMany listOf(projectId.toString(), "2", taskName, taskDescription)
         every { getProjectByIdUseCase(projectId) } throws IllegalArgumentException(errorMessage)
 
-        updateProjectUI()
+        updateProjectNameUI()
 
         verify {
             consoleIO.write("Enter the project ID to update:")
@@ -419,7 +419,7 @@ class UpdateProjectUITest {
 
         every { consoleIO.read() } returnsMany listOf(UUID.randomUUID().toString(), "7", invalidTaskId)
 
-        updateProjectUI()
+        updateProjectNameUI()
 
         verify {
             consoleIO.write("Enter the project ID to update:")
@@ -439,7 +439,7 @@ class UpdateProjectUITest {
 
         every { consoleIO.read() } returnsMany listOf(projectId.toString(), "8", invalidStateId)
 
-        updateProjectUI()
+        updateProjectNameUI()
 
         verify {
             consoleIO.write("Enter the project ID to update:")
@@ -461,7 +461,7 @@ class UpdateProjectUITest {
         every { consoleIO.read() } returnsMany listOf(projectId.toString(), "9", invalidUserId)
         every { getAllUserUseCase(UserRole.ADMIN) } returns users
 
-        updateProjectUI()
+        updateProjectNameUI()
 
         verify {
             consoleIO.write("Enter the project ID to update:")
@@ -485,7 +485,7 @@ class UpdateProjectUITest {
         every { consoleIO.read() } returnsMany listOf(projectId.toString(), "10", invalidUserId)
         every { getAllUserUseCase(UserRole.ADMIN) } returns users
 
-        updateProjectUI()
+        updateProjectNameUI()
 
         verify {
             consoleIO.write("Enter the project ID to update:")
@@ -506,7 +506,7 @@ class UpdateProjectUITest {
 
         every { consoleIO.read() } returnsMany listOf(projectId.toString(), "11")
 
-        updateProjectUI()
+        updateProjectNameUI()
 
         verify {
             consoleIO.write("Enter the project ID to update:")
@@ -524,7 +524,7 @@ class UpdateProjectUITest {
         every { consoleIO.read() } returnsMany listOf(projectId.toString(), "9")
         every { getAllUserUseCase(UserRole.ADMIN) } returns emptyUsers
 
-        updateProjectUI()
+        updateProjectNameUI()
 
         verify {
             consoleIO.write("Enter the project ID to update:")

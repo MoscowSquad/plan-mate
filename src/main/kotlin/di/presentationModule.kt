@@ -37,7 +37,7 @@ val presentationModule = module {
     // Project UI
     factoryOf(::CreateProjectUI)
     factoryOf(::DeleteProjectUI)
-    factoryOf(::UpdateProjectUI)
+    factoryOf(::UpdateProjectNameUI)
     factoryOf(::GetAllProjectsUI)
     factoryOf(::ProjectsUI)
 

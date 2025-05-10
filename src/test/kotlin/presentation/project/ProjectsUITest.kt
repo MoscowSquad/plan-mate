@@ -1,6 +1,9 @@
 package presentation.project
 
-import io.mockk.*
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import io.mockk.verifySequence
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.io.ConsoleIO
@@ -8,7 +11,7 @@ import presentation.io.ConsoleIO
 class ProjectsUITest {
     private lateinit var getAllProjectsUI: GetAllProjectsUI
     private lateinit var createProjectUI: CreateProjectUI
-    private lateinit var updateProjectUI: UpdateProjectUI
+    private lateinit var updateProjectNameUI: UpdateProjectNameUI
     private lateinit var deleteProjectUI: DeleteProjectUI
     private lateinit var consoleIO: ConsoleIO
     private lateinit var projectsUI: ProjectsUI
@@ -17,13 +20,13 @@ class ProjectsUITest {
     fun setUp() {
         getAllProjectsUI = mockk(relaxed = true)
         createProjectUI = mockk(relaxed = true)
-        updateProjectUI = mockk(relaxed = true)
+        updateProjectNameUI = mockk(relaxed = true)
         deleteProjectUI = mockk(relaxed = true)
         consoleIO = mockk(relaxed = true)
         projectsUI = ProjectsUI(
             getAllProjectsUI,
             createProjectUI,
-            updateProjectUI,
+            updateProjectNameUI,
             deleteProjectUI,
             consoleIO
         )
@@ -76,7 +79,7 @@ class ProjectsUITest {
             consoleIO.write(any<String>()) // Menu display
             consoleIO.read()
             getAllProjectsUI.invoke()
-            updateProjectUI.invoke()
+            updateProjectNameUI.invoke()
         }
     }
 
@@ -115,7 +118,7 @@ class ProjectsUITest {
 
         verify(exactly = 0) {
             createProjectUI.invoke()
-            updateProjectUI.invoke()
+            updateProjectNameUI.invoke()
             deleteProjectUI.invoke()
         }
     }
