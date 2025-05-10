@@ -13,16 +13,16 @@ import java.util.*
 class TaskStateDataSourceImpl(
     private val collection: MongoCollection<TaskStateDto>
 
-): TaskStateDataSource {
+) : TaskStateDataSource {
     override suspend fun getTaskStateById(id: UUID): TaskStateDto {
-        val filter = Filters.eq("id", id.toString())
+        val filter = Filters.eq(TaskStateDto::id.name, id.toString())
         return collection.find(filter).firstOrNull()
             ?: throw NoStateExistException("Task state not found")
     }
 
 
     override suspend fun getTaskStateByProjectId(projectId: UUID): List<TaskStateDto> {
-        val filter = Filters.eq("projectId", projectId.toString())
+        val filter = Filters.eq(TaskStateDto::projectId.name, projectId.toString())
         return collection.find(filter).toList()
     }
 
@@ -42,7 +42,10 @@ class TaskStateDataSourceImpl(
     }
 
     override suspend fun deleteTaskState(projectId: UUID, stateId: UUID): Boolean {
-        val filter = Filters.eq("id", stateId.toString())
+        val filter = Filters.and(
+            Filters.eq(TaskStateDto::id.name, stateId.toString()),
+            Filters.eq(TaskStateDto::projectId.name, projectId.toString())
+        )
         val result = collection.deleteOne(filter)
         return result.deletedCount > 0
     }
