@@ -5,27 +5,37 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifySequence
+import logic.models.User
+import logic.models.UserRole
 import logic.usecases.auth.LoginUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import presentation.session.SessionManager
 import java.util.*
 
 class LoginUserUITest {
     private lateinit var loginUseCase: LoginUseCase
     private lateinit var consoleIO: FakeConsoleIO
     private lateinit var loginUserUI: LoginUserUI
+    private lateinit var mockUser: User
 
     @BeforeEach
     fun setUp() {
         loginUseCase = mockk(relaxed = true)
         consoleIO = FakeConsoleIO(LinkedList(listOf("test user", "test password")))
         loginUserUI = LoginUserUI(loginUseCase, consoleIO)
+        mockUser = mockk<User>(relaxed = true) {
+            every { id } returns UUID.fromString("00000000-0000-0000-0000-000000000001")
+            every { name } returns "test user"
+            every { role } returns UserRole.ADMIN
+            every { projectIds } returns listOf(UUID.fromString("00000000-0000-0000-0000-000000000002"))
+        }
     }
 
     @Test
     fun `should login successfully on first attempt`() {
         // Given
-        every { loginUseCase("test user", "test password") } returns true
+        every { loginUseCase("test user", "test password") } returns mockUser
 
         // When
         loginUserUI.invoke()
@@ -45,6 +55,9 @@ class LoginUserUITest {
         outputs.forEachIndexed { index, message ->
             assert(consoleIO.outputs[index] == message)
         }
+
+        assert(SessionManager.currentUser?.id == UUID.fromString("00000000-0000-0000-0000-000000000001"))
+        assert(SessionManager.currentUser?.name == "test user")
     }
 
     @Test
@@ -53,8 +66,15 @@ class LoginUserUITest {
         consoleIO = FakeConsoleIO(LinkedList(listOf("bad user", "bad password", "good user", "good password")))
         loginUserUI = LoginUserUI(loginUseCase, consoleIO)
 
+        val goodUser = mockk<User>(relaxed = true) {
+            every { id } returns UUID.fromString("00000000-0000-0000-0000-000000000001")
+            every { name } returns "good user"
+            every { role } returns UserRole.ADMIN
+            every { projectIds } returns listOf(UUID.fromString("00000000-0000-0000-0000-000000000002"))
+        }
+
         every { loginUseCase("bad user", "bad password") } throws Exception("Invalid credentials")
-        every { loginUseCase("good user", "good password") } returns true
+        every { loginUseCase("good user", "good password") } returns goodUser
 
         // When
         loginUserUI.invoke()
@@ -78,6 +98,10 @@ class LoginUserUITest {
         outputs.forEachIndexed { index, message ->
             assert(consoleIO.outputs[index] == message)
         }
+
+        // Verify SessionManager was updated
+        assert(SessionManager.currentUser?.id == UUID.fromString("00000000-0000-0000-0000-000000000001"))
+        assert(SessionManager.currentUser?.name == "good user")
     }
 
     @Test
@@ -94,9 +118,16 @@ class LoginUserUITest {
         )
         loginUserUI = LoginUserUI(loginUseCase, consoleIO)
 
+        val user3 = mockk<User>(relaxed = true) {
+            every { id } returns UUID.fromString("00000000-0000-0000-0000-000000000003")
+            every { name } returns "user3"
+            every { role } returns UserRole.ADMIN
+            every { projectIds } returns listOf(UUID.fromString("00000000-0000-0000-0000-000000000004"))
+        }
+
         every { loginUseCase("user1", "pass1") } throws Exception("Account locked")
         every { loginUseCase("user2", "pass2") } throws Exception("Network error")
-        every { loginUseCase("user3", "pass3") } returns true
+        every { loginUseCase("user3", "pass3") } returns user3
 
         // When
         loginUserUI.invoke()
@@ -111,5 +142,8 @@ class LoginUserUITest {
         assert(consoleIO.outputs.contains("Login failed. Account locked 😞"))
         assert(consoleIO.outputs.contains("Login failed. Network error 😞"))
         assert(consoleIO.outputs.contains("✅ Logged in successfully! Welcome back, user3."))
+
+        assert(SessionManager.currentUser?.id == UUID.fromString("00000000-0000-0000-0000-000000000003"))
+        assert(SessionManager.currentUser?.name == "user3")
     }
 }
