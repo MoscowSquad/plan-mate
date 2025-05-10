@@ -86,7 +86,6 @@ fun AuditLogDto.toAudiLog(): AuditLog {
         auditType = if (auditType == PROJECT) AuditType.PROJECT else AuditType.TASK,
         timestamp = timestamp.toTimeStamp(),
         entityId = entityId.toUUID(),
-        userId = userId.toUUID(),
     )
 }
 
@@ -97,7 +96,6 @@ fun AuditLog.toDto(): AuditLogDto {
         auditType = if (auditType == AuditType.PROJECT) PROJECT else TASK,
         timestamp = timestamp.toString(),
         entityId = entityId.toString(),
-        userId = userId.toString(),
     )
 }
 

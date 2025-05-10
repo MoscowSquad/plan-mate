@@ -2,7 +2,6 @@ package data.csv_data.repositories
 
 import data.csv_data.datasource.AuditLogDataSource
 import data.csv_data.mappers.toAudiLog
-import data.csv_data.mappers.toDto
 import logic.models.AuditLog
 import logic.models.AuditType
 import logic.repositories.AuditRepository
@@ -16,11 +15,6 @@ class AuditRepositoryImpl(
     init {
         val auditLog = auditLogDataSource.fetch()
         audits.addAll(auditLog.map { it.toAudiLog() })
-    }
-
-    override fun addLog(log: AuditLog) {
-        audits.add(log)
-        auditLogDataSource.save(audits.map { it.toDto() })
     }
 
     override fun getAllLogsByTaskId(taskId: UUID): List<AuditLog> {

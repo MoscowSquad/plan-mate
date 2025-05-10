@@ -12,8 +12,8 @@ class UserUI(
 ) : ConsoleIO by consoleIO {
 
     operator fun invoke() {
-        getAllUserUI()
         while (true) {
+            getAllUserUI()
             write("\n========== User Management ==========")
             write("1. ➕ Add User")
             write("2. 🗑️  Delete User")

@@ -9,7 +9,6 @@ data class AuditLog(
     val auditType: AuditType,
     val timestamp: LocalDateTime,
     val entityId: UUID,
-    val userId: UUID,
 )
 
 

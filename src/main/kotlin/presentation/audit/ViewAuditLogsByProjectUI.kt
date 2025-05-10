@@ -36,7 +36,6 @@ class ViewAuditLogsByProjectUI(
             write(
                 """
                 ${index + 1}. [${log.timestamp}] ${log.action} | ${log.auditType}
-                   👤 User: ${log.userId}
                    📌 Entity: ${log.entityId}
                 """.trimIndent()
             )

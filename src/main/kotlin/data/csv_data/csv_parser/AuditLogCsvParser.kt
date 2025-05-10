@@ -13,7 +13,6 @@ class AuditLogCsvParser : CsvParser<AuditLogDto> {
                 auditType = it[AuditLogIndex.AUDIT_TYPE],
                 timestamp = it[AuditLogIndex.TIMESTAMP],
                 entityId = it[AuditLogIndex.ENTITY_ID],
-                userId = it[AuditLogIndex.USER_ID],
             )
         }
     }
@@ -21,7 +20,7 @@ class AuditLogCsvParser : CsvParser<AuditLogDto> {
     override fun serialize(data: List<AuditLogDto>): List<String> {
         return listOf("id,entityType,action,timestamp,entityId,userId") +
                 data.map { datum ->
-                    "${datum.id},${datum.action},${datum.auditType},${datum.timestamp},${datum.entityId},${datum.userId}"
+                    "${datum.id},${datum.action},${datum.auditType},${datum.timestamp},${datum.entityId}"
                 }
     }
 }

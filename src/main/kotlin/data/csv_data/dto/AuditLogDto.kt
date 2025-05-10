@@ -6,7 +6,6 @@ data class AuditLogDto(
     val auditType: String,
     val timestamp: String,
     val entityId: String,
-    val userId: String,
 )
 
 
