@@ -1,6 +1,7 @@
 package data.mongodb_data.datasource
 
 import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.data_source.TaskStateDataSource
 import data.mongodb_data.dto.TaskStateDto
@@ -26,8 +27,13 @@ class TaskStateDataSourceImpl(
     }
 
     override suspend fun updateTaskState(state: TaskStateDto): Boolean {
-        val filter = Filters.eq("id", state.id)
-        return collection.replaceOne(filter, state).wasAcknowledged()
+        val filter = Filters.eq(TaskStateDto::id.name, state.id)
+        val updates = Updates.combine(
+            Updates.set(TaskStateDto::id.name, state.id),
+            Updates.set(TaskStateDto::name.name, state.name),
+            Updates.set(TaskStateDto::projectId.name, state.projectId)
+        )
+        return collection.updateOne(filter, updates).wasAcknowledged()
     }
 
     override suspend fun addTaskState(projectId: UUID, state: TaskStateDto): Boolean {
