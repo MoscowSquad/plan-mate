@@ -4,7 +4,6 @@ import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import presentation.PlanMateConsoleUI
-import presentation.audit.AddAuditLogUI
 import presentation.audit.AuditUI
 import presentation.audit.ViewAuditLogsByProjectUI
 import presentation.audit.ViewAuditLogsByTaskUI
@@ -117,7 +116,6 @@ val presentationModule = module {
         )
     }
 
-    factoryOf(::AddAuditLogUI)
     factoryOf(::ViewAuditLogsByProjectUI)
     factoryOf(::ViewAuditLogsByTaskUI)
     factoryOf(::AuditUI)

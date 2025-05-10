@@ -1,6 +1,5 @@
 package di
 
-import logic.usecases.audit.AddAuditLogUseCase
 import logic.usecases.audit.ViewAuditLogsByProjectUseCase
 import logic.usecases.audit.ViewAuditLogsByTaskUseCase
 import logic.usecases.auth.LoginUseCase
@@ -14,7 +13,6 @@ import org.koin.dsl.module
 
 val useCaseModule = module {
     // Audit log-related use cases
-    singleOf(::AddAuditLogUseCase)
     singleOf(::ViewAuditLogsByProjectUseCase)
     singleOf(::ViewAuditLogsByTaskUseCase)
 

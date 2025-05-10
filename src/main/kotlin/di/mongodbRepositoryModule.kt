@@ -5,10 +5,10 @@ import logic.repositories.*
 import org.koin.dsl.module
 
 val mongodbRepositoryModule = module {
-    single<UserRepository> { UserRepositoryImpl(get()) }
-    single<TasksRepository> { TaskRepositoryImpl(get()) }
-    single<ProjectsRepository> { ProjectsRepositoryImpl(get()) }
+    single<UserRepository> { UserRepositoryImpl(get(), get()) }
+    single<TasksRepository> { TaskRepositoryImpl(get(), get()) }
+    single<ProjectsRepository> { ProjectsRepositoryImpl(get(), get()) }
     single<AuditRepository> { AuditLogRepositoryImpl(get()) }
-    single<TaskStateRepository> { TaskStateRepositoryImpl(get()) }
-    single<AuthenticationRepository> { UserRepositoryImpl(get()) }
+    single<TaskStateRepository> { TaskStateRepositoryImpl(get(), get()) }
+    single<AuthenticationRepository> { UserRepositoryImpl(get(), get()) }
 }
