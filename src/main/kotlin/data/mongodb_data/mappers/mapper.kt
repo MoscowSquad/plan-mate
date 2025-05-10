@@ -5,7 +5,10 @@ import data.mongodb_data.util.Constants.ADMIN
 import data.mongodb_data.util.Constants.MATE
 import data.mongodb_data.util.Constants.PROJECT
 import data.mongodb_data.util.Constants.TASK
+import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import logic.models.*
 import java.util.*
 
@@ -110,5 +113,7 @@ fun String.toUUID(): UUID {
 }
 
 fun String.toTimeStamp(): LocalDateTime {
-    return LocalDateTime.parse(this)
+    val instant = Instant.fromEpochMilliseconds(this.toLong())
+    val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
+    return localDateTime
 }

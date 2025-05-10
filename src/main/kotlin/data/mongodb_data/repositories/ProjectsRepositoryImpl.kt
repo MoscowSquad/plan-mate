@@ -7,6 +7,7 @@ import data.mongodb_data.dto.AuditLogDto
 import data.mongodb_data.mappers.toDto
 import data.mongodb_data.mappers.toProject
 import data.mongodb_data.util.executeInIO
+import kotlinx.datetime.Clock
 import logic.models.AuditType
 import logic.models.Project
 import logic.repositories.ProjectsRepository
@@ -26,7 +27,7 @@ class ProjectsRepositoryImpl(
                     id = UUID.randomUUID().toString(),
                     action = "Project named ${project.name} with id ${project.id} Created",
                     entityId = project.id.toString(),
-                    timestamp = System.currentTimeMillis().toString(),
+                    timestamp = Clock.System.now().toString(),
                     auditType = AuditType.PROJECT.toString(),
                 )
             )
@@ -41,7 +42,7 @@ class ProjectsRepositoryImpl(
                     id = UUID.randomUUID().toString(),
                     action = "Project named ${project.name} with id ${project.id} Updated",
                     entityId = project.id.toString(),
-                    timestamp = System.currentTimeMillis().toString(),
+                    timestamp = Clock.System.now().toString(),
                     auditType = AuditType.PROJECT.toString(),
                 )
             )
@@ -56,7 +57,7 @@ class ProjectsRepositoryImpl(
                     id = UUID.randomUUID().toString(),
                     action = "Project with id $id Deleted",
                     entityId = id.toString(),
-                    timestamp = System.currentTimeMillis().toString(),
+                    timestamp = Clock.System.now().toString(),
                     auditType = AuditType.PROJECT.toString(),
                 )
             )

@@ -6,6 +6,7 @@ import data.mongodb_data.dto.AuditLogDto
 import data.mongodb_data.mappers.toDto
 import data.mongodb_data.mappers.toUser
 import data.mongodb_data.util.executeInIO
+import kotlinx.datetime.Clock
 import logic.models.AuditType
 import logic.models.User
 import logic.repositories.AuthenticationRepository
@@ -27,7 +28,7 @@ class UserRepositoryImpl(
                     id = UUID.randomUUID().toString(),
                     action = "User with id ${user.id} and name ${user.name} Added",
                     entityId = user.id.toString(),
-                    timestamp = System.currentTimeMillis().toString(),
+                    timestamp = Clock.System.now().toString(),
                     auditType = AuditType.USER.toString(),
                 )
             )
@@ -42,7 +43,7 @@ class UserRepositoryImpl(
                     id = UUID.randomUUID().toString(),
                     action = "User with id $id Deleted",
                     entityId = id.toString(),
-                    timestamp = System.currentTimeMillis().toString(),
+                    timestamp = Clock.System.now().toString(),
                     auditType = AuditType.USER.toString(),
                 )
             )
@@ -57,7 +58,7 @@ class UserRepositoryImpl(
                     id = UUID.randomUUID().toString(),
                     action = "User with id $userId Assigned to Project with id $projectId",
                     entityId = userId.toString(),
-                    timestamp = System.currentTimeMillis().toString(),
+                    timestamp = Clock.System.now().toString(),
                     auditType = AuditType.USER.toString(),
                 )
             )
@@ -72,7 +73,7 @@ class UserRepositoryImpl(
                     id = UUID.randomUUID().toString(),
                     action = "User with id $userId Unassigned from Project with id $projectId",
                     entityId = userId.toString(),
-                    timestamp = System.currentTimeMillis().toString(),
+                    timestamp = Clock.System.now().toString(),
                     auditType = AuditType.USER.toString(),
                 )
             )
@@ -97,7 +98,7 @@ class UserRepositoryImpl(
                     id = UUID.randomUUID().toString(),
                     action = "User with id ${user.id} and name ${user.name} Registered",
                     entityId = user.id.toString(),
-                    timestamp = System.currentTimeMillis().toString(),
+                    timestamp = Clock.System.now().toString(),
                     auditType = AuditType.USER.toString(),
                 )
             )
@@ -118,7 +119,7 @@ class UserRepositoryImpl(
                     id = UUID.randomUUID().toString(),
                     action = "User with name $name Logged In",
                     entityId = result.id.toString(),
-                    timestamp = System.currentTimeMillis().toString(),
+                    timestamp = Clock.System.now().toString(),
                     auditType = AuditType.USER.toString(),
                 )
             )

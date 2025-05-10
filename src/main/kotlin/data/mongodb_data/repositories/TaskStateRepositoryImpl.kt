@@ -6,6 +6,7 @@ import data.mongodb_data.dto.AuditLogDto
 import data.mongodb_data.mappers.toDto
 import data.mongodb_data.mappers.toTaskState
 import data.mongodb_data.util.executeInIO
+import kotlinx.datetime.Clock
 import logic.models.AuditType
 import logic.models.TaskState
 import logic.repositories.TaskStateRepository
@@ -34,7 +35,7 @@ class TaskStateRepositoryImpl(
                     id = UUID.randomUUID().toString(),
                     action = "State with id ${state.id} in project id ${state.projectId} is Updated",
                     entityId = state.id.toString(),
-                    timestamp = System.currentTimeMillis().toString(),
+                    timestamp = Clock.System.now().toString(),
                     auditType = AuditType.TASK_STATE.toString(),
                 )
             )
@@ -49,7 +50,7 @@ class TaskStateRepositoryImpl(
                     id = UUID.randomUUID().toString(),
                     action = "New State with id ${state.id} in project id $projectId is Added",
                     entityId = state.id.toString(),
-                    timestamp = System.currentTimeMillis().toString(),
+                    timestamp = Clock.System.now().toString(),
                     auditType = AuditType.TASK_STATE.toString(),
                 )
             )
@@ -64,7 +65,7 @@ class TaskStateRepositoryImpl(
                     id = UUID.randomUUID().toString(),
                     action = "State with id $stateId in project id $projectId is Deleted",
                     entityId = stateId.toString(),
-                    timestamp = System.currentTimeMillis().toString(),
+                    timestamp = Clock.System.now().toString(),
                     auditType = AuditType.TASK_STATE.toString(),
                 )
             )

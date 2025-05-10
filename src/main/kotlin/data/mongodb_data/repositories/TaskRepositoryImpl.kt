@@ -7,6 +7,7 @@ import data.mongodb_data.dto.AuditLogDto
 import data.mongodb_data.mappers.toDto
 import data.mongodb_data.mappers.toTask
 import data.mongodb_data.util.executeInIO
+import kotlinx.datetime.Clock
 import logic.models.AuditType
 import logic.models.Task
 import logic.repositories.TasksRepository
@@ -32,7 +33,7 @@ class TaskRepositoryImpl(
                 id = UUID.randomUUID().toString(),
                 action = "Task named ${task.name} with description ${task.description} and id ${task.id} Created",
                 entityId = task.id.toString(),
-                timestamp = System.currentTimeMillis().toString(),
+                timestamp = Clock.System.now().toString(),
                 auditType = AuditType.TASK.toString(),
             )
         )
@@ -47,7 +48,7 @@ class TaskRepositoryImpl(
                 id = UUID.randomUUID().toString(),
                 action = "Task named ${updatedTask.name} with description ${updatedTask.description} and id ${updatedTask.id} Created",
                 entityId = updatedTask.id.toString(),
-                timestamp = System.currentTimeMillis().toString(),
+                timestamp = Clock.System.now().toString(),
                 auditType = AuditType.TASK.toString(),
             )
         )
@@ -62,7 +63,7 @@ class TaskRepositoryImpl(
                 id = UUID.randomUUID().toString(),
                 action = "Task with id $taskId Deleted",
                 entityId = taskId.toString(),
-                timestamp = System.currentTimeMillis().toString(),
+                timestamp = Clock.System.now().toString(),
                 auditType = AuditType.TASK.toString(),
             )
         )
