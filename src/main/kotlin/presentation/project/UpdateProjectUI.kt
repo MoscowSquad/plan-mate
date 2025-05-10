@@ -258,7 +258,7 @@ class UpdateProjectUI(
         }
 
         runCatching {
-            userId?.let { assignProjectToSpecificUser(UserRole.MATE, projectId = projectId, userId = it) }
+            userId?.let { assignProjectToSpecificUser(UserRole.ADMIN, projectId = projectId, userId = it) }
         }.onSuccess {
             consoleIO.write("✅ Assigned successfully")
         }.onFailure { error ->
