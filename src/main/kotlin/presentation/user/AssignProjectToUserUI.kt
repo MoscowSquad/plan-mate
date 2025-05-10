@@ -5,35 +5,55 @@ import di.SessionManager
 import logic.models.UserRole
 import logic.usecases.user.AssignProjectToUserUseCase
 import presentation.io.ConsoleIO
+import presentation.project.GetAllProjectsUI
 
 class AssignProjectToUserUI(
     private val assignProjectToUserUseCase: AssignProjectToUserUseCase,
     private val sessionManager: SessionManager,
-    private val consoleIO: ConsoleIO
+    private val consoleIO: ConsoleIO,
+    private val getAllProjectsUI: GetAllProjectsUI
 ) : ConsoleIO by consoleIO {
 
     operator fun invoke() {
+        getAllProjectsUI.invoke()
         write("\n=== Assign Project to User ===")
 
         write("Enter Project ID:")
         val projectIdInput = read()
-        val projectId = projectIdInput.toUUID()
+
+        val projectId = try {
+            projectIdInput.toUUID()
+        } catch (e: IllegalArgumentException) {
+            write("Invalid Project ID format. Please enter a valid UUID.")
+            return
+        }
+
+
 
         write("Enter User ID:")
         val userIdInput = read()
-        val userId = userIdInput.toUUID()
 
-        val isAdmin = sessionManager.getCurrentUserRole() == UserRole.ADMIN
+        val result = runCatching {
+            val userId = try {
+                userIdInput.toUUID()
+            } catch (e: IllegalArgumentException) {
+                throw IllegalArgumentException("Invalid UUID format.")
+            }
 
-        runCatching {
+            val isAdmin = sessionManager.getCurrentUserRole() == UserRole.ADMIN
+
             if (isAdmin) {
                 assignProjectToUserUseCase(UserRole.ADMIN, projectId, userId)
+            } else {
+                throw IllegalAccessException("Only admins can assign users to projects.")
             }
         }
+
+        result
             .onSuccess {
                 write("User successfully assigned to the project.")
-            }.onFailure {
-                write("Failed to assign user. ${it.message}")
             }
+            .onFailure {
+                write("Failed to assign user. ${it.message}")
+            }}
     }
-}

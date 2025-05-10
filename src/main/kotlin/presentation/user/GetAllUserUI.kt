@@ -35,21 +35,22 @@ class GetAllUserUI(
     }
 
     private fun printUserTable(users: List<User>) {
-        consoleIO.write("\n┌───────────────────────────────┐")
-        consoleIO.write("│        REGISTERED USERS       │")
-        consoleIO.write("├───────┬───────────────┬───────┤")
-        consoleIO.write("│ Index │ Username      │ Role  │")
-        consoleIO.write("├───────┼───────────────┼───────┤")
+        consoleIO.write("\n┌────────────────────────────────────────────────────────────────────────")
+        consoleIO.write("│        REGISTERED USERS       │                                          ")
+        consoleIO.write("├───────┬───────────────┬───────┤──────────────────────────────────────────")
+        consoleIO.write("│ Index │ Username      │ Role  │                   ID                     ")
+        consoleIO.write("├───────┼───────────────┼───────│──────────────────────────────────────────")
 
         users.forEachIndexed { index, user ->
             consoleIO.write(
                 "│ ${(index + 1).toString().padEnd(5)} │ " +
                         "${user.name.padEnd(13)} │ " +
-                        "${user.role.toString().padEnd(5)} │"
+                        "${user.role.toString().padEnd(5)} │"+
+                        "${user.id.toString().padEnd(5)} │"
             )
         }
 
-        consoleIO.write("└───────┴───────────────┴───────┘")
+        consoleIO.write("└───────┴───────────────┴────────────────────────┴───────────────────")
         consoleIO.write("\nTotal registered users: ${users.size}\n")
     }
 }
