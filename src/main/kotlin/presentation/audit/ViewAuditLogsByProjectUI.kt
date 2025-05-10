@@ -13,47 +13,14 @@ class ViewAuditLogsByProjectUI(
 
     operator fun invoke() {
         while (true) {
-            write(
-                """
-                
-                🏗️ VIEW AUDIT LOGS BY PROJECT
-                
-                1️⃣  View logs for specific project
-                2️⃣  View all project logs
-                3️⃣  Return to Audit Menu
-                
-                Please choose an option (1-3):
-                """.trimIndent()
-            )
+            try {
+                val projectId = readUUIDInput("Enter project ID (or type 'exit' to quit): ") ?: return
 
-            when (read().toIntOrNull()) {
-                1 -> viewSpecificProjectLogs()
-                2 -> viewAllProjectLogs()
-                3 -> return
-                else -> write("\n❌ Invalid input. Please enter 1, 2, or 3.")
+                val logs = viewAuditLogsByProjectUseCase(projectId)
+                displayLogs(logs, "Project ID: $projectId")
+            } catch (e: Exception) {
+                write("\n❌ Error retrieving project logs: ${e.message}")
             }
-        }
-    }
-
-    private fun viewSpecificProjectLogs() {
-        try {
-            write("\n🔍 ENTER PROJECT DETAILS")
-            val projectId = readUUIDInput("Enter project ID: ")
-            val logs = viewAuditLogsByProjectUseCase(projectId)
-            displayLogs(logs, "Project ID: $projectId")
-        } catch (e: Exception) {
-            write("\n❌ Error retrieving project logs: ${e.message}")
-        }
-    }
-
-    private fun viewAllProjectLogs() {
-        try {
-            write("\n📋 ALL PROJECT LOGS")
-            val allProjectsId = UUID(0, 0)
-            val logs = viewAuditLogsByProjectUseCase(allProjectsId)
-            displayLogs(logs, "All Projects")
-        } catch (e: Exception) {
-            write("\n❌ Error retrieving all project logs: ${e.message}")
         }
     }
 
@@ -64,6 +31,7 @@ class ViewAuditLogsByProjectUI(
         }
 
         write("\n📝 AUDIT LOGS ($context) - ${logs.size} entries")
+        write("=========================================")
         logs.forEachIndexed { index, log ->
             write(
                 """
@@ -73,13 +41,16 @@ class ViewAuditLogsByProjectUI(
                 """.trimIndent()
             )
         }
+        write("=========================================")
     }
 
-    private fun readUUIDInput(prompt: String): UUID {
+    private fun readUUIDInput(prompt: String): UUID? {
         while (true) {
             write(prompt)
+            val input = read().trim()
+            if (input.equals("exit", ignoreCase = true)) return null
             try {
-                return read().trim().toUUID()
+                return input.toUUID()
             } catch (e: IllegalArgumentException) {
                 write("❌ Invalid UUID format. Please try again.")
             }
