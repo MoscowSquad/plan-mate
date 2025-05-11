@@ -18,6 +18,15 @@ class RegisterAdminUI(
             write("Enter admin username: ")
             val username = read()
 
+            write(
+                """
+                # At least one lowercase letter
+                # At least one uppercase letter
+                # At least one digit
+                # At least one special character
+                # Minimum length of 8 characters""".trimIndent()
+            )
+
             write("Enter password: 🔑")
             val password = read()
 

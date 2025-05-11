@@ -1,9 +1,10 @@
 package logic.usecases.auth
 
-import logic.util.toMD5Hash
 import logic.models.User
 import logic.models.UserRole
 import logic.repositories.AuthenticationRepository
+import logic.util.isValidPasswordFormat
+import logic.util.toMD5Hash
 import java.util.*
 
 class RegisterUseCase(
@@ -17,7 +18,9 @@ class RegisterUseCase(
     ): User {
         require(name.isNotBlank()) { "Username cannot be blank" }
         require(plainPassword.isNotBlank()) { "Password cannot be blank" }
-        require(plainPassword.length >= 8) { "Password must be at least 8 characters" }
+        require(plainPassword.isValidPasswordFormat()) {
+            "Password must be at least 8 characters long and contain at least one digit, one uppercase letter, and one lowercase letter"
+        }
 
         return authRepository.register(
             User(
