@@ -21,10 +21,12 @@ class LoginUserUITest {
 
     @BeforeEach
     fun setUp() {
+        SessionManager.currentUser = null
+
         loginUseCase = mockk(relaxed = true)
         consoleIO = FakeConsoleIO(LinkedList(listOf("test user", "test password")))
         loginUserUI = LoginUserUI(loginUseCase, consoleIO)
-        mockUser = mockk<User>(relaxed = true) {
+        mockUser = mockk(relaxed = true) {
             every { id } returns UUID.fromString("00000000-0000-0000-0000-000000000001")
             every { name } returns "test user"
             every { role } returns UserRole.ADMIN
@@ -99,7 +101,6 @@ class LoginUserUITest {
             assert(consoleIO.outputs[index] == message)
         }
 
-        // Verify SessionManager was updated
         assert(SessionManager.currentUser?.id == UUID.fromString("00000000-0000-0000-0000-000000000001"))
         assert(SessionManager.currentUser?.name == "good user")
     }
