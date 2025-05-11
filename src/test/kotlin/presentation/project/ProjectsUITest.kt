@@ -42,9 +42,9 @@ class ProjectsUITest {
 
         // Then
         verifySequence {
-            consoleIO.write(any<String>()) // Menu display
-            consoleIO.read()
             getAllProjectsUI.invoke()
+            consoleIO.write(any<String>())
+            consoleIO.read()
             consoleIO.write("Going back to the main menu...")
         }
     }
@@ -59,9 +59,9 @@ class ProjectsUITest {
 
         // Then
         verifySequence {
-            consoleIO.write(any<String>()) // Menu display
-            consoleIO.read()
             getAllProjectsUI.invoke()
+            consoleIO.write(any<String>())
+            consoleIO.read()
             createProjectUI.invoke()
         }
     }
@@ -76,9 +76,8 @@ class ProjectsUITest {
 
         // Then
         verifySequence {
-            consoleIO.write(any<String>()) // Menu display
+            consoleIO.write(any<String>())
             consoleIO.read()
-            getAllProjectsUI.invoke()
             updateProjectNameUI.invoke()
         }
     }
@@ -93,9 +92,9 @@ class ProjectsUITest {
 
         // Then
         verifySequence {
-            consoleIO.write(any<String>()) // Menu display
-            consoleIO.read()
             getAllProjectsUI.invoke()
+            consoleIO.write(any<String>())
+            consoleIO.read()
             deleteProjectUI.invoke()
         }
     }
@@ -110,9 +109,9 @@ class ProjectsUITest {
 
         // Then
         verifySequence {
-            consoleIO.write(any<String>()) // Menu display
-            consoleIO.read()
             getAllProjectsUI.invoke()
+            consoleIO.write(any<String>())
+            consoleIO.read()
             consoleIO.write("Going back to the main menu...")
         }
 
@@ -133,9 +132,9 @@ class ProjectsUITest {
 
         // Then
         verifySequence {
-            consoleIO.write(any<String>()) // Menu display
-            consoleIO.read()
             getAllProjectsUI.invoke()
+            consoleIO.write(any<String>())
+            consoleIO.read()
             consoleIO.write("\nInvalid input. Please enter a number between 1 and 4.")
         }
     }
@@ -150,9 +149,9 @@ class ProjectsUITest {
 
         // Then
         verifySequence {
-            consoleIO.write(any<String>()) // Menu display
-            consoleIO.read()
             getAllProjectsUI.invoke()
+            consoleIO.write(any<String>())
+            consoleIO.read()
             consoleIO.write("\nInvalid input. Please enter a number between 1 and 4.")
         }
     }

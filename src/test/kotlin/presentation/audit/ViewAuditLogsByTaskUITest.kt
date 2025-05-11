@@ -1,6 +1,6 @@
 package presentation.audit
 
-import data.mappers.toUUID
+import data.mongodb_data.mappers.toUUID
 import io.mockk.*
 import kotlinx.datetime.toLocalDateTime
 import logic.models.AuditLog
@@ -17,14 +17,12 @@ class ViewAuditLogsByTaskUITest {
     private lateinit var viewAuditLogsByTaskUI: ViewAuditLogsByTaskUI
     private val taskId = UUID.randomUUID()
     private val taskIdString = taskId.toString()
-    private val allTasksId = UUID(0, 0)
     private val sampleLog = AuditLog(
         id = UUID.randomUUID(),
         action = "Task was created",
         auditType = AuditType.TASK,
         timestamp = kotlinx.datetime.Clock.System.now().toLocalDateTime(kotlinx.datetime.TimeZone.UTC),
-        entityId = UUID.randomUUID(),
-        userId = UUID.randomUUID()
+        entityId = UUID.randomUUID()
     )
 
     @BeforeEach
@@ -38,16 +36,16 @@ class ViewAuditLogsByTaskUITest {
     }
 
     @Test
-    fun `should return to audit menu when option 3 is selected`() {
+    fun `should exit when exit command is entered`() {
         // Given
-        every { consoleIO.read() } returns "3"
+        every { consoleIO.read() } returns "exit"
 
         // When
         viewAuditLogsByTaskUI.invoke()
 
         // Then
-        verify(exactly = 1) {
-            consoleIO.write(any())
+        verifySequence {
+            consoleIO.write("Enter task ID (or type 'exit' to quit): ")
             consoleIO.read()
         }
         verify(exactly = 0) {
@@ -56,28 +54,10 @@ class ViewAuditLogsByTaskUITest {
     }
 
     @Test
-    fun `should show error message for invalid option`() {
-        // Given
-        every { consoleIO.read() } returnsMany listOf("invalid", "3")
-
-        // When
-        viewAuditLogsByTaskUI.invoke()
-
-        // Then
-        verifySequence {
-            consoleIO.write(any())
-            consoleIO.read()
-            consoleIO.write("\n❌ Invalid input. Please enter 1, 2, or 3.")
-            consoleIO.write(any())
-            consoleIO.read()
-        }
-    }
-
-    @Test
     fun `should view specific task logs successfully`() {
         // Given
         val logs = listOf(sampleLog)
-        every { consoleIO.read() } returnsMany listOf("1", taskIdString, "3")
+        every { consoleIO.read() } returnsMany listOf(taskIdString, "exit")
         every { viewAuditLogsByTaskUseCase(taskId) } returns logs
 
         // When
@@ -85,52 +65,45 @@ class ViewAuditLogsByTaskUITest {
 
         // Then
         verifySequence {
-            consoleIO.write(any())
-            consoleIO.read()
-            consoleIO.write("\n🔍 ENTER TASK DETAILS")
-            consoleIO.write("Enter task ID: ")
+            consoleIO.write("Enter task ID (or type 'exit' to quit): ")
             consoleIO.read()
             viewAuditLogsByTaskUseCase(taskId)
             consoleIO.write("\n📝 AUDIT LOGS (Task ID: $taskId) - 1 entries")
+            consoleIO.write("=========================================")
             consoleIO.write(any())
-            consoleIO.write(any())
+            consoleIO.write("=========================================")
+            consoleIO.write("Enter task ID (or type 'exit' to quit): ")
             consoleIO.read()
         }
     }
 
     @Test
-    fun `should handle invalid UUID format when viewing specific task logs`() {
+    fun `should handle invalid UUID format`() {
         // Given
         val invalidUUID = "invalid-uuid"
-        val validUUID = taskIdString
-        every { consoleIO.read() } returnsMany listOf("1", invalidUUID, validUUID, "3")
+        every { consoleIO.read() } returnsMany listOf(invalidUUID, "exit")
         every { invalidUUID.toUUID() } throws IllegalArgumentException("Invalid UUID format")
-        every { viewAuditLogsByTaskUseCase(taskId) } returns emptyList()
 
         // When
         viewAuditLogsByTaskUI.invoke()
 
         // Then
         verifySequence {
-            consoleIO.write(any())
-            consoleIO.read()
-            consoleIO.write("\n🔍 ENTER TASK DETAILS")
-            consoleIO.write("Enter task ID: ")
+            consoleIO.write("Enter task ID (or type 'exit' to quit): ")
             consoleIO.read()
             consoleIO.write("❌ Invalid UUID format. Please try again.")
-            consoleIO.write("Enter task ID: ")
+            consoleIO.write("Enter task ID (or type 'exit' to quit): ")
             consoleIO.read()
-            viewAuditLogsByTaskUseCase(taskId)
-            consoleIO.write("\nℹ️ No audit logs found for Task ID: $taskId")
-            consoleIO.write(any())
-            consoleIO.read()
+        }
+        verify(exactly = 0) {
+            viewAuditLogsByTaskUseCase(any())
         }
     }
 
     @Test
-    fun `should handle empty logs when viewing specific task logs`() {
+    fun `should handle empty logs`() {
         // Given
-        every { consoleIO.read() } returnsMany listOf("1", taskIdString, "3")
+        every { consoleIO.read() } returnsMany listOf(taskIdString, "exit")
         every { viewAuditLogsByTaskUseCase(taskId) } returns emptyList()
 
         // When
@@ -138,23 +111,20 @@ class ViewAuditLogsByTaskUITest {
 
         // Then
         verifySequence {
-            consoleIO.write(any())
-            consoleIO.read()
-            consoleIO.write("\n🔍 ENTER TASK DETAILS")
-            consoleIO.write("Enter task ID: ")
+            consoleIO.write("Enter task ID (or type 'exit' to quit): ")
             consoleIO.read()
             viewAuditLogsByTaskUseCase(taskId)
             consoleIO.write("\nℹ️ No audit logs found for Task ID: $taskId")
-            consoleIO.write(any())
+            consoleIO.write("Enter task ID (or type 'exit' to quit): ")
             consoleIO.read()
         }
     }
 
     @Test
-    fun `should handle exception when viewing specific task logs`() {
+    fun `should handle exception when retrieving logs`() {
         // Given
-        val errorMsg = "Task not found"
-        every { consoleIO.read() } returnsMany listOf("1", taskIdString, "3")
+        val errorMsg = "Database connection error"
+        every { consoleIO.read() } returnsMany listOf(taskIdString, "exit")
         every { viewAuditLogsByTaskUseCase(taskId) } throws RuntimeException(errorMsg)
 
         // When
@@ -162,99 +132,37 @@ class ViewAuditLogsByTaskUITest {
 
         // Then
         verifySequence {
-            consoleIO.write(any())
-            consoleIO.read()
-            consoleIO.write("\n🔍 ENTER TASK DETAILS")
-            consoleIO.write("Enter task ID: ")
+            consoleIO.write("Enter task ID (or type 'exit' to quit): ")
             consoleIO.read()
             viewAuditLogsByTaskUseCase(taskId)
             consoleIO.write("\n❌ Error retrieving task logs: $errorMsg")
-            consoleIO.write(any())
+            consoleIO.write("Enter task ID (or type 'exit' to quit): ")
             consoleIO.read()
         }
     }
 
     @Test
-    fun `should view all task logs successfully`() {
+    fun `should handle multiple valid queries before exiting`() {
         // Given
-        val logs = listOf(sampleLog, sampleLog)
-        every { consoleIO.read() } returnsMany listOf("2", "3")
-        every { viewAuditLogsByTaskUseCase(allTasksId) } returns logs
+        val secondTaskId = UUID.randomUUID()
+        val secondTaskIdString = secondTaskId.toString()
+        every { secondTaskIdString.toUUID() } returns secondTaskId
+
+        every { consoleIO.read() } returnsMany listOf(
+            taskIdString,
+            secondTaskIdString,
+            "exit"
+        )
+        every { viewAuditLogsByTaskUseCase(taskId) } returns listOf(sampleLog, sampleLog)
+        every { viewAuditLogsByTaskUseCase(secondTaskId) } returns listOf(sampleLog)
 
         // When
         viewAuditLogsByTaskUI.invoke()
 
         // Then
-        verifySequence {
-            consoleIO.write(any())
-            consoleIO.read()
-            consoleIO.write("\n📋 ALL TASK LOGS")
-            viewAuditLogsByTaskUseCase(allTasksId)
-            consoleIO.write("\n📝 AUDIT LOGS (All Tasks) - 2 entries")
-            consoleIO.write(any())
-            consoleIO.write(any())
-            consoleIO.write(any())
-            consoleIO.read()
-        }
-    }
-
-    @Test
-    fun `should handle empty logs when viewing all task logs`() {
-        // Given
-        every { consoleIO.read() } returnsMany listOf("2", "3")
-        every { viewAuditLogsByTaskUseCase(allTasksId) } returns emptyList()
-
-        // When
-        viewAuditLogsByTaskUI.invoke()
-
-        // Then
-        verifySequence {
-            consoleIO.write(any())
-            consoleIO.read()
-            consoleIO.write("\n📋 ALL TASK LOGS")
-            viewAuditLogsByTaskUseCase(allTasksId)
-            consoleIO.write("\nℹ️ No audit logs found for All Tasks")
-            consoleIO.write(any())
-            consoleIO.read()
-        }
-    }
-
-    @Test
-    fun `should handle exception when viewing all task logs`() {
-        // Given
-        val errorMsg = "Database connection error"
-        every { consoleIO.read() } returnsMany listOf("2", "3")
-        every { viewAuditLogsByTaskUseCase(allTasksId) } throws RuntimeException(errorMsg)
-
-        // When
-        viewAuditLogsByTaskUI.invoke()
-
-        // Then
-        verifySequence {
-            consoleIO.write(any())
-            consoleIO.read()
-            consoleIO.write("\n📋 ALL TASK LOGS")
-            viewAuditLogsByTaskUseCase(allTasksId)
-            consoleIO.write("\n❌ Error retrieving all task logs: $errorMsg")
-            consoleIO.write(any())
-            consoleIO.read()
-        }
-    }
-    @Test
-    fun `should handle invalid numeric menu option`() {
-        // Given
-        every { consoleIO.read() } returnsMany listOf("4", "3")
-
-        // When
-        viewAuditLogsByTaskUI.invoke()
-
-        // Then
-        verifySequence {
-            consoleIO.write(match { it.contains("TASK AUDIT LOG VIEWER") })
-            consoleIO.read()
-            consoleIO.write("\n❌ Invalid input. Please enter 1, 2, or 3.")
-            consoleIO.write(match { it.contains("TASK AUDIT LOG VIEWER") })
-            consoleIO.read()
-        }
+        verify(exactly = 3) { consoleIO.write("Enter task ID (or type 'exit' to quit): ") }
+        verify(exactly = 3) { consoleIO.read() }
+        verify(exactly = 1) { viewAuditLogsByTaskUseCase(taskId) }
+        verify(exactly = 1) { viewAuditLogsByTaskUseCase(secondTaskId) }
     }
 }

@@ -13,7 +13,7 @@ class TasksRepositoryImpl(
     private val taskDataSource: TaskDataSource
 ) : TasksRepository {
 
-    private val tasks = mutableListOf<Task>()
+    val tasks = mutableListOf<Task>()
 
     init {
         tasks.addAll(taskDataSource.fetch().map { it.toTask() })

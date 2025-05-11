@@ -15,6 +15,7 @@ import java.util.*
 class ViewAuditLogsByProjectUseCaseTest {
     private lateinit var repository: AuditRepository
     private lateinit var useCase: ViewAuditLogsByProjectUseCase
+    private val projectId = UUID.randomUUID()
 
     @BeforeEach
     fun setUp() {
@@ -25,7 +26,6 @@ class ViewAuditLogsByProjectUseCaseTest {
     @Test
     fun `invoke should return empty list when no logs exist for project`() {
         // Given
-        val projectId = UUID.randomUUID()
         every { repository.getAllLogsByProjectId(projectId) } returns emptyList()
 
         // When
@@ -37,90 +37,81 @@ class ViewAuditLogsByProjectUseCaseTest {
     }
 
     @Test
-    fun `invoke should return only project logs for given project ID`() {
+    fun `invoke should return logs for given project ID`() {
         // Given
-        val projectId = UUID.fromString("00000000-0000-0000-0000-000000000020")
-        val expectedLogs = listOf(
-            AuditLog(
-                id = UUID.fromString("00000000-0000-0000-0000-000000000020"),
-                auditType = AuditType.PROJECT,
-                action = "Project created",
-                timestamp = LocalDateTime(2023, 12, 31, 23, 59, 59),
-                entityId = projectId,
-                userId = UUID.fromString("00000000-0000-0000-0000-000000000020")
-            )
+        val expectedLog = AuditLog(
+            id = UUID.randomUUID(),
+            action = "Project created",
+            auditType = AuditType.PROJECT,
+            timestamp = LocalDateTime(2023, 12, 31, 23, 59, 59),
+            entityId = projectId
         )
 
-        every { repository.getAllLogsByProjectId(projectId) } returns expectedLogs
-
-        // When
-        val result = useCase(projectId)
-
-        // Then
-        assertEquals(expectedLogs.size, result.size)
-        assertEquals(projectId, result[0].entityId)
-        assertEquals(AuditType.PROJECT, result[0].auditType)
-        verify(exactly = 1) { repository.getAllLogsByProjectId(projectId) }
-    }
-
-    @Test
-    fun `invoke should not return task logs for given project ID`() {
-        // Given
-        val projectId = UUID.fromString("00000000-0000-0000-0000-000000000020")
-        val taskId = UUID.fromString("00000000-0000-0000-0000-000000000020")
-        val mixedLogs = listOf(
-            AuditLog(
-                id = UUID.fromString("00000000-0000-0000-0000-000000000020"),
-                auditType = AuditType.PROJECT,
-                action = "Project updated",
-                timestamp = LocalDateTime(2023, 12, 31, 23, 59, 59),
-                entityId = projectId,
-                userId = UUID.fromString("00000000-0000-0000-0000-000000000020")
-            ),
-            AuditLog(
-                id = UUID.fromString("00000000-0000-0000-0000-000000000020"),
-                auditType = AuditType.TASK,
-                action = "Task created",
-                timestamp = LocalDateTime(2023, 12, 31, 23, 59, 59),
-                entityId = taskId,
-                userId = UUID.fromString("00000000-0000-0000-0000-000000000020")
-            )
-        )
-
-        every { repository.getAllLogsByProjectId(projectId) } returns mixedLogs.filter { it.auditType == AuditType.PROJECT && it.entityId == projectId }
+        every { repository.getAllLogsByProjectId(projectId) } returns listOf(expectedLog)
 
         // When
         val result = useCase(projectId)
 
         // Then
         assertEquals(1, result.size)
+        assertEquals(projectId, result[0].entityId)
         assertEquals(AuditType.PROJECT, result[0].auditType)
         verify(exactly = 1) { repository.getAllLogsByProjectId(projectId) }
     }
 
     @Test
-    fun `invoke should return multiple logs when multiple project logs exist`() {
+    fun `invoke should return both project and task logs for the project`() {
         // Given
-        val projectId = UUID.fromString("00000000-0000-0000-0000-000000000020")
-        val expectedLogs = listOf(
-            AuditLog(
-                id = UUID.fromString("00000000-0000-0000-0000-000000000020"),
-                auditType = AuditType.PROJECT,
-                action = "Project created",
-                timestamp = LocalDateTime(2023, 12, 31, 23, 59, 59),
-                entityId = projectId,
-                userId = UUID.fromString("00000000-0000-0000-0000-000000000020")
-            ),
-            AuditLog(
-                id = UUID.fromString("00000000-0000-0000-0000-000000000020"),
-                auditType = AuditType.PROJECT,
-                action = "Project updated",
-                timestamp = LocalDateTime(2023, 12, 31, 23, 59, 59),
-                entityId = projectId,
-                userId = UUID.fromString("00000000-0000-0000-0000-000000000020")
-            )
+        val taskId = UUID.randomUUID()
+        val projectLog = AuditLog(
+            id = UUID.randomUUID(),
+            action = "Project updated",
+            auditType = AuditType.PROJECT,
+            timestamp = LocalDateTime(2023, 12, 31, 23, 59, 59),
+            entityId = projectId
         )
 
+        val taskLog = AuditLog(
+            id = UUID.randomUUID(),
+            action = "Task created",
+            auditType = AuditType.TASK,
+            timestamp = LocalDateTime(2023, 12, 31, 23, 59, 59),
+            entityId = taskId
+        )
+
+        val mixedLogs = listOf(projectLog, taskLog)
+        every { repository.getAllLogsByProjectId(projectId) } returns mixedLogs
+
+        // When
+        val result = useCase(projectId)
+
+        // Then
+        assertEquals(2, result.size)
+        assertTrue(result.any { it.auditType == AuditType.PROJECT })
+        assertTrue(result.any { it.auditType == AuditType.TASK })
+        verify(exactly = 1) { repository.getAllLogsByProjectId(projectId) }
+    }
+
+    @Test
+    fun `invoke should return multiple logs when multiple logs exist`() {
+        // Given
+        val log1 = AuditLog(
+            id = UUID.randomUUID(),
+            auditType = AuditType.PROJECT,
+            action = "Project created",
+            timestamp = LocalDateTime(2023, 12, 31, 23, 59, 59),
+            entityId = projectId
+        )
+
+        val log2 = AuditLog(
+            id = UUID.randomUUID(),
+            auditType = AuditType.PROJECT,
+            action = "Project updated",
+            timestamp = LocalDateTime(2024, 1, 1, 10, 30, 0),
+            entityId = projectId
+        )
+
+        val expectedLogs = listOf(log1, log2)
         every { repository.getAllLogsByProjectId(projectId) } returns expectedLogs
 
         // When
@@ -128,7 +119,6 @@ class ViewAuditLogsByProjectUseCaseTest {
 
         // Then
         assertEquals(2, result.size)
-        assertTrue(result.all { it.auditType == AuditType.PROJECT && it.entityId == projectId })
         verify(exactly = 1) { repository.getAllLogsByProjectId(projectId) }
     }
 }

@@ -1,41 +1,50 @@
 package logic.usecases.auth
 
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import logic.models.User
+import logic.models.UserRole
+import logic.repositories.AuthenticationRepository
 import logic.util.UserNotFoundException
 import logic.util.toMD5Hash
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
-import org.junit.jupiter.api.io.TempDir
-import java.io.File
-import java.nio.file.Path
+import java.util.UUID
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
+import kotlin.test.assertNotNull
 
 class LoginUseCaseTest {
 
     private lateinit var loginUseCase: LoginUseCase
-    private lateinit var usersFile: File
+    private lateinit var authRepository: AuthenticationRepository
+
+    private val validUser = User(
+        id = UUID.randomUUID(),
+        name = "validUser",
+        hashedPassword = "correctPassword".toMD5Hash(),
+        role = UserRole.ADMIN,
+        projectIds = emptyList()
+    )
 
     @BeforeEach
-    fun setUp(@TempDir tempDir: Path) {
-        usersFile = File(tempDir.toFile(), "users.csv")
-        usersFile.writeText(
-            """
-            id,username,password,role
-            1,validUser,${"correctPassword".toMD5Hash()},ADMIN
-            2,testUser,${"test123".toMD5Hash()},MATE
-        """.trimIndent()
-        )
+    fun setUp() {
+        authRepository = mockk()
+        loginUseCase = LoginUseCase(authRepository)
 
-        loginUseCase = LoginUseCase()
-        val field = LoginUseCase::class.java.getDeclaredField("usersFile")
-        field.isAccessible = true
-        field.set(loginUseCase, usersFile)
+        every { authRepository.login("validUser", "correctPassword".toMD5Hash()) } returns validUser
+        every { authRepository.login("VALIDUSER", "correctPassword".toMD5Hash()) } returns validUser
+        every { authRepository.login("validUser", "wrongPassword".toMD5Hash()) } throws UserNotFoundException("validUser")
+        every { authRepository.login("nonExistentUser", any()) } throws UserNotFoundException("nonExistentUser")
+        every { authRepository.login("testUser", any()) } throws UserNotFoundException("testUser")
     }
 
     @Test
     fun `should return true for successful authentication`() {
-        assertTrue(loginUseCase("validUser", "correctPassword"))
+        val result = loginUseCase("validUser", "correctPassword")
+        assertNotNull(result)
+        assertEquals("validUser", result.name)
     }
 
     @Test
@@ -48,9 +57,9 @@ class LoginUseCaseTest {
     @Test
     fun `should throw when username is blank`() {
         val exception = assertThrows<IllegalArgumentException> {
-            loginUseCase("", "password")
+            loginUseCase("", "password123")
         }
-        assertTrue(exception.message!!.contains("Username cannot be blank"))
+        assertEquals("Username cannot be blank", exception.message)
     }
 
     @Test
@@ -58,47 +67,49 @@ class LoginUseCaseTest {
         val exception = assertThrows<IllegalArgumentException> {
             loginUseCase("username", "")
         }
-        assertTrue(exception.message!!.contains("Password cannot be blank"))
+        assertEquals("Password cannot be blank", exception.message)
+    }
+
+    @Test
+    fun `should throw when password is too short`() {
+        val exception = assertThrows<IllegalArgumentException> {
+            loginUseCase("username", "short")
+        }
+        assertEquals("Password must be at least 8 characters", exception.message)
     }
 
     @Test
     fun `should ignore case for username comparison`() {
-        assertTrue(loginUseCase("VALIDUSER", "correctPassword"))
+        val result = loginUseCase("VALIDUSER", "correctPassword")
+        assertNotNull(result)
+        assertEquals("validUser", result.name)
     }
 
     @Test
     fun `should throw when users file does not exist`() {
-        // Delete the users file
-        usersFile.delete()
+        every { authRepository.login(any(), any()) } throws IllegalStateException("users.csv not found")
 
         val exception = assertThrows<IllegalStateException> {
             loginUseCase("validUser", "correctPassword")
         }
-        assertTrue(exception.message!!.contains("users.csv not found"))
+        assertEquals("users.csv not found", exception.message)
     }
 
     @Test
     fun `should throw UserNotFoundException when user does not exist`() {
         val exception = assertThrows<UserNotFoundException> {
-            loginUseCase("nonExistentUser", "anyPassword")
+            loginUseCase("nonExistentUser", "anyPassword12")
         }
         assertEquals("User 'nonExistentUser' does not exist", exception.message)
     }
+
     @Test
     fun `should handle malformed CSV lines without enough columns`() {
-        usersFile.writeText(
-            """
-        id,username,password,role
-        1,validUser,${"correctPassword".toMD5Hash()},ADMIN
-        2,testUser
-        """.trimIndent()
-        )
-
-        assertTrue(loginUseCase("validUser", "correctPassword"))
-
         val exception = assertThrows<UserNotFoundException> {
-            loginUseCase("testUser", "anyPassword")
+            loginUseCase("testUser", "password123")
         }
         assertEquals("User 'testUser' does not exist", exception.message)
+
+        verify { authRepository.login("testUser", "password123".toMD5Hash()) }
     }
 }

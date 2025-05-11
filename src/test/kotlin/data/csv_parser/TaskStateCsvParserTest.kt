@@ -3,7 +3,7 @@ package data.csv_parser
 import com.google.common.truth.Truth
 import data.csv_data.csv_parser.CsvHandler
 import data.csv_data.csv_parser.TaskStateCsvParser
-import data.mongodb_data.dto.TaskStateDto
+import data.csv_data.dto.TaskStateDto
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
@@ -87,7 +87,6 @@ class TaskStateCsvParserTest {
         Truth.assertThat(result).isEqualTo(csvLines)
     }
 
-
     private fun getStates(): List<TaskStateDto> {
         return listOf(
             createState("caf22bb1-90ff-409d-bef2-3b8bc9759354", "Todo", "caf22bb1-90ff-409d-bef2-3b8bc9759354"),
@@ -104,7 +103,6 @@ class TaskStateCsvParserTest {
             "caf22bb1-90ff-409d-bef2-3b8bc9759354,Done,caf22bb1-90ff-409d-bef2-3b8bc9759354",
         )
     }
-
 
     private fun createState(
         id: String,
