@@ -24,17 +24,20 @@ class RegisterUseCaseTest {
             return user
         }
 
-        override fun login(name: String, password: String): Boolean = false
+        override fun login(name: String, password: String): User {
+            val user = registeredUsers.find { it.name == name && it.hashedPassword == password }
+                ?: throw IllegalArgumentException("Invalid credentials")
+            return user
+        }
     }
 
     private val fakeRepository = FakeAuthRepository()
-    private val passwordHasher = { plain: String -> "hashed_$plain" }
     private val registerUseCase = RegisterUseCase(fakeRepository)
 
     @Test
     fun `should return non-null user when registration succeeds`() {
         val result = registerUseCase(
-            name = "testuser",
+            name = "test user",
             plainPassword = "validPassword123",
             role = UserRole.MATE
         )
@@ -48,14 +51,16 @@ class RegisterUseCaseTest {
                 throw RuntimeException("Password hashing failed")
             }
 
-            override fun login(name: String, password: String): Boolean = false
+            override fun login(name: String, password: String): User {
+                throw RuntimeException("Password hashing failed")
+            }
         }
 
         val failingRegisterUseCase = RegisterUseCase(failingAuthRepository)
 
         assertThrows<RuntimeException> {
             failingRegisterUseCase(
-                name = "testuser",
+                name = "test user",
                 plainPassword = "password123",
                 role = UserRole.MATE
             )
@@ -68,7 +73,7 @@ class RegisterUseCaseTest {
 
         assertThrows<IllegalStateException> {
             registerUseCase(
-                name = "testuser",
+                name = "test user",
                 plainPassword = "password123",
                 role = UserRole.MATE
             )
@@ -78,7 +83,7 @@ class RegisterUseCaseTest {
     @Test
     fun `should add user to repository when registration succeeds`() {
         registerUseCase(
-            name = "testuser",
+            name = "test user",
             plainPassword = "validPassword123",
             role = UserRole.MATE
         )
@@ -88,11 +93,11 @@ class RegisterUseCaseTest {
     @Test
     fun `should store correct username when registration succeeds`() {
         registerUseCase(
-            name = "testuser",
+            name = "test user",
             plainPassword = "validPassword123",
             role = UserRole.MATE
         )
-        assertTrue { fakeRepository.registeredUsers[0].name == "testuser" }
+        assertTrue { fakeRepository.registeredUsers[0].name == "test user" }
     }
 
     @Test
@@ -100,7 +105,7 @@ class RegisterUseCaseTest {
         val password = "validPassword123"
 
         registerUseCase(
-            name = "testuser",
+            name = "test user",
             plainPassword = password,
             role = UserRole.MATE
         )
@@ -111,7 +116,7 @@ class RegisterUseCaseTest {
     fun `should include single project ID when one is provided`() {
         val projectId = UUID.randomUUID()
         registerUseCase(
-            name = "projectuser",
+            name = "project user",
             plainPassword = "password123",
             role = UserRole.MATE,
             projectIds = listOf(projectId)
@@ -123,7 +128,7 @@ class RegisterUseCaseTest {
     fun `should store correct project ID when one is provided`() {
         val projectId = UUID.randomUUID()
         registerUseCase(
-            name = "projectuser",
+            name = "project user",
             plainPassword = "password123",
             role = UserRole.MATE,
             projectIds = listOf(projectId)
@@ -151,13 +156,13 @@ class RegisterUseCaseTest {
                 role = UserRole.MATE
             )
         }
-        assertTrue { exception.message?.contains("Username cannot be blank") ?: false }
+        assertTrue { exception.message?.contains("Username cannot be blank") == true }
     }
 
     @Test
     fun `should generate valid UUID for new user`() {
         val result = registerUseCase(
-            name = "newuser",
+            name = "new user",
             plainPassword = "password123",
             role = UserRole.ADMIN
         )
@@ -174,7 +179,7 @@ class RegisterUseCaseTest {
         fakeRepository.shouldThrow = true
         assertThrows<IllegalStateException> {
             registerUseCase(
-                name = "testuser",
+                name = "test user",
                 plainPassword = "validPassword123",
                 role = UserRole.MATE
             )
@@ -184,8 +189,8 @@ class RegisterUseCaseTest {
     @Test
     fun `should store correct role for admin user`() {
         registerUseCase(
-            name = "adminuser",
-            plainPassword = "adminpass",
+            name = "admin user",
+            plainPassword = "admin pass",
             role = UserRole.ADMIN
         )
         assertTrue { fakeRepository.registeredUsers[0].role == UserRole.ADMIN }
@@ -194,7 +199,7 @@ class RegisterUseCaseTest {
     @Test
     fun `should store empty project list when none provided`() {
         registerUseCase(
-            name = "noprojects",
+            name = "no projects",
             plainPassword = "test12345",
             role = UserRole.MATE
         )
@@ -205,24 +210,23 @@ class RegisterUseCaseTest {
     fun `should throw when password is blank`() {
         val exception = assertThrows<IllegalArgumentException> {
             registerUseCase(
-                name = "testuser",
+                name = "test user",
                 plainPassword = "",
                 role = UserRole.MATE
             )
         }
-        assertTrue { exception.message?.contains("Password cannot be blank") ?: false }
+        assertTrue { exception.message?.contains("Password cannot be blank") == true }
     }
 
     @Test
     fun `should throw when password is shorter than 8 characters`() {
         val exception = assertThrows<IllegalArgumentException> {
             registerUseCase(
-                name = "testuser",
+                name = "test user",
                 plainPassword = "short",
                 role = UserRole.MATE
             )
         }
-        assertTrue { exception.message?.contains("Password must be at least 8 characters") ?: false }
+        assertTrue { exception.message?.contains("Password must be at least 8 characters") == true }
     }
-
 }

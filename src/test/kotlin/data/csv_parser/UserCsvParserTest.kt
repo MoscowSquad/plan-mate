@@ -3,9 +3,9 @@ package data.csv_parser
 import com.google.common.truth.Truth
 import data.csv_data.csv_parser.CsvHandler
 import data.csv_data.csv_parser.UserCsvParser
+import data.csv_data.dto.UserDto
 import data.csv_data.util.ADMIN
 import data.csv_data.util.MATE
-import data.mongodb_data.dto.UserDto
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
@@ -52,9 +52,7 @@ class UserCsvParserTest {
     @Test
     fun `should return empty list when parse data from empty user file with csv-header`() {
         // Given
-        val csvLines = listOf(
-            "id,name,hashedPassword,role,projectIds",
-        )
+        val csvLines = listOf("id,name,hashedPassword,role,projectIds")
         every { csvHandler.getLines() } returns csvLines
 
         // When
@@ -90,6 +88,7 @@ class UserCsvParserTest {
         val csvLines = listOf("id,name,hashedPassword,role,projectIds")
         Truth.assertThat(result).isEqualTo(csvLines)
     }
+
     @Test
     fun `should return empty list when serialize and parse user with empty project ids string`() {
         // Given
@@ -119,6 +118,7 @@ class UserCsvParserTest {
             createUser("test-id", "TestUser", "password123", MATE, emptyList())
         )
     }
+
     @Test
     fun `should return empty list when parsing blank project ids`() {
         // Given
@@ -135,8 +135,6 @@ class UserCsvParserTest {
             createUser("test-id", "TestUser", "password123", MATE, emptyList())
         )
     }
-
-
 
     private fun getUsers(): List<UserDto> {
         return listOf(

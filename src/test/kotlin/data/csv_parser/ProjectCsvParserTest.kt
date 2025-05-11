@@ -3,7 +3,7 @@ package data.csv_parser
 import com.google.common.truth.Truth
 import data.csv_data.csv_parser.CsvHandler
 import data.csv_data.csv_parser.ProjectCsvParser
-import data.mongodb_data.dto.ProjectDto
+import data.csv_data.dto.ProjectDto
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
@@ -88,7 +88,6 @@ class ProjectCsvParserTest {
         val csvLines = listOf("id,name")
         Truth.assertThat(result).isEqualTo(csvLines)
     }
-
 
     private fun getProjects(): List<ProjectDto> {
         return listOf(

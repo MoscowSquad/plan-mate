@@ -12,7 +12,7 @@ class TaskStateRepositoryImpl(
     private val stateDataSource: TaskStateDataSource
 ) : TaskStateRepository {
 
-    private val states = mutableListOf<TaskState>()
+    val states = mutableListOf<TaskState>()
 
     init {
         states.addAll(stateDataSource.fetch().map { it.toTaskState() })

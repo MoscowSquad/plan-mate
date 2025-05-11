@@ -1,11 +1,13 @@
 package data.repositories
 
 import com.google.common.truth.Truth.assertThat
-import data.csv_parser.CsvHandler
-import data.csv_parser.TaskCsvParser
-import data.datasource.TaskDataSource
-import data.mappers.toDto
+import data.csv_data.datasource.TaskDataSource
+import data.csv_data.mappers.toDto
+import data.csv_data.mappers.toTask
+import data.csv_data.repositories.TasksRepositoryImpl
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import logic.models.Task
 import logic.util.TaskIsExist
 import logic.util.TaskIsNotFoundException
@@ -16,8 +18,6 @@ import java.util.*
 
 class TasksRepositoryImplTest {
 
-    private lateinit var csvHandler: CsvHandler
-    private lateinit var csvParser: TaskCsvParser
     private lateinit var dataSource: TaskDataSource
     private lateinit var tasksRepository: TasksRepositoryImpl
     private lateinit var testTask1: Task
@@ -28,17 +28,52 @@ class TasksRepositoryImplTest {
 
     @BeforeEach
     fun setUp() {
-        csvHandler = mockk(relaxed = true)
-        csvParser = mockk(relaxed = true)
-        dataSource = TaskDataSource(csvHandler, csvParser)
-        tasksRepository = TasksRepositoryImpl(dataSource)
+        dataSource = mockk(relaxed = true)
 
         projectId1 = UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa")
         projectId2 = UUID.fromString("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb")
 
-        testTask1 = Task(UUID.fromString("11111111-1111-1111-1111-111111111111"), "Task 1", "Description 1", projectId1, UUID.randomUUID())
-        testTask2 = Task(UUID.fromString("22222222-2222-2222-2222-222222222222"), "Task 2", "Description 2", projectId1, UUID.randomUUID())
-        testTask3 = Task(UUID.fromString("33333333-3333-3333-3333-333333333333"), "Task 3", "Description 3", projectId2, UUID.randomUUID())
+        testTask1 = Task(
+            UUID.fromString("11111111-1111-1111-1111-111111111111"),
+            "Task 1",
+            "Description 1",
+            projectId1,
+            UUID.randomUUID()
+        )
+        testTask2 = Task(
+            UUID.fromString("22222222-2222-2222-2222-222222222222"),
+            "Task 2",
+            "Description 2",
+            projectId1,
+            UUID.randomUUID()
+        )
+        testTask3 = Task(
+            UUID.fromString("33333333-3333-3333-3333-333333333333"),
+            "Task 3",
+            "Description 3",
+            projectId2,
+            UUID.randomUUID()
+        )
+
+        every { dataSource.fetch() } returns emptyList()
+
+        tasksRepository = TasksRepositoryImpl(dataSource)
+    }
+
+    @Test
+    fun `init should fetch tasks from data source`() {
+        // Given
+        val taskDtos = listOf(testTask1.toDto(), testTask2.toDto())
+        every { dataSource.fetch() } returns taskDtos
+
+        // When
+        val repository = TasksRepositoryImpl(dataSource)
+
+        // Then
+        verify { dataSource.fetch() }
+        assertThat(repository.tasks.size).isEqualTo(2)
+        assertThat(repository.tasks).contains(testTask1.toDto().toTask())
+        assertThat(repository.tasks).contains(testTask2.toDto().toTask())
     }
 
     @Test
@@ -71,11 +106,10 @@ class TasksRepositoryImplTest {
 
         // When
         val tasks = tasksRepository.getAllTasks()
-        val mutableTasks = tasks.toMutableList()
-        mutableTasks.add(testTask2)
+        tasks.toMutableList().add(testTask2)
 
         // Then
-        assertThat(tasksRepository.getAllTasks()).containsExactly(testTask1)
+        assertThat(tasksRepository.tasks).doesNotContain(testTask2)
     }
 
     @Test
@@ -85,7 +119,8 @@ class TasksRepositoryImplTest {
 
         // Then
         assertThat(result).isTrue()
-        assertThat(tasksRepository.getAllTasks()).containsExactly(testTask1)
+        assertThat(tasksRepository.tasks).contains(testTask1)
+        verify { dataSource.save(any()) }
     }
 
     @Test
@@ -93,37 +128,44 @@ class TasksRepositoryImplTest {
         // Given
         tasksRepository.addTask(testTask1)
         val duplicateTask = Task(testTask1.id, "Duplicate Task", "Duplicate Description", projectId1, UUID.randomUUID())
+
         // When & Then
         val exception = assertThrows<TaskIsExist> {
             tasksRepository.addTask(duplicateTask)
         }
 
         assertThat(exception.message).contains(testTask1.id.toString())
+        verify(exactly = 1) { dataSource.save(any()) }
     }
 
     @Test
     fun `editTask should modify existing task`() {
         // Given
         tasksRepository.addTask(testTask1)
-        val updatedTask = Task(testTask1.id, "Updated Task", "Updated Description", testTask1.projectId, testTask1.stateId)
+        val updatedTask =
+            Task(testTask1.id, "Updated Task", "Updated Description", testTask1.projectId, testTask1.stateId)
+
         // When
         val result = tasksRepository.editTask(updatedTask)
 
         // Then
         assertThat(result).isTrue()
         assertThat(tasksRepository.getTaskById(testTask1.id)).isEqualTo(updatedTask)
+        verify(exactly = 2) { dataSource.save(any()) }
     }
 
     @Test
     fun `editTask should throw TaskIsNotFoundException when task does not exist`() {
         // Given
         val nonExistingTask = Task(UUID.randomUUID(), "Non-existing", "Description", projectId1, UUID.randomUUID())
+
         // When & Then
         val exception = assertThrows<TaskIsNotFoundException> {
             tasksRepository.editTask(nonExistingTask)
         }
 
         assertThat(exception.message).contains(nonExistingTask.id.toString())
+        verify(exactly = 0) { dataSource.save(any()) }
     }
 
     @Test
@@ -137,7 +179,9 @@ class TasksRepositoryImplTest {
 
         // Then
         assertThat(result).isTrue()
-        assertThat(tasksRepository.getAllTasks()).containsExactly(testTask2)
+        assertThat(tasksRepository.tasks).doesNotContain(testTask1)
+        assertThat(tasksRepository.tasks).contains(testTask2)
+        verify(exactly = 3) { dataSource.save(any()) }
     }
 
     @Test
@@ -151,6 +195,7 @@ class TasksRepositoryImplTest {
         }
 
         assertThat(exception.message).contains(nonExistingId.toString())
+        verify(exactly = 0) { dataSource.save(any()) }
     }
 
     @Test
@@ -205,25 +250,5 @@ class TasksRepositoryImplTest {
 
         // Then
         assertThat(result).isEmpty()
-    }
-    @Test
-    fun `init block should load tasks from data source`() {
-        // Given
-        val task1 = Task(UUID.randomUUID(), "Task 1", "Description 1", projectId1, UUID.randomUUID())
-        val task2 = Task(UUID.randomUUID(), "Task 2", "Description 2", projectId2, UUID.randomUUID())
-        val taskDtos = listOf(task1.toDto(), task2.toDto())
-
-        io.mockk.clearAllMocks()
-
-        val testDataSource = mockk<TaskDataSource>(relaxed = false)
-        io.mockk.every { testDataSource.fetch() } returns taskDtos
-
-        val repository = TasksRepositoryImpl(testDataSource)
-
-        val allTasks = repository.getAllTasks()
-        assertThat(allTasks).hasSize(2)
-        assertThat(allTasks[0].id).isEqualTo(task1.id)
-        assertThat(allTasks[1].id).isEqualTo(task2.id)
-        io.mockk.verify { testDataSource.fetch() }
     }
 }

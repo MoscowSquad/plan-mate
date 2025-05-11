@@ -1,14 +1,14 @@
 package presentation.project
 
-import data.mappers.toUUID
-import di.LoggedInUser
-import di.SessionManager
+import data.csv_data.mappers.toUUID
 import io.mockk.*
 import logic.models.UserRole
 import logic.usecases.project.DeleteProjectUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.io.ConsoleIO
+import presentation.session.LoggedInUser
+import presentation.session.SessionManager
 import java.util.*
 
 class DeleteProjectUITest {
