@@ -1,5 +1,7 @@
 package presentation.project
 
+import di.LoggedInUser
+import di.SessionManager
 import io.mockk.*
 import logic.models.*
 import logic.usecases.project.GetProjectByIdUseCase
@@ -17,8 +19,6 @@ import logic.usecases.user.RemoveFromProjectUserUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.io.ConsoleIO
-import presentation.session.LoggedInUser
-import presentation.session.SessionManager
 import java.util.*
 
 class UpdateProjectNameUITest {
@@ -259,7 +259,7 @@ class UpdateProjectNameUITest {
         val stateName = "New State"
 
         every { consoleIO.read() } returnsMany listOf(projectId.toString(), "6", stateName)
-        every { addTaskStateUseCase(any()) } returns true
+        every { addTaskStateUseCase(any(), SessionManager.currentUser?.role == UserRole.ADMIN) } returns true
 
         updateProjectNameUI()
 
@@ -270,7 +270,7 @@ class UpdateProjectNameUITest {
             consoleIO.read()
             consoleIO.write("please enter the name of State")
             consoleIO.read()
-            addTaskStateUseCase(any())
+            addTaskStateUseCase(any(), SessionManager.currentUser?.role == UserRole.ADMIN)
             consoleIO.write("✅ correctly updated")
         }
     }
@@ -302,7 +302,13 @@ class UpdateProjectNameUITest {
         val stateId = UUID.randomUUID()
 
         every { consoleIO.read() } returnsMany listOf(projectId.toString(), "8", stateId.toString())
-        every { deleteTaskStateUseCase(stateId, projectId) } returns true
+        every {
+            deleteTaskStateUseCase(
+                stateId,
+                projectId,
+                SessionManager.currentUser?.role == UserRole.ADMIN
+            )
+        } returns true
 
         updateProjectNameUI()
 
@@ -313,7 +319,7 @@ class UpdateProjectNameUITest {
             consoleIO.read()
             consoleIO.write("please enter task state id ")
             consoleIO.read()
-            deleteTaskStateUseCase(stateId, projectId)
+            deleteTaskStateUseCase(stateId, projectId, SessionManager.currentUser?.role == UserRole.ADMIN)
             consoleIO.write("✅ correctly deleted state")
         }
     }

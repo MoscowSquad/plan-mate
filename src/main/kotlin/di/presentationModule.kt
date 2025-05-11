@@ -20,7 +20,6 @@ import java.util.*
 
 val presentationModule = module {
     single { Scanner(System.`in`) }
-    single { SessionManager() }
     single<ConsoleIO> { ConsoleIOImpl(get()) }
 
     // Authentication UI
@@ -55,11 +54,8 @@ val presentationModule = module {
     factoryOf(::StateUI)
 
     factory {
-        val role = get<SessionManager>().getCurrentUserRole()
-            ?: throw IllegalStateException("User must be logged in with a valid role")
         CreateUserUI(
             createUserUseCase = get(),
-            currentUserRole = role,
             consoleIO = get()
         )
     }
@@ -67,8 +63,6 @@ val presentationModule = module {
     factory {
         GetAllUserUI(
             getAllUsersUseCase = get(),
-            currentUserRole = { get<SessionManager>().getCurrentUserRole()
-                ?: error("No user role set") },
             consoleIO = get()
         )
     }
@@ -76,18 +70,14 @@ val presentationModule = module {
     factory {
         AssignProjectToUserUI(
             assignProjectToUserUseCase = get(),
-            sessionManager = get(),
             consoleIO = get(),
             getAllProjectsUI = get()
         )
     }
 
-
     factory {
         DeleteUserUI(
             deleteUserUseCase = get(),
-            currentUserRole = { get<SessionManager>().getCurrentUserRole()
-                ?: error("No user role set") },
             consoleIO = get()
         )
     }

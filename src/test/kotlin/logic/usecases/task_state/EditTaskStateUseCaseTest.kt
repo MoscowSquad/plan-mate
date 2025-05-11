@@ -1,10 +1,12 @@
 package logic.usecases.task_state
 
 import com.google.common.truth.Truth.assertThat
+import di.SessionManager
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import logic.models.TaskState
+import logic.models.UserRole
 import logic.repositories.TaskStateRepository
 import logic.util.IllegalStateTitle
 import logic.util.NoStateExistException
@@ -36,7 +38,7 @@ class EditTaskStateUseCaseTest {
         every { stateRepository.updateTaskState(updatedState) } returns true
 
         // When
-        val result = editStateUseCase(updatedState)
+        val result = editStateUseCase(updatedState, SessionManager.currentUser?.role == UserRole.ADMIN)
 
         // Then
         assertThat(result).isEqualTo(updatedState)
@@ -54,7 +56,7 @@ class EditTaskStateUseCaseTest {
 
         // When & Then
         val exception = assertThrows<IllegalStateTitle> {
-            editStateUseCase(invalidState)
+            editStateUseCase(invalidState, SessionManager.currentUser?.role == UserRole.ADMIN)
         }
         assertThat(exception.message).isEqualTo("TaskState title cannot be blank")
         verify(exactly = 0) { stateRepository.updateTaskState(any()) }
@@ -73,7 +75,7 @@ class EditTaskStateUseCaseTest {
 
         // When & Then
         val exception = assertThrows<NoStateExistException> {
-            editStateUseCase(state)
+            editStateUseCase(state, SessionManager.currentUser?.role == UserRole.ADMIN)
         }
         assertThat(exception.message).contains("not found")
     }

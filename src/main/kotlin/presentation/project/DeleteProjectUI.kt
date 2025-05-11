@@ -1,10 +1,10 @@
 package presentation.project
 
 import data.csv_data.mappers.toUUID
+import di.SessionManager
 import logic.models.UserRole
 import logic.usecases.project.DeleteProjectUseCase
 import presentation.io.ConsoleIO
-import presentation.session.SessionManager
 
 class DeleteProjectUI(
     private val deleteProjectUseCase: DeleteProjectUseCase,

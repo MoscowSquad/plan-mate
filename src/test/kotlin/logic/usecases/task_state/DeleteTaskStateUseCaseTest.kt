@@ -1,10 +1,12 @@
 package logic.usecases.task_state
 
+import di.SessionManager
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifyOrder
 import logic.models.TaskState
+import logic.models.UserRole
 import logic.repositories.TaskStateRepository
 import logic.util.NoStateExistException
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -37,7 +39,7 @@ class DeleteTaskStateUseCaseTest {
         every { stateRepository.deleteTaskState(projectId, stateId) } returns true
 
         // When
-        val result = deleteStateUseCase(stateId, projectId)
+        val result = deleteStateUseCase(stateId, projectId, SessionManager.currentUser?.role == UserRole.ADMIN)
 
         // Then
         assertTrue(result)
@@ -57,7 +59,7 @@ class DeleteTaskStateUseCaseTest {
 
         // When/Then
         val exception = assertThrows<NoStateExistException> {
-            deleteStateUseCase(stateId, projectId)
+            deleteStateUseCase(stateId, projectId, SessionManager.currentUser?.role == UserRole.ADMIN)
         }
 
         assertEquals(
@@ -78,7 +80,7 @@ class DeleteTaskStateUseCaseTest {
 
         // When/Then
         val exception = assertThrows<IllegalStateException> {
-            deleteStateUseCase(stateId, projectId)
+            deleteStateUseCase(stateId, projectId, SessionManager.currentUser?.role == UserRole.ADMIN)
         }
 
         assertEquals(expectedError, exception)
@@ -97,7 +99,7 @@ class DeleteTaskStateUseCaseTest {
 
         // When/Then
         val exception = assertThrows<IllegalStateException> {
-            deleteStateUseCase(stateId, projectId)
+            deleteStateUseCase(stateId, projectId, SessionManager.currentUser?.role == UserRole.ADMIN)
         }
 
         assertEquals("Deletion failed unexpectedly", exception.message)

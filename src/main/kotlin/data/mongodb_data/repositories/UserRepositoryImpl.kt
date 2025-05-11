@@ -6,13 +6,13 @@ import data.mongodb_data.dto.AuditLogDto
 import data.mongodb_data.mappers.toDto
 import data.mongodb_data.mappers.toUser
 import data.mongodb_data.util.executeInIO
+import di.LoggedInUser
+import di.SessionManager
 import kotlinx.datetime.Clock
 import logic.models.AuditType
 import logic.models.User
 import logic.repositories.AuthenticationRepository
 import logic.repositories.UserRepository
-import presentation.session.LoggedInUser
-import presentation.session.SessionManager
 import java.util.*
 
 class UserRepositoryImpl(
@@ -122,6 +122,12 @@ class UserRepositoryImpl(
                     timestamp = Clock.System.now().toString(),
                     auditType = AuditType.USER.toString(),
                 )
+            )
+            SessionManager.currentUser = LoggedInUser(
+                id = result.id,
+                name = result.name,
+                role = result.role,
+                projectIds = result.projectIds
             )
             return@executeInIO result
         }

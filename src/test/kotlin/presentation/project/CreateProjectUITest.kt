@@ -1,5 +1,7 @@
 package presentation.project
 
+import di.LoggedInUser
+import di.SessionManager
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
@@ -9,9 +11,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import presentation.io.ConsoleIO
-import presentation.session.LoggedInUser
-import presentation.session.SessionManager
-import java.util.UUID
+import java.util.*
 
 @ExtendWith(MockKExtension::class)
 class CreateProjectUITest {

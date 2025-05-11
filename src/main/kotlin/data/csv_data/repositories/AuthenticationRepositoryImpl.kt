@@ -3,13 +3,13 @@ package data.csv_data.repositories
 import data.csv_data.datasource.UserDataSource
 import data.csv_data.mappers.toDto
 import data.csv_data.mappers.toUser
+import di.LoggedInUser
+import di.SessionManager
 import logic.models.User
 import logic.models.UserRole
 import logic.repositories.AuthenticationRepository
 import logic.util.UserNotFoundException
 import logic.util.toMD5Hash
-import presentation.session.LoggedInUser
-import presentation.session.SessionManager
 import java.util.*
 
 class AuthenticationRepositoryImpl(

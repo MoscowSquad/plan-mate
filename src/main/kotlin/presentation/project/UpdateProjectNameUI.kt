@@ -1,10 +1,10 @@
 package presentation.project
 
 import data.mongodb_data.mappers.toUUID
+import di.SessionManager
 import logic.models.UserRole
 import logic.usecases.project.UpdateProjectUseCase
 import presentation.io.ConsoleIO
-import presentation.session.SessionManager
 import java.util.*
 
 class UpdateProjectNameUI(
