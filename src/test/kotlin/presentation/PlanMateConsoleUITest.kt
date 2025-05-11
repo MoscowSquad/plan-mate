@@ -1,30 +1,47 @@
 package presentation
 
-import io.mockk.*
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.audit.AuditUI
 import presentation.auth.AuthenticationUI
 import presentation.io.ConsoleIO
 import presentation.project.ProjectsUI
+import presentation.state.StateUI
+import presentation.task.TasksUI
 import presentation.user.UserUI
+
 
 class PlanMateConsoleUITest {
     private lateinit var authenticationUI: AuthenticationUI
     private lateinit var projectsUI: ProjectsUI
+    private lateinit var tasksUI: TasksUI
+    private lateinit var stateUI: StateUI
     private lateinit var userUI: UserUI
     private lateinit var auditUI: AuditUI
     private lateinit var consoleIO: ConsoleIO
-    private lateinit var planMateConsoleUI: PlanMateConsoleUI
+    private lateinit var planMateConsoleUI: TestPlanMateConsoleUI
 
     @BeforeEach
     fun setUp() {
         authenticationUI = mockk(relaxed = true)
         projectsUI = mockk(relaxed = true)
+        tasksUI = mockk(relaxed = true)
+        stateUI = mockk(relaxed = true)
         userUI = mockk(relaxed = true)
         auditUI = mockk(relaxed = true)
         consoleIO = mockk(relaxed = true)
-        planMateConsoleUI = PlanMateConsoleUI(authenticationUI, projectsUI, userUI, auditUI, consoleIO)
+        planMateConsoleUI = TestPlanMateConsoleUI(
+            authenticationUI,
+            projectsUI,
+            tasksUI,
+            stateUI,
+            userUI,
+            auditUI,
+            consoleIO
+        )
     }
 
     @Test
@@ -58,9 +75,39 @@ class PlanMateConsoleUITest {
     }
 
     @Test
-    fun `should navigate to audit log screen when option 3 is selected`() {
+    fun `should navigate to task management screen when option 3 is selected`() {
         // Given
         every { consoleIO.read() } returns "3"
+
+        // When
+        planMateConsoleUI.start(isStopped = true)
+
+        // Then
+        verify {
+            authenticationUI.invoke()
+            tasksUI.invoke()
+        }
+    }
+
+    @Test
+    fun `should navigate to state management screen when option 4 is selected`() {
+        // Given
+        every { consoleIO.read() } returns "4"
+
+        // When
+        planMateConsoleUI.start(isStopped = true)
+
+        // Then
+        verify {
+            authenticationUI.invoke()
+            stateUI.invoke()
+        }
+    }
+
+    @Test
+    fun `should navigate to audit log screen when option 5 is selected`() {
+        // Given
+        every { consoleIO.read() } returns "5"
 
         // When
         planMateConsoleUI.start(isStopped = true)
@@ -91,7 +138,7 @@ class PlanMateConsoleUITest {
     @Test
     fun `should show error message when numeric input is out of range`() {
         // Given
-        val outOfRangeOption = "5"
+        val outOfRangeOption = "7"
         every { consoleIO.read() } returns outOfRangeOption
 
         // When
@@ -120,4 +167,32 @@ class PlanMateConsoleUITest {
         }
     }
 
+
+    private class TestPlanMateConsoleUI(
+        authenticationUI: AuthenticationUI,
+        projectsUI: ProjectsUI,
+        tasksUI: TasksUI,
+        stateUI: StateUI,
+        userUI: UserUI,
+        auditUI: AuditUI,
+        consoleIO: ConsoleIO
+    ) : PlanMateConsoleUI(authenticationUI, projectsUI, tasksUI, stateUI, userUI, auditUI, consoleIO) {
+
+        fun start(isStopped: Boolean) {
+            write(
+                """
+                🔷 Welcome to PlanMate v2.0 🔷
+                Let's set up the app. Please sign up as the admin user.
+                """.trimIndent()
+            )
+            authenticationUI()
+
+            if (isStopped) {
+                showOptions()
+                goToScreen()
+            } else {
+                menuLoop()
+            }
+        }
+    }
 }
