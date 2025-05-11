@@ -1,6 +1,8 @@
 package presentation.state
 
 import data.mongodb_data.mappers.toUUID
+import di.SessionManager
+import logic.models.UserRole
 import logic.usecases.task_state.DeleteTaskStateUseCase
 import presentation.io.ConsoleIO
 import java.util.*
@@ -18,7 +20,12 @@ class DeleteStateUI(
             return
         }
 
-        runCatching { deleteTaskStateUseCase(stateId, projectId) }
+        runCatching {
+            deleteTaskStateUseCase(
+                stateId, projectId,
+                isAdmin = SessionManager.currentUser?.role == UserRole.ADMIN
+            )
+        }
             .onSuccess { write("✅ State deleted successfully.") }
             .onFailure { write("❌ Failed to delete state: ${it.message}") }
     }

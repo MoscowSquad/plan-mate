@@ -4,12 +4,16 @@ import logic.models.TaskState
 import logic.repositories.TaskStateRepository
 import logic.util.IllegalStateTitle
 import logic.util.NoStateExistException
+import logic.util.NotAdminException
 
 class EditTaskStateUseCase(
     private val stateRepository: TaskStateRepository
 ) {
 
-    operator fun invoke(state: TaskState): TaskState {
+    operator fun invoke(state: TaskState, isAdmin: Boolean): TaskState {
+        require(isAdmin) {
+            throw NotAdminException("Only administrators can edit task states")
+        }
         require(isValidTitle(state.name)) {
             throw IllegalStateTitle("TaskState title cannot be blank")
         }

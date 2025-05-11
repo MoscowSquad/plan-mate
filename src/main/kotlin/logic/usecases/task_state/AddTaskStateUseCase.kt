@@ -3,12 +3,16 @@ package logic.usecases.task_state
 import logic.models.TaskState
 import logic.repositories.TaskStateRepository
 import logic.util.IllegalStateTitle
+import logic.util.NotAdminException
 
 class AddTaskStateUseCase(
     private val stateRepository: TaskStateRepository,
 ) {
 
-    operator fun invoke(state: TaskState): Boolean {
+    operator fun invoke(state: TaskState, isAdmin: Boolean): Boolean {
+        require(isAdmin) {
+            throw NotAdminException("Only administrators can add task states")
+        }
         require(isValidTitle(state.name)) {
             throw IllegalStateTitle("Task state title cannot be blank")
         }

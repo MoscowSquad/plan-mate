@@ -1,7 +1,9 @@
 package presentation.state
 
 import data.mongodb_data.mappers.toUUID
+import di.SessionManager
 import logic.models.TaskState
+import logic.models.UserRole
 import logic.usecases.task_state.EditTaskStateUseCase
 import presentation.io.ConsoleIO
 import java.util.*
@@ -28,7 +30,12 @@ class EditStateUI(
             projectId = projectId
         )
 
-        runCatching { editTaskStateUseCase(state) }
+        runCatching {
+            editTaskStateUseCase(
+                state,
+                isAdmin = SessionManager.currentUser?.role == UserRole.ADMIN
+            )
+        }
             .onSuccess { write("✅ State updated successfully.") }
             .onFailure { write("❌ Failed to update state: ${it.message}") }
     }

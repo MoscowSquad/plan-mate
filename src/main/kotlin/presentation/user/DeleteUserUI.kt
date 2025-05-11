@@ -1,6 +1,7 @@
 package presentation.user
 
 import data.mongodb_data.mappers.toUUID
+import di.SessionManager
 import logic.models.UserRole
 import logic.usecases.user.DeleteUserUseCase
 import logic.util.UnauthorizedAccessException
@@ -8,12 +9,11 @@ import presentation.io.ConsoleIO
 
 class DeleteUserUI(
     private val deleteUserUseCase: DeleteUserUseCase,
-    private val currentUserRole: () -> UserRole,
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
-
     operator fun invoke() {
-        if (currentUserRole() != UserRole.ADMIN) {
+        val currentUserRole = SessionManager.getCurrentUserRole()
+        if (currentUserRole != UserRole.ADMIN) {
             write("\nError: Only ADMIN users can delete accounts.")
             return
         }
@@ -32,7 +32,7 @@ class DeleteUserUI(
         }
 
         try {
-            deleteUserUseCase(currentUserRole(), userId)
+            deleteUserUseCase(currentUserRole, userId)
             write("User with ID $userId has been successfully deleted.")
         } catch (e: UnauthorizedAccessException) {
             write("Error: You don't have permission to delete users.")

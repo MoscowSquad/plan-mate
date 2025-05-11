@@ -1,9 +1,9 @@
 package presentation.project
 
+import di.SessionManager
 import logic.models.UserRole
 import logic.usecases.project.CreateProjectUseCase
 import presentation.io.ConsoleIO
-import presentation.session.SessionManager
 
 class CreateProjectUI(
     private val createProjectUseCase: CreateProjectUseCase,
@@ -20,7 +20,7 @@ class CreateProjectUI(
             )
         }
             .onSuccess {
-                write("Project $it created successfully!")
+                write("Project named $projectName with id $it created successfully!")
             }
             .onFailure {
                 write("Error creating project: ${it.message}")

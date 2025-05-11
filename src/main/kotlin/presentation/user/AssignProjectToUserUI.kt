@@ -9,12 +9,11 @@ import presentation.project.GetAllProjectsUI
 
 class AssignProjectToUserUI(
     private val assignProjectToUserUseCase: AssignProjectToUserUseCase,
-    private val sessionManager: SessionManager,
     private val consoleIO: ConsoleIO,
     private val getAllProjectsUI: GetAllProjectsUI
 ) : ConsoleIO by consoleIO {
-
     operator fun invoke() {
+        val currentUserRole = SessionManager.getCurrentUserRole()
         getAllProjectsUI.invoke()
         write("\n=== Assign Project to User ===")
 
@@ -40,7 +39,7 @@ class AssignProjectToUserUI(
                 throw IllegalArgumentException("Invalid UUID format.")
             }
 
-            val isAdmin = sessionManager.getCurrentUserRole() == UserRole.ADMIN
+            val isAdmin = currentUserRole == UserRole.ADMIN
 
             if (isAdmin) {
                 assignProjectToUserUseCase(UserRole.ADMIN, projectId, userId)

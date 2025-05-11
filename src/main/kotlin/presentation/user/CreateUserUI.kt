@@ -1,5 +1,6 @@
 package presentation.user
 
+import di.SessionManager
 import logic.models.User
 import logic.models.UserRole
 import logic.usecases.user.CreateUserUseCase
@@ -9,11 +10,10 @@ import java.util.*
 
 class CreateUserUI(
     private val createUserUseCase: CreateUserUseCase,
-    private val currentUserRole: UserRole,
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
-
     operator fun invoke() {
+        val currentUserRole = SessionManager.getCurrentUserRole()
         if (currentUserRole != UserRole.ADMIN) {
             write("\n❌ Error: Only ADMIN users can create new accounts.")
             return
