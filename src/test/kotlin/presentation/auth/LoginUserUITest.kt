@@ -12,6 +12,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.session.SessionManager
 import java.util.*
+import kotlin.test.assertEquals
 
 class LoginUserUITest {
     private lateinit var loginUseCase: LoginUseCase
@@ -58,8 +59,10 @@ class LoginUserUITest {
             assert(consoleIO.outputs[index] == message)
         }
 
-        assert(SessionManager.currentUser?.id == UUID.fromString("00000000-0000-0000-0000-000000000001"))
-        assert(SessionManager.currentUser?.name == "test user")
+        val currentUser = SessionManager.currentUser
+        assert(currentUser != null) { "Session user should not be null" }
+        assertEquals(UUID.fromString("00000000-0000-0000-0000-000000000001"), currentUser?.id, "User ID should match")
+        assertEquals("test user", currentUser?.name, "Username should match")
     }
 
     @Test
@@ -101,8 +104,10 @@ class LoginUserUITest {
             assert(consoleIO.outputs[index] == message)
         }
 
-        assert(SessionManager.currentUser?.id == UUID.fromString("00000000-0000-0000-0000-000000000001"))
-        assert(SessionManager.currentUser?.name == "good user")
+        val currentUser = SessionManager.currentUser
+        assert(currentUser != null) { "Session user should not be null" }
+        assertEquals(UUID.fromString("00000000-0000-0000-0000-000000000001"), currentUser?.id, "User ID should match")
+        assertEquals("good user", currentUser?.name, "Username should match")
     }
 
     @Test
@@ -144,7 +149,9 @@ class LoginUserUITest {
         assert(consoleIO.outputs.contains("Login failed. Network error 😞"))
         assert(consoleIO.outputs.contains("✅ Logged in successfully! Welcome back, user3."))
 
-        assert(SessionManager.currentUser?.id == UUID.fromString("00000000-0000-0000-0000-000000000003"))
-        assert(SessionManager.currentUser?.name == "user3")
+        val currentUser = SessionManager.currentUser
+        assert(currentUser != null) { "Session user should not be null" }
+        assertEquals(UUID.fromString("00000000-0000-0000-0000-000000000003"), currentUser?.id, "User ID should match")
+        assertEquals("user3", currentUser?.name, "Username should match")
     }
 }
