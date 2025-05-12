@@ -17,7 +17,7 @@ class TaskStateDataSourceImpl(
     override suspend fun getTaskStateById(id: UUID): TaskStateDto {
         val filter = Filters.eq(TaskStateDto::id.name, id.toString())
         return collection.find(filter).firstOrNull()
-            ?: throw NoStateExistException("Task state not found")
+            ?: throw NoStateExistException()
     }
 
 

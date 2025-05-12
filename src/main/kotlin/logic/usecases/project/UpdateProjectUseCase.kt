@@ -13,11 +13,11 @@ class UpdateProjectUseCase(
 
     operator fun invoke(id: UUID, name: String, isAdmin: Boolean): Boolean {
         if (!isAdmin) {
-            throw NotAdminException("Only administrators can update projects")
+            throw NotAdminException()
         }
 
         if (name.isBlank()) {
-            throw InvalidProjectNameException("Project name cannot be empty")
+            throw InvalidProjectNameException()
         }
 
         val updatedProject = Project(

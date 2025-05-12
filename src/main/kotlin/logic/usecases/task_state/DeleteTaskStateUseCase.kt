@@ -12,19 +12,19 @@ class DeleteTaskStateUseCase(
 
     operator fun invoke(stateId: UUID, projectId: UUID, isAdmin: Boolean): Boolean {
         require(isAdmin) {
-            throw NotAdminException("Only administrators can delete task states")
+            throw NotAdminException()
         }
         getState(stateId, projectId)
         return stateRepository.deleteTaskState(projectId, stateId)
             .also { success ->
-                if (!success) throw IllegalStateException("Deletion failed unexpectedly")
+                if (!success) throw IllegalStateException()
             }
     }
 
     private fun getState(stateId: UUID, projectId: UUID): TaskState {
         return stateRepository.getTaskStateByProjectId(projectId)
             .firstOrNull { it.id == stateId }
-            ?: throw NoStateExistException("State with ID $stateId does not exist in project $projectId")
+            ?: throw NoStateExistException()
     }
 
 }

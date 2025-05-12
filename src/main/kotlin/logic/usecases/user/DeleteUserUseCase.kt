@@ -9,7 +9,7 @@ import kotlin.NoSuchElementException
 class DeleteUserUseCase(private val userRepository: UserRepository) {
     operator fun invoke(role: UserRole, id: UUID) {
         if (role == UserRole.MATE) {
-            throw UnauthorizedAccessException("Only admins can delete users")
+            throw UnauthorizedAccessException()
         }
         val success = userRepository.deleteUser(id)
         if (!success) {

@@ -8,7 +8,7 @@ import java.util.UUID
 class DeleteProjectUseCase(private val projectsRepository: ProjectsRepository) {
     operator fun invoke(id: UUID, isAdmin: Boolean): Boolean {
         if (!isAdmin) {
-            throw NotAdminException("Only administrators can delete projects")
+            throw NotAdminException()
         }
 
         val success = projectsRepository.deleteProject(id)

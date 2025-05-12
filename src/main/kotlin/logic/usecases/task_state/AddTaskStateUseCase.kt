@@ -11,10 +11,10 @@ class AddTaskStateUseCase(
 
     operator fun invoke(state: TaskState, isAdmin: Boolean): Boolean {
         require(isAdmin) {
-            throw NotAdminException("Only administrators can add task states")
+            throw NotAdminException()
         }
         require(isValidTitle(state.name)) {
-            throw IllegalStateTitle("Task state title cannot be blank")
+            throw IllegalStateTitle()
         }
 
         return stateRepository.addTaskState(state.projectId, state)
