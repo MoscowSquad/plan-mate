@@ -7,9 +7,10 @@ import logic.util.UnauthorizedAccessException
 
 class GetAllUsersUseCase(private val userRepository: UserRepository) {
     operator fun invoke(role: UserRole): List<User> {
-        if (role == UserRole.MATE) {
+        if (role != UserRole.ADMIN) {
             throw UnauthorizedAccessException()
         }
+
         return userRepository.getAllUsers()
     }
 }
