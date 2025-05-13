@@ -7,9 +7,9 @@ import logic.util.UnauthorizedAccessException
 
 class CreateUserUseCase(private val userRepository: UserRepository) {
     operator fun invoke(role: UserRole, user: User): Boolean {
-        if (role == UserRole.MATE) {
-            throw UnauthorizedAccessException()
+        return when (role) {
+            UserRole.ADMIN -> userRepository.addUser(user)
+            else -> throw UnauthorizedAccessException()
         }
-        return userRepository.addUser(user)
     }
 }
