@@ -30,7 +30,7 @@ class EditTaskUI(
 
         val task = Task(
             id = taskId,
-            name = taskName,
+            title = taskName,
             description = taskDescription,
             projectId = projectId,
             stateId = stateId

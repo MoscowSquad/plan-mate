@@ -27,7 +27,7 @@ class AddTaskUseCaseTest {
         // Given
         val task = Task(
             id = UUID.randomUUID(),
-            name = "Videos3",
+            title = "Videos3",
             projectId = UUID.randomUUID(),
             description = "description",
             stateId = UUID.randomUUID()

@@ -8,8 +8,6 @@ import logic.repositories.TasksRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
-import logic.util.TaskIsNotFoundException
 import java.util.*
 
 class GetTaskByIdUseCaseTest {
@@ -30,7 +28,7 @@ class GetTaskByIdUseCaseTest {
 
         val task = Task(
             id = id,
-            name = "Videos",
+            title = "Videos",
             projectId = UUID.randomUUID(),
             description = "description",
             stateId = UUID.randomUUID()

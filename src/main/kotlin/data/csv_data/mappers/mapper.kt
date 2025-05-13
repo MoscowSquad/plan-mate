@@ -46,7 +46,7 @@ fun Project.toDto(): ProjectDto {
 fun TaskDto.toTask(): Task {
     return Task(
         id = UUID.fromString(id),
-        name = name,
+        title = name,
         description = description,
         projectId = projectId.toUUID(),
         stateId = stateId.toUUID()
@@ -56,7 +56,7 @@ fun TaskDto.toTask(): Task {
 fun Task.toDto(): TaskDto {
     return TaskDto(
         id = id.toString(),
-        name = name,
+        name = title,
         description = description,
         projectId = projectId.toString(),
         stateId = stateId.toString()

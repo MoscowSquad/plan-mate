@@ -31,7 +31,7 @@ class TaskRepositoryImpl(
         auditLogDataSource.addLog(
             log = AuditLogDto(
                 id = UUID.randomUUID().toString(),
-                action = "Task named ${task.name} with description ${task.description} and id ${task.id} Created",
+                action = "Task named ${task.title} with description ${task.description} and id ${task.id} Created",
                 entityId = task.id.toString(),
                 timestamp = Clock.System.now().toString(),
                 auditType = AuditType.TASK.toString(),
@@ -46,7 +46,7 @@ class TaskRepositoryImpl(
         auditLogDataSource.addLog(
             log = AuditLogDto(
                 id = UUID.randomUUID().toString(),
-                action = "Task named ${updatedTask.name} with description ${updatedTask.description} and id ${updatedTask.id} Created",
+                action = "Task named ${updatedTask.title} with description ${updatedTask.description} and id ${updatedTask.id} Created",
                 entityId = updatedTask.id.toString(),
                 timestamp = Clock.System.now().toString(),
                 auditType = AuditType.TASK.toString(),

@@ -18,7 +18,7 @@ class GetAllTasksUI(
                         write(
                             """
                             -------------------------------------------------------
-                            | Task Name: ${task.name}
+                            | Task Name: ${task.title}
                             | Description: ${task.description}
                             | Task ID: ${task.id}
                             | Task State ID: ${task.stateId}

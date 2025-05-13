@@ -4,12 +4,10 @@ import io.mockk.every
 import io.mockk.mockk
 import logic.models.Task
 import logic.repositories.TasksRepository
-import logic.util.TaskIsNotFoundException
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.*
-import org.junit.jupiter.api.assertThrows
 
 class GetTaskByProjectIdUseCaseTest {
     private lateinit var getTaskByProjectIdUseCase: GetTaskByProjectIdUseCase
@@ -28,14 +26,14 @@ class GetTaskByProjectIdUseCaseTest {
         val tasks: List<Task> = listOf(
             Task(
                 id = UUID.randomUUID(),
-                name = "Videos",
+                title = "Videos",
                 projectId = projectID,
                 description = "description",
                 stateId = UUID.randomUUID()
             ),
             Task(
                 id = UUID.randomUUID(),
-                name = "Videos2",
+                title = "Videos2",
                 projectId = projectID,
                 description = "description",
                 stateId = UUID.randomUUID()

@@ -1,16 +1,16 @@
 package data.mappers
 
 import data.csv_data.dto.*
+import data.csv_data.mappers.*
 import data.csv_data.util.ADMIN
 import data.csv_data.util.MATE
 import data.csv_data.util.PROJECT
 import data.csv_data.util.TASK
 import kotlinx.datetime.LocalDateTime
 import logic.models.*
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.util.*
-import data.csv_data.mappers.*
 
 class MapperKtTest {
 
@@ -93,7 +93,7 @@ class MapperKtTest {
         val task = taskDto.toTask()
 
         assertEquals(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"), task.id)
-        assertEquals("Test Task", task.name)
+        assertEquals("Test Task", task.title)
         assertEquals("Task Description", task.description)
         assertEquals(UUID.fromString("550e8400-e29b-41d4-a716-446655440001"), task.projectId)
         assertEquals(UUID.fromString("550e8400-e29b-41d4-a716-446655440002"), task.stateId)
@@ -103,7 +103,7 @@ class MapperKtTest {
     fun `test Task to TaskDto conversion`() {
         val task = Task(
             id = UUID.fromString("550e8400-e29b-41d4-a716-446655440000"),
-            name = "Test Task",
+            title = "Test Task",
             description = "Task Description",
             projectId = UUID.fromString("550e8400-e29b-41d4-a716-446655440001"),
             stateId = UUID.fromString("550e8400-e29b-41d4-a716-446655440002")
