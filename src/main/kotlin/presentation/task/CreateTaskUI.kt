@@ -42,7 +42,7 @@ class CreateTaskUI(
 
         val task = Task(
             id = UUID.randomUUID(),
-            name = taskName,
+            title = taskName,
             description = taskDescription,
             projectId = projectId,
             stateId = stateId

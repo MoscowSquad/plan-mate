@@ -7,8 +7,6 @@ import logic.models.Task
 import logic.repositories.TasksRepository
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
-import logic.util.TaskIsNotFoundException
 import java.util.*
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -29,7 +27,7 @@ class DeleteTaskUseCaseTest {
         val id = UUID.fromString("00000000-0000-0000-0000-000000000001")
         val task = Task(
             id = id,
-            name = "Videos3",
+            title = "Videos3",
             projectId = UUID.randomUUID(),
             description = "description",
             stateId = UUID.randomUUID()
@@ -54,7 +52,7 @@ class DeleteTaskUseCaseTest {
 
         val task = Task(
             id = id,
-            name = "Videos3",
+            title = "Videos3",
             projectId = UUID.randomUUID(),
             description = "description",
             stateId = UUID.randomUUID()

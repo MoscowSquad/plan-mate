@@ -28,7 +28,7 @@ class EditTaskUseCaseTest {
         // Given
         val task = Task(
             id = UUID.randomUUID(),
-            name = "Videos",
+            title = "Videos",
             projectId = UUID.randomUUID(),
             description = "description",
             stateId = UUID.randomUUID()
@@ -51,7 +51,7 @@ class EditTaskUseCaseTest {
         // Given
         val task = Task(
             id = UUID.randomUUID(),
-            name = "Videos",
+            title = "Videos",
             projectId = UUID.randomUUID(),
             description = "description",
             stateId = UUID.randomUUID()
