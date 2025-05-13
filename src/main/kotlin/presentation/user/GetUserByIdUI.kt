@@ -14,21 +14,23 @@ class GetUserByIdUI(
         val id = try {
             read().trim().toUUID()
         } catch (e: IllegalArgumentException) {
-            write("Error: Invalid UUID format")
+            write("❌ Error: Invalid UUID format")
             return
         }
 
-        try {
-            val user = getUserByIdUseCase(id)
-            write("\n=== User Details ===")
-            write("ID: ${user.id}")
-            write("Name: ${user.name}")
-            write("Role: ${user.role}")
-            write("Projects: ${user.projectIds.joinToString()}")
-        } catch (e: NoSuchElementException) {
-            write("Error: User with ID $id not found")
-        } catch (e: Exception) {
-            write("Error: An unexpected error occurred while fetching user details")
-        }
+        runCatching { getUserByIdUseCase(id) }
+            .onSuccess { user ->
+                write("\n✅ User Details:")
+                write("ID       : ${user.id}")
+                write("Name     : ${user.name}")
+                write("Role     : ${user.role}")
+                write("Projects : ${user.projectIds.joinToString()}")
+            }
+            .onFailure { error ->
+                when (error) {
+                    is NoSuchElementException -> write("❌ ${error.message}")
+                    else -> write("❌ Unexpected error: ${error.message}")
+                }
+            }
     }
 }
