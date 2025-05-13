@@ -8,7 +8,7 @@ import logic.repositories.AuditRepository
 import java.util.*
 
 class AuditRepositoryImpl(
-    private val auditLogDataSource: AuditLogDataSource
+    auditLogDataSource: AuditLogDataSource
 ) : AuditRepository {
     private val audits = mutableListOf<AuditLog>()
 
