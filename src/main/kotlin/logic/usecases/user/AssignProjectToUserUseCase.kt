@@ -7,9 +7,9 @@ import java.util.*
 
 class AssignProjectToUserUseCase(private val userRepository: UserRepository) {
     operator fun invoke(role: UserRole, projectId: UUID, userId: UUID): Boolean {
-        if (role == UserRole.MATE) {
-            throw UnauthorizedAccessException()
+        return when (role) {
+            UserRole.ADMIN -> userRepository.assignUserToProject(projectId, userId)
+            else -> throw UnauthorizedAccessException()
         }
-        return userRepository.assignUserToProject(projectId, userId)
     }
 }
