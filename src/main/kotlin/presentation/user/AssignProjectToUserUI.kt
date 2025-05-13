@@ -27,8 +27,6 @@ class AssignProjectToUserUI(
             return
         }
 
-
-
         write("Enter User ID:")
         val userIdInput = read()
 
@@ -39,13 +37,7 @@ class AssignProjectToUserUI(
                 throw IllegalArgumentException("Invalid UUID format.")
             }
 
-            val isAdmin = currentUserRole == UserRole.ADMIN
-
-            if (isAdmin) {
-                assignProjectToUserUseCase(UserRole.ADMIN, projectId, userId)
-            } else {
-                throw IllegalAccessException("Only admins can assign users to projects.")
-            }
+            assignProjectToUserUseCase(currentUserRole, projectId, userId)
         }
 
         result
@@ -54,5 +46,6 @@ class AssignProjectToUserUI(
             }
             .onFailure {
                 write("Failed to assign user. ${it.message}")
-            }}
+            }
     }
+}
