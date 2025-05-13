@@ -86,11 +86,9 @@ class TaskStateRepositoryImplTest {
         val nonExistingId = UUID.randomUUID()
 
         // When & Then
-        val exception = assertThrows<NoStateExistException> {
+        assertThrows<NoStateExistException> {
             repository.getTaskStateById(nonExistingId)
         }
-
-        assertThat(exception.message).contains(nonExistingId.toString())
     }
 
     @Test
@@ -113,11 +111,9 @@ class TaskStateRepositoryImplTest {
         val nonExistingProjectId = UUID.randomUUID()
 
         // When & Then
-        val exception = assertThrows<NoStateExistException> {
+        assertThrows<NoStateExistException> {
             repository.getTaskStateByProjectId(nonExistingProjectId)
         }
-
-        assertThat(exception.message).contains("No State Exist")
     }
 
     @Test
@@ -265,12 +261,11 @@ class TaskStateRepositoryImplTest {
         repository.deleteTaskState(projectId1, testState1.id)
 
         // When & Then
-        val exception = assertThrows<NoStateExistException> {
+        assertThrows<NoStateExistException> {
             repository.getTaskStateById(testState1.id)
         }
-
-        assertThat(exception.message).contains(testState1.id.toString())
     }
+
     @Test
     fun `addTaskState should check for existing state ID before adding`() {
         // Given
@@ -291,7 +286,7 @@ class TaskStateRepositoryImplTest {
 
         // Then
         assertThat(result).isFalse()
-        verify(exactly = 1) { dataSource.save(any()) } 
+        verify(exactly = 1) { dataSource.save(any()) }
         verify(exactly = 1) { mockStates.add(any()) }
     }
 }

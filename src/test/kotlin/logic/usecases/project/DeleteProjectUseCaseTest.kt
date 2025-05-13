@@ -68,13 +68,10 @@ class DeleteProjectUseCaseTest {
         val projectId = UUID.randomUUID()
         every { projectsRepository.deleteProject(projectId) } returns false
 
-        // When
-        val exception = assertThrows<NoExistProjectException> {
+        // When, Then
+         assertThrows<NoExistProjectException> {
             deleteProjectUseCase.invoke(projectId, isAdmin = true)
         }
-
-        // Then
-        assertTrue(exception.message?.contains(projectId.toString()) == true)
     }
 
     @Test
@@ -82,12 +79,9 @@ class DeleteProjectUseCaseTest {
         // Given
         val projectId = UUID.randomUUID()
 
-        // When
-        val exception = assertThrows<NotAdminException> {
+        // When, Then
+        assertThrows<NotAdminException> {
             deleteProjectUseCase.invoke(projectId, isAdmin = false)
         }
-
-        // Then
-        assertTrue(exception.message?.contains("Only administrators can delete projects") == true)
     }
 }

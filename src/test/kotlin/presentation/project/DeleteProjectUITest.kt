@@ -1,14 +1,14 @@
 package presentation.project
 
 import data.csv_data.mappers.toUUID
+import di.LoggedInUser
+import di.SessionManager
 import io.mockk.*
 import logic.models.UserRole
 import logic.usecases.project.DeleteProjectUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.io.ConsoleIO
-import presentation.session.LoggedInUser
-import presentation.session.SessionManager
 import java.util.*
 
 class DeleteProjectUITest {
@@ -74,11 +74,10 @@ class DeleteProjectUITest {
     fun `should handle exception when deleting project`() {
         // Given
         val errorMessage = "Project not found"
-        val exception = RuntimeException(errorMessage)
 
         mockkObject(SessionManager)
         every { SessionManager.currentUser } returns null
-        every { deleteProjectUseCase(projectId, false) } throws exception
+        every { deleteProjectUseCase(projectId, false) } throws RuntimeException(errorMessage)
 
         // When
         deleteProjectUI.invoke()

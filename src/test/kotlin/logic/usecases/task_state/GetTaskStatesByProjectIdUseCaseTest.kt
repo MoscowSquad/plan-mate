@@ -28,14 +28,13 @@ class GetTaskStatesByProjectIdUseCaseTest {
     fun `should throw NoStateExistException when project has no states`() {
         // Given
         val projectId = UUID.randomUUID()
-        every { stateRepository.getTaskStateByProjectId(projectId) } throws NoStateExistException("No State Exist")
+        every { stateRepository.getTaskStateByProjectId(projectId) } throws NoStateExistException()
 
         // When/Then
-        val exception = assertThrows<NoStateExistException> {
+        assertThrows<NoStateExistException> {
             useCase(projectId)
         }
 
-        assertEquals("No State Exist", exception.message)
         verify(exactly = 1) { stateRepository.getTaskStateByProjectId(projectId) }
     }
 

@@ -38,7 +38,7 @@ class AddTaskStateUseCaseTest {
         every { stateRepository.addTaskState(validState.projectId, validState) } returns true
 
         // When
-        val result = addStateUseCase(validState, SessionManager.currentUser?.role == UserRole.ADMIN)
+        val result = addStateUseCase(validState, true)
 
         // Then
         assertTrue(result)
@@ -55,11 +55,9 @@ class AddTaskStateUseCaseTest {
         )
 
         // When & Then
-        val exception = assertThrows<IllegalStateTitle> {
-            addStateUseCase(invalidState, SessionManager.currentUser?.role == UserRole.ADMIN)
+        assertThrows<IllegalStateTitle> {
+            addStateUseCase(invalidState, true)
         }
-
-        assertEquals("Task state title cannot be blank", exception.message)
         verify(exactly = 0) { stateRepository.addTaskState(any(), any()) }
     }
 
@@ -74,11 +72,9 @@ class AddTaskStateUseCaseTest {
         )
 
         // When & Then
-        val exception = assertThrows<IllegalStateTitle> {
-            addStateUseCase(invalidState, SessionManager.currentUser?.role == UserRole.ADMIN)
+        assertThrows<IllegalStateTitle> {
+            addStateUseCase(invalidState, true)
         }
-
-        assertTrue(exception.message!!.contains("title"))
         verify(exactly = 0) { stateRepository.addTaskState(any(), any()) }
     }
 
@@ -95,7 +91,7 @@ class AddTaskStateUseCaseTest {
 
         // When & Then
         assertThrows<IllegalStateException> {
-            addStateUseCase(validState, SessionManager.currentUser?.role == UserRole.ADMIN)
+            addStateUseCase(validState, true)
         }
 
         verify(exactly = 1) { stateRepository.addTaskState(validState.projectId, validState) }
@@ -120,11 +116,11 @@ class AddTaskStateUseCaseTest {
 
         // When & Then
 
-        assertTrue(addStateUseCase(minLengthState, SessionManager.currentUser?.role == UserRole.ADMIN))
+        assertTrue(addStateUseCase(minLengthState, true))
         verify(exactly = 1) { stateRepository.addTaskState(minLengthState.projectId, minLengthState) }
 
 
-        assertTrue(addStateUseCase(maxLengthState, SessionManager.currentUser?.role == UserRole.ADMIN))
+        assertTrue(addStateUseCase(maxLengthState, true))
         verify(exactly = 1) { stateRepository.addTaskState(maxLengthState.projectId, maxLengthState) }
     }
 }

@@ -38,7 +38,7 @@ class EditTaskStateUseCaseTest {
         every { stateRepository.updateTaskState(updatedState) } returns true
 
         // When
-        val result = editStateUseCase(updatedState, SessionManager.currentUser?.role == UserRole.ADMIN)
+        val result = editStateUseCase(updatedState, true)
 
         // Then
         assertThat(result).isEqualTo(updatedState)
@@ -55,10 +55,9 @@ class EditTaskStateUseCaseTest {
         )
 
         // When & Then
-        val exception = assertThrows<IllegalStateTitle> {
-            editStateUseCase(invalidState, SessionManager.currentUser?.role == UserRole.ADMIN)
+        assertThrows<IllegalStateTitle> {
+            editStateUseCase(invalidState, true)
         }
-        assertThat(exception.message).isEqualTo("TaskState title cannot be blank")
         verify(exactly = 0) { stateRepository.updateTaskState(any()) }
     }
 
@@ -74,10 +73,9 @@ class EditTaskStateUseCaseTest {
         every { stateRepository.updateTaskState(state) } returns false
 
         // When & Then
-        val exception = assertThrows<NoStateExistException> {
-            editStateUseCase(state, SessionManager.currentUser?.role == UserRole.ADMIN)
+        assertThrows<NoStateExistException> {
+            editStateUseCase(state, true)
         }
-        assertThat(exception.message).contains("not found")
     }
 
 }

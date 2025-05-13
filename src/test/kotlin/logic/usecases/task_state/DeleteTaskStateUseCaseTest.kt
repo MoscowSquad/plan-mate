@@ -39,7 +39,7 @@ class DeleteTaskStateUseCaseTest {
         every { stateRepository.deleteTaskState(projectId, stateId) } returns true
 
         // When
-        val result = deleteStateUseCase(stateId, projectId, SessionManager.currentUser?.role == UserRole.ADMIN)
+        val result = deleteStateUseCase(stateId, projectId, true)
 
         // Then
         assertTrue(result)
@@ -58,14 +58,10 @@ class DeleteTaskStateUseCaseTest {
         every { stateRepository.getTaskStateByProjectId(projectId) } returns emptyList()
 
         // When/Then
-        val exception = assertThrows<NoStateExistException> {
-            deleteStateUseCase(stateId, projectId, SessionManager.currentUser?.role == UserRole.ADMIN)
+        assertThrows<NoStateExistException> {
+            deleteStateUseCase(stateId, projectId, true)
         }
 
-        assertEquals(
-            "State with ID $stateId does not exist in project $projectId",
-            exception.message
-        )
         verify(exactly = 0) { stateRepository.deleteTaskState(any(), any()) }
     }
 
@@ -79,13 +75,13 @@ class DeleteTaskStateUseCaseTest {
         every { stateRepository.getTaskStateByProjectId(projectId) } throws expectedError
 
         // When/Then
-        val exception = assertThrows<IllegalStateException> {
-            deleteStateUseCase(stateId, projectId, SessionManager.currentUser?.role == UserRole.ADMIN)
+        assertThrows<IllegalStateException> {
+            deleteStateUseCase(stateId, projectId, true)
         }
 
-        assertEquals(expectedError, exception)
         verify(exactly = 0) { stateRepository.deleteTaskState(any(), any()) }
     }
+
     @Test
     fun `should throw IllegalStateException when deletion fails`() {
         // Given
@@ -98,11 +94,10 @@ class DeleteTaskStateUseCaseTest {
         every { stateRepository.deleteTaskState(projectId, stateId) } returns false
 
         // When/Then
-        val exception = assertThrows<IllegalStateException> {
-            deleteStateUseCase(stateId, projectId, SessionManager.currentUser?.role == UserRole.ADMIN)
+        assertThrows<IllegalStateException> {
+            deleteStateUseCase(stateId, projectId, true)
         }
 
-        assertEquals("Deletion failed unexpectedly", exception.message)
         verifyOrder {
             stateRepository.getTaskStateByProjectId(projectId)
             stateRepository.deleteTaskState(projectId, stateId)

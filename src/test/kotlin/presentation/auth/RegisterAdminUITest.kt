@@ -26,7 +26,9 @@ class RegisterAdminUITest {
     @Test
     fun `should register admin successfully on first attempt`() {
         // Given
-        every { registerUseCase("test admin", "test password", UserRole.ADMIN) } returns mockk<logic.models.User>(relaxed = true)
+        every { registerUseCase("test admin", "test password", UserRole.ADMIN) } returns mockk<logic.models.User>(
+            relaxed = true
+        )
         // When
         registerAdminUI.invoke()
 

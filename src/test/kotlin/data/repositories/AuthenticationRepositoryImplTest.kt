@@ -3,6 +3,7 @@ package data.repositories
 import data.csv_data.datasource.UserDataSource
 import data.csv_data.mappers.toDto
 import data.csv_data.repositories.AuthenticationRepositoryImpl
+import di.SessionManager
 import io.mockk.*
 import logic.models.User
 import logic.models.UserRole
@@ -10,7 +11,6 @@ import logic.util.UserNotFoundException
 import logic.util.toMD5Hash
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import presentation.session.SessionManager
 import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith

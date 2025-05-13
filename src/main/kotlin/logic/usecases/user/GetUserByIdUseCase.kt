@@ -7,5 +7,6 @@ import java.util.*
 class GetUserByIdUseCase(private val userRepository: UserRepository) {
     operator fun invoke(id: UUID): User {
         return userRepository.getUserById(id)
+            ?: throw NoSuchElementException("User with ID $id not found")
     }
 }

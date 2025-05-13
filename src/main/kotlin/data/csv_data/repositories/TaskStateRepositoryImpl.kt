@@ -19,12 +19,12 @@ class TaskStateRepositoryImpl(
     }
 
     override fun getTaskStateById(id: UUID): TaskState {
-        return states.find { it.id == id } ?: throw NoStateExistException("State with ID $id not found.")
+        return states.find { it.id == id } ?: throw NoStateExistException()
     }
 
     override fun getTaskStateByProjectId(projectId: UUID): List<TaskState> {
         return states.filter { it.projectId == projectId }
-            .ifEmpty { throw NoStateExistException("No State Exist") }
+            .ifEmpty { throw NoStateExistException() }
     }
 
 

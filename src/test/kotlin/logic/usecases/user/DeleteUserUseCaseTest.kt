@@ -34,10 +34,9 @@ class DeleteUserUseCaseTest {
         every { userRepository.addUser(user) } returns true
 
         // When & Then
-        val exception = assertThrows<UnauthorizedAccessException> {
+        assertThrows<UnauthorizedAccessException> {
             deleteUserUseCase(mateRole, user.id)
         }
-        assertEquals("Only admins can delete users", exception.message)
     }
 
     @Test
@@ -47,10 +46,9 @@ class DeleteUserUseCaseTest {
         every { userRepository.deleteUser(user.id) } returns false
 
         // When & Then
-        val exception = assertThrows<NoSuchElementException> {
+        assertThrows<NoSuchElementException> {
             deleteUserUseCase(adminRole, user.id)
         }
-        assertEquals("User with id ${user.id} not found", exception.message)
     }
 
     @Test

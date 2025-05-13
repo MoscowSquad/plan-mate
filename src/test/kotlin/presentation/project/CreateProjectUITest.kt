@@ -78,14 +78,13 @@ class CreateProjectUITest {
         // Arrange
         val projectName = "Test Project"
         val errorMessage = "Invalid project name"
-        val exception = IllegalArgumentException(errorMessage)
         val user = mockk<LoggedInUser>()
 
         every { user.role } returns UserRole.MATE
         every { SessionManager.currentUser } returns user
         every { consoleIO.read() } returns projectName
         every { consoleIO.write(any()) } just Runs
-        every { createProjectUseCase(projectName, false) } throws exception
+        every { createProjectUseCase(projectName, false) } throws IllegalArgumentException(errorMessage)
 
 
         createProjectUI.invoke()

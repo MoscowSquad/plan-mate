@@ -13,12 +13,12 @@ class CreateProjectUseCase(
     operator fun invoke(name: String, isAdmin: Boolean): UUID {
 
         if (!isAdmin) {
-            throw NotAdminException("Only administrators can create projects")
+            throw NotAdminException()
         }
 
 
         if (name.isBlank()) {
-            throw InvalidProjectNameException("Project name cannot be empty")
+            throw InvalidProjectNameException()
         }
 
 
@@ -31,7 +31,7 @@ class CreateProjectUseCase(
 
         val success = projectsRepository.addProject(project)
         if (!success) {
-            throw ProjectCreationFailedException("Failed to create project")
+            throw ProjectCreationFailedException()
         }
 
         return projectId

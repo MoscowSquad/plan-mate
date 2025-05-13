@@ -13,19 +13,22 @@ class GetAllUserUI(
         val currentUserRole = SessionManager.getCurrentUserRole()
         printHeader()
 
-        try {
-            val users = getAllUsersUseCase(currentUserRole)
-
-            if (users.isEmpty()) {
-                write("\nℹ️  No users found in the system")
-                return
-            }
-
-            printUserTable(users)
-
-        } catch (e: Exception) {
-            write("\n❌ Unexpected error: ${e.message}")
+        val result = runCatching {
+            getAllUsersUseCase(currentUserRole)
         }
+
+        result
+            .onSuccess { users ->
+                if (users.isEmpty()) {
+                    write("\nℹ️  No users found in the system")
+                } else {
+                    printUserTable(users)
+                    write("\nTotal registered users: ${users.size}\n")
+                }
+            }
+            .onFailure {
+                write("\n❌ Failed to load users: ${it.message}")
+            }
     }
 
     private fun printHeader() {
@@ -51,6 +54,5 @@ class GetAllUserUI(
         }
 
         write("└───────┴───────────────┴────────────────────────┴───────────────────")
-        write("\nTotal registered users: ${users.size}\n")
     }
 }

@@ -36,7 +36,6 @@ class AssignProjectToUserUITest {
 
         assignProjectToUserUI = AssignProjectToUserUI(
             assignProjectToUserUseCase,
-            sessionManager,
             consoleIO,
             getAllProjectsUI
         )

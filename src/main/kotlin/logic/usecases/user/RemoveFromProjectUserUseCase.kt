@@ -8,7 +8,7 @@ import java.util.*
 class RemoveFromProjectUserUseCase(private val userRepository: UserRepository) {
     operator fun invoke(role: UserRole, projectId: UUID, userId: UUID): Boolean {
         if (role == UserRole.MATE) {
-            throw UnauthorizedAccessException("Only admins can revoke projects from users")
+            throw UnauthorizedAccessException()
         }
         return userRepository.unassignUserFromProject(projectId, userId)
     }

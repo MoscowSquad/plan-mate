@@ -14,11 +14,6 @@ class CreateUserUI(
 ) : ConsoleIO by consoleIO {
     operator fun invoke() {
         val currentUserRole = SessionManager.getCurrentUserRole()
-        if (currentUserRole != UserRole.ADMIN) {
-            write("\n❌ Error: Only ADMIN users can create new accounts.")
-            return
-        }
-
         write("\n=== 👤 Create New User ===")
 
         val username = promptForUsername()
@@ -33,12 +28,17 @@ class CreateUserUI(
             projectIds = listOf()
         )
 
-        val success = createUserUseCase(currentUserRole, newUser)
-        if (success) {
-            write("✅ User '$username' created successfully.")
-        } else {
-            write("❌ Failed to create user. Username might already exist.")
+        val result = runCatching {
+            createUserUseCase(currentUserRole, newUser)
         }
+
+        result
+            .onSuccess {
+                write("✅ User '$username' created successfully.")
+            }
+            .onFailure {
+                write("❌ Failed to create user. ${it.message}")
+            }
     }
 
     private fun promptForUsername(): String {

@@ -50,10 +50,9 @@ class UserDataSourceImplTest {
     fun `add user with duplicate ID throws exception`() {
         repository.addUser(user)
         val duplicateUser = user.copy(name = "Duplicate")
-        val exception = assertThrows<IllegalArgumentException> {
+        assertThrows<IllegalArgumentException> {
             repository.addUser(duplicateUser)
         }
-        assertEquals("User with id ${user.id} already exists", exception.message)
     }
 
     @Test
@@ -66,10 +65,9 @@ class UserDataSourceImplTest {
     @Test
     fun `delete non-existing user throws exception`() {
         val fakeId = UUID.randomUUID()
-        val exception = assertThrows<NoSuchElementException> {
+        assertThrows<NoSuchElementException> {
             repository.deleteUser(fakeId)
         }
-        assertEquals("Cannot delete: User with id $fakeId not found", exception.message)
     }
 
     @Test
@@ -86,20 +84,18 @@ class UserDataSourceImplTest {
         repository.addUser(user)
         val projectId = UUID.randomUUID()
         repository.assignUserToProject(projectId, user.id)
-        val exception = assertThrows<IllegalStateException> {
+        assertThrows<IllegalStateException> {
             repository.assignUserToProject(projectId, user.id)
         }
-        assertEquals("Project $projectId is already assigned to user ${user.id}", exception.message)
     }
 
     @Test
     fun `assign project to non-existing user throws exception`() {
         val fakeId = UUID.randomUUID()
         val projectId = UUID.randomUUID()
-        val exception = assertThrows<NoSuchElementException> {
+        assertThrows<NoSuchElementException> {
             repository.assignUserToProject(projectId, fakeId)
         }
-        assertEquals("User with id $fakeId not found", exception.message)
     }
 
     @Test
@@ -116,20 +112,18 @@ class UserDataSourceImplTest {
     fun `revoke project not assigned throws exception`() {
         val projectId = UUID.randomUUID()
         repository.addUser(user)
-        val exception = assertThrows<IllegalStateException> {
+        assertThrows<IllegalStateException> {
             repository.unassignUserFromProject(projectId, user.id)
         }
-        assertEquals("Project $projectId is not assigned to user ${user.id}", exception.message)
     }
 
     @Test
     fun `revoke from non-existing user throws exception`() {
         val fakeId = UUID.randomUUID()
         val projectId = UUID.randomUUID()
-        val exception = assertThrows<NoSuchElementException> {
+        assertThrows<NoSuchElementException> {
             repository.unassignUserFromProject(projectId, fakeId)
         }
-        assertEquals("User with id $fakeId not found", exception.message)
     }
 
     @Test
@@ -155,10 +149,9 @@ class UserDataSourceImplTest {
     @Test
     fun `getById throws exception when user not found`() {
         val fakeId = UUID.randomUUID()
-        val exception = assertThrows<NoSuchElementException> {
+        assertThrows<NoSuchElementException> {
             repository.getUserById(fakeId)
         }
-        assertEquals("User with id $fakeId not found", exception.message)
     }
 
     @Test

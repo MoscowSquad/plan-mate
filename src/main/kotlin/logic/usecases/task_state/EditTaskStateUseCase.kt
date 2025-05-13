@@ -12,16 +12,16 @@ class EditTaskStateUseCase(
 
     operator fun invoke(state: TaskState, isAdmin: Boolean): TaskState {
         require(isAdmin) {
-            throw NotAdminException("Only administrators can edit task states")
+            throw NotAdminException()
         }
         require(isValidTitle(state.name)) {
-            throw IllegalStateTitle("TaskState title cannot be blank")
+            throw IllegalStateTitle()
         }
 
         return if (stateRepository.updateTaskState(state)) {
             state
         } else {
-            throw NoStateExistException("State with ID ${state.id} not found")
+            throw NoStateExistException()
         }
     }
 
