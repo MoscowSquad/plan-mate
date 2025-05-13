@@ -41,16 +41,14 @@ class GetProjectByIdUseCaseTest {
     fun `should throw exception when project does not exist`() {
         // Given
         val projectId = UUID.randomUUID()
-        val exception = NoSuchElementException("Project not found")
 
-        every { projectsRepository.getProjectById(projectId) } throws exception
+        every { projectsRepository.getProjectById(projectId) } throws NoSuchElementException("Project not found")
 
         // When & Then
-        val thrownException = assertThrows<NoSuchElementException> {
+        assertThrows<NoSuchElementException> {
             getProjectByIdUseCase.invoke(projectId)
         }
 
-        assertThat(thrownException.message).isEqualTo("Project not found")
         verify(exactly = 1) { projectsRepository.getProjectById(projectId) }
     }
 

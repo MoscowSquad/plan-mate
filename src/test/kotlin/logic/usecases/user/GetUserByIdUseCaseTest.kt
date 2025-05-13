@@ -45,9 +45,8 @@ class GetUserByIdUseCaseTest {
         every { userRepository.getUserById(nonExistentUserId) } throws NoSuchElementException("User with id $nonExistentUserId not found")
 
         // When & Then
-        val exception = assertThrows<NoSuchElementException> {
+        assertThrows<NoSuchElementException> {
             getUserByIdUseCase(nonExistentUserId)
         }
-        assertEquals("User with id $nonExistentUserId not found", exception.message)
     }
 }

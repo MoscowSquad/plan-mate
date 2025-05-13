@@ -60,8 +60,7 @@ class GetAllProjectsUITest {
     fun `should display error message when exception is thrown`() {
         // Given
         val errorMessage = "Database connection failed"
-        val exception = RuntimeException(errorMessage)
-        every { getAllProjectsUseCase() } throws exception
+        every { getAllProjectsUseCase() } throws RuntimeException(errorMessage)
 
         // When
         getAllProjectsUI.invoke()

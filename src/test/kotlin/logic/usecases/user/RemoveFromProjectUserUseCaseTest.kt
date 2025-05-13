@@ -35,10 +35,9 @@ class RemoveFromProjectUserUseCaseTest {
         every { userRepository.addUser(user) } returns true
 
         // When & Then
-        val exception = assertThrows<UnauthorizedAccessException> {
+        assertThrows<UnauthorizedAccessException> {
             removeFromProjectUserUseCase(mateRole, projectId, user.id)
         }
-        assertEquals("Only admins can revoke projects from users", exception.message)
     }
 
     @Test

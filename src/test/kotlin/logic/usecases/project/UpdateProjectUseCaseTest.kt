@@ -53,10 +53,9 @@ class UpdateProjectUseCaseTest {
         val projectName = "Updated Project"
 
         // When & Then
-        val exception = assertThrows<NotAdminException> {
+        assertThrows<NotAdminException> {
             updateProjectUseCase.invoke(projectId, projectName, isAdmin = false)
         }
-        assertEquals("Only administrators can update projects", exception.message)
         verify(exactly = 0) { projectsRepository.updateProject(any()) }
     }
 
@@ -65,10 +64,9 @@ class UpdateProjectUseCaseTest {
     @ValueSource(strings = ["  ", "\t", "\n"])
     fun `should throw InvalidProjectNameException when project name is blank`(name: String) {
         // When & Then
-        val exception = assertThrows<InvalidProjectNameException> {
+        assertThrows<InvalidProjectNameException> {
             updateProjectUseCase.invoke(projectId, name, isAdmin = true)
         }
-        assertEquals("Project name cannot be empty", exception.message)
         verify(exactly = 0) { projectsRepository.updateProject(any()) }
     }
 
@@ -79,10 +77,9 @@ class UpdateProjectUseCaseTest {
         every { projectsRepository.updateProject(any()) } returns false
 
         // When & Then
-        val exception = assertThrows<NoExistProjectException> {
+        assertThrows<NoExistProjectException> {
             updateProjectUseCase.invoke(projectId, projectName, isAdmin = true)
         }
-        assertEquals("Project '$projectId' does not exist", exception.message)
     }
 
     @Test

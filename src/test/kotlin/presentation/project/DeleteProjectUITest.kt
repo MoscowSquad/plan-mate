@@ -74,11 +74,10 @@ class DeleteProjectUITest {
     fun `should handle exception when deleting project`() {
         // Given
         val errorMessage = "Project not found"
-        val exception = RuntimeException(errorMessage)
 
         mockkObject(SessionManager)
         every { SessionManager.currentUser } returns null
-        every { deleteProjectUseCase(projectId, false) } throws exception
+        every { deleteProjectUseCase(projectId, false) } throws RuntimeException(errorMessage)
 
         // When
         deleteProjectUI.invoke()

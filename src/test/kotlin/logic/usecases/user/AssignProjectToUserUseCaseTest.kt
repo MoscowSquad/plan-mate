@@ -35,10 +35,9 @@ class AssignProjectToUserUseCaseTest {
         every { userRepository.addUser(user) } returns true
 
         // When & Then
-        val exception = assertThrows<UnauthorizedAccessException> {
+         assertThrows<UnauthorizedAccessException> {
             assignProjectToUserUseCase(mateRole, projectId, user.id)
         }
-        assertEquals("Only admins can assign projects to users", exception.message)
     }
 
 

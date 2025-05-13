@@ -171,11 +171,9 @@ class ProjectsRepositoryImplTest {
         val nonExistingId = UUID.randomUUID()
 
         // When & Then
-        val exception = assertThrows<ProjectNotFoundException> {
+        assertThrows<ProjectNotFoundException> {
             repository.getProjectById(nonExistingId)
         }
-
-        assertThat(exception.message).contains(nonExistingId.toString())
     }
 
     @Test

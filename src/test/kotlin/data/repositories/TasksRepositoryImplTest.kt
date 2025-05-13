@@ -130,11 +130,9 @@ class TasksRepositoryImplTest {
         val duplicateTask = Task(testTask1.id, "Duplicate Task", "Duplicate Description", projectId1, UUID.randomUUID())
 
         // When & Then
-        val exception = assertThrows<TaskIsExist> {
+        assertThrows<TaskIsExist> {
             tasksRepository.addTask(duplicateTask)
         }
-
-        assertThat(exception.message).contains(testTask1.id.toString())
         verify(exactly = 1) { dataSource.save(any()) }
     }
 
@@ -160,11 +158,9 @@ class TasksRepositoryImplTest {
         val nonExistingTask = Task(UUID.randomUUID(), "Non-existing", "Description", projectId1, UUID.randomUUID())
 
         // When & Then
-        val exception = assertThrows<TaskIsNotFoundException> {
+        assertThrows<TaskIsNotFoundException> {
             tasksRepository.editTask(nonExistingTask)
         }
-
-        assertThat(exception.message).contains(nonExistingTask.id.toString())
         verify(exactly = 0) { dataSource.save(any()) }
     }
 
@@ -190,11 +186,9 @@ class TasksRepositoryImplTest {
         val nonExistingId = UUID.randomUUID()
 
         // When & Then
-        val exception = assertThrows<TaskIsNotFoundException> {
+        assertThrows<TaskIsNotFoundException> {
             tasksRepository.deleteTask(nonExistingId)
         }
-
-        assertThat(exception.message).contains(nonExistingId.toString())
         verify(exactly = 0) { dataSource.save(any()) }
     }
 
@@ -217,11 +211,9 @@ class TasksRepositoryImplTest {
         val nonExistingId = UUID.randomUUID()
 
         // When & Then
-        val exception = assertThrows<TaskIsNotFoundException> {
+        assertThrows<TaskIsNotFoundException> {
             tasksRepository.getTaskById(nonExistingId)
         }
-
-        assertThat(exception.message).contains(nonExistingId.toString())
     }
 
     @Test

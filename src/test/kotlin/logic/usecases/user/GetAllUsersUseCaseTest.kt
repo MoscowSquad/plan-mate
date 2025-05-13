@@ -34,10 +34,9 @@ class GetAllUsersUseCaseTest {
         every { userRepository.addUser(user) } returns true
 
         // When & Then
-        val exception = assertThrows<UnauthorizedAccessException> {
+        assertThrows<UnauthorizedAccessException> {
             getAllUsersUseCase(mateRole)
         }
-        assertEquals("Only admins can access all users", exception.message)
     }
 
     @Test

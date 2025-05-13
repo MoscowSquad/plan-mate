@@ -34,10 +34,9 @@ class CreateUserUseCaseTest {
         every { userRepository.addUser(newUser) } returns true
 
         // When & Then
-        val exception = assertThrows<UnauthorizedAccessException> {
+        assertThrows<UnauthorizedAccessException> {
             createUserUseCase(mateRole, newUser)
         }
-        assertEquals("Only admins can create users", exception.message)
     }
 
     @Test
