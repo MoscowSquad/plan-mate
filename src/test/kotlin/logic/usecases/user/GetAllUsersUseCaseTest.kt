@@ -20,18 +20,18 @@ class GetAllUsersUseCaseTest {
 
     private val adminRole = UserRole.ADMIN
     private val mateRole = UserRole.MATE
-    private val user = User(UUID.randomUUID(), "User1", "", UserRole.MATE, listOf())
+    private val user = User(UUID.randomUUID(), "User1", UserRole.MATE, listOf())
 
     @BeforeEach
     fun setup() {
-        userRepository = mockk()
+        userRepository = mockk(relaxed = true)
         getAllUsersUseCase = GetAllUsersUseCase(userRepository)
     }
 
     @Test
     fun `should throw UnauthorizedAccessException for mates`() {
         // Given
-        every { userRepository.addUser(user) } returns true
+        every { userRepository.addUser(any(), any()) } returns true
 
         // When & Then
         assertThrows<UnauthorizedAccessException> {
@@ -42,7 +42,7 @@ class GetAllUsersUseCaseTest {
     @Test
     fun `should return all users for admins`() {
         // Given
-        every { userRepository.addUser(user) } returns true
+        every { userRepository.addUser(any(), any()) } returns true
         every { userRepository.getAllUsers() } returns listOf(user)
 
         // When

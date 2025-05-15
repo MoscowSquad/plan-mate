@@ -20,7 +20,7 @@ class RemoveFromProjectUserUseCaseTest {
 
     private val adminRole = UserRole.ADMIN
     private val mateRole = UserRole.MATE
-    private val user = User(UUID.randomUUID(), "User1", "", UserRole.MATE, listOf())
+    private val user = User(UUID.randomUUID(), "User1", UserRole.MATE, listOf())
     private val projectId = UUID.randomUUID()
 
     @BeforeEach
@@ -32,7 +32,7 @@ class RemoveFromProjectUserUseCaseTest {
     @Test
     fun `should throw UnauthorizedAccessException for mates`() {
         // Given
-        every { userRepository.addUser(user) } returns true
+        every { userRepository.addUser(any(), any()) } returns true
 
         // When & Then
         assertThrows<UnauthorizedAccessException> {
@@ -43,7 +43,7 @@ class RemoveFromProjectUserUseCaseTest {
     @Test
     fun `should revoke project for mates when user is admin`() {
         // Given
-        every { userRepository.addUser(user) } returns true
+        every { userRepository.addUser(any(), any()) } returns true
         every { userRepository.unassignUserFromProject(projectId, user.id) } returns true
 
         // When

@@ -23,7 +23,6 @@ class LoginUseCaseTest {
     private val validUser = User(
         id = UUID.randomUUID(),
         name = "validUser",
-        hashedPassword = "correctPassword".toMD5Hash(),
         role = UserRole.ADMIN,
         projectIds = emptyList()
     )

@@ -1,5 +1,8 @@
 package logic.usecases.auth
 
+import data.csv_data.dto.UserDto
+import data.csv_data.mappers.toDto
+import data.csv_data.mappers.toUser
 import logic.util.toMD5Hash
 import logic.models.User
 import logic.models.User.UserRole
@@ -15,19 +18,19 @@ import kotlin.test.fail
 class RegisterUseCaseTest {
 
     private class FakeAuthRepository : AuthenticationRepository {
-        val registeredUsers = mutableListOf<User>()
+        val registeredUsers = mutableListOf<UserDto>()
         var shouldThrow = false
 
-        override fun register(user: User): User {
+        override fun register(user: User, hashedPassword: String): User {
             if (shouldThrow) throw IllegalStateException("Repository error")
-            registeredUsers.add(user)
+            registeredUsers.add(user.toDto(hashedPassword))
             return user
         }
 
         override fun login(name: String, password: String): User {
             val user = registeredUsers.find { it.name == name && it.hashedPassword == password }
                 ?: throw IllegalArgumentException("Invalid credentials")
-            return user
+            return user.toUser()
         }
     }
 
@@ -47,7 +50,7 @@ class RegisterUseCaseTest {
     @Test
     fun `should handle password hashing failure`() {
         val failingAuthRepository = object : AuthenticationRepository {
-            override fun register(user: User): User {
+            override fun register(user: User, hashedPassword: String): User {
                 throw RuntimeException("Password hashing failed")
             }
 
@@ -133,7 +136,7 @@ class RegisterUseCaseTest {
             role = UserRole.MATE,
             projectIds = listOf(projectId)
         )
-        assertTrue { fakeRepository.registeredUsers[0].projectIds[0] == projectId }
+        assertTrue { fakeRepository.registeredUsers[0].toUser().projectIds[0] == projectId }
     }
 
     @Test
@@ -192,7 +195,7 @@ class RegisterUseCaseTest {
             plainPassword = "valid@Password123",
             role = UserRole.ADMIN
         )
-        assertTrue { fakeRepository.registeredUsers[0].role == UserRole.ADMIN }
+        assertTrue { fakeRepository.registeredUsers[0].toUser().role == UserRole.ADMIN }
     }
 
     @Test

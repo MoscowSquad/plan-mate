@@ -18,8 +18,6 @@ class TaskRepositoryImpl(
     private val taskDataSource: TaskDataSource,
     private val auditLogDataSource: AuditLogDataSource
 ) : TasksRepository {
-
-
     override fun getAllTasks() = executeInIO {
         taskDataSource.getAllTasks().map {
             it.toTask()

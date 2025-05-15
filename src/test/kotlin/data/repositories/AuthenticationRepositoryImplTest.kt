@@ -2,6 +2,7 @@ package data.repositories
 
 import data.csv_data.datasource.UserDataSource
 import data.csv_data.mappers.toDto
+import data.csv_data.mappers.toUser
 import data.csv_data.repositories.AuthenticationRepositoryImpl
 import data.session_manager.SessionManager
 import io.mockk.*
@@ -20,6 +21,7 @@ class AuthenticationRepositoryImplTest {
     private lateinit var userDataSource: UserDataSource
     private lateinit var repository: AuthenticationRepositoryImpl
     private lateinit var testUser: User
+    private val hashedPassword = "password123".toMD5Hash()
 
     @BeforeEach
     fun setUp() {
@@ -27,12 +29,11 @@ class AuthenticationRepositoryImplTest {
         testUser = User(
             id = UUID.randomUUID(),
             name = "testUser",
-            hashedPassword = "password123".toMD5Hash(),
             role = UserRole.MATE,
             projectIds = emptyList()
         )
 
-        every { userDataSource.fetch() } returns listOf(testUser.toDto())
+        every { userDataSource.fetch() } returns listOf(testUser.toDto(hashedPassword))
 
         repository = AuthenticationRepositoryImpl(userDataSource)
 
@@ -45,27 +46,27 @@ class AuthenticationRepositoryImplTest {
         // Then
         verify { userDataSource.fetch() }
         assertEquals(1, repository.users.size)
-        assertEquals(testUser.id, repository.users[0].id)
+            assertEquals(testUser.id, repository.users[0].toUser().id)
     }
 
     @Test
     fun `register should add user and update data source`() {
         // Given
+        val hashedPassword = "password456".toMD5Hash()
         val newUser = User(
             id = UUID.randomUUID(),
             name = "newUser",
-            hashedPassword = "password456".toMD5Hash(),
             role = UserRole.MATE,
             projectIds = emptyList()
         )
         every { userDataSource.save(any()) } just Runs
 
         // When
-        val result = repository.register(newUser)
+        val result = repository.register(newUser, hashedPassword)
 
         // Then
         assertEquals(newUser, result)
-        assertTrue(repository.users.contains(newUser))
+        assertTrue(repository.users.contains(newUser.toDto(hashedPassword)))
         verify { userDataSource.save(any()) }
         verify { SessionManager.currentUser = any() }
     }
@@ -77,7 +78,7 @@ class AuthenticationRepositoryImplTest {
 
         // When and Then
         assertFailsWith<IllegalArgumentException> {
-            repository.register(duplicateUser)
+            repository.register(duplicateUser, hashedPassword)
         }
 
         verify(exactly = 0) { userDataSource.save(any()) }
@@ -101,79 +102,6 @@ class AuthenticationRepositoryImplTest {
         }
 
         verify(exactly = 0) { SessionManager.currentUser = any() }
-    }
-
-    @Test
-    fun `create Default Admin should register admin user when no admin exists`() {
-        // Given
-        repository.users.clear()
-        every { userDataSource.fetch() } returns emptyList()
-        every { userDataSource.save(any()) } just Runs
-
-        repository = AuthenticationRepositoryImpl(userDataSource)
-
-        // When
-        repository.createDefaultAdmin()
-
-        // Then
-        assertEquals(1, repository.users.size)
-        assertEquals(UserRole.ADMIN, repository.users[0].role)
-        assertEquals("admin", repository.users[0].name)
-        verify { userDataSource.save(any()) }
-    }
-
-    @Test
-    fun `create Default Admin should not create admin when one already exists`() {
-        // Given
-        val adminUser = User(
-            id = UUID.randomUUID(),
-            name = "existingAdmin",
-            hashedPassword = "adminPass".toMD5Hash(),
-            role = UserRole.ADMIN,
-            projectIds = emptyList()
-        )
-
-        every { userDataSource.fetch() } returns listOf(adminUser.toDto())
-
-        repository = AuthenticationRepositoryImpl(userDataSource)
-
-        // When
-        repository.createDefaultAdmin()
-
-        // Then
-        assertEquals(1, repository.users.size)
-        assertEquals("existingAdmin", repository.users[0].name)
-        verify(exactly = 0) { userDataSource.save(any()) }
-    }
-
-    @Test
-    fun `create Default Admin should not register admin when any user with ADMIN role exists`() {
-        // Given
-        val normalUser = User(
-            id = UUID.randomUUID(),
-            name = "normalUser",
-            hashedPassword = "password123".toMD5Hash(),
-            role = UserRole.MATE,
-            projectIds = emptyList()
-        )
-        val adminUser = User(
-            id = UUID.randomUUID(),
-            name = "someAdmin",
-            hashedPassword = "adminPass".toMD5Hash(),
-            role = UserRole.ADMIN,
-            projectIds = emptyList()
-        )
-
-        every { userDataSource.fetch() } returns listOf(normalUser.toDto(), adminUser.toDto())
-
-        repository = AuthenticationRepositoryImpl(userDataSource)
-
-        // When
-        repository.createDefaultAdmin()
-
-        // Then
-        assertEquals(2, repository.users.size)
-        verify(exactly = 0) { userDataSource.save(any()) }
     }
 
     @Test

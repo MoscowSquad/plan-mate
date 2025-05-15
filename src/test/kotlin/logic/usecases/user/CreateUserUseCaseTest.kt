@@ -30,26 +30,26 @@ class CreateUserUseCaseTest {
     @Test
     fun `should throw UnauthorizedAccessException for mates`() {
         // Given
-        val newUser = User(UUID.randomUUID(), "User2", "", UserRole.MATE, listOf())
-        every { userRepository.addUser(newUser) } returns true
+        val newUser = User(UUID.randomUUID(), "User2", UserRole.MATE, listOf())
+        every { userRepository.addUser(any(), any()) } returns true
 
         // When & Then
         assertThrows<UnauthorizedAccessException> {
-            createUserUseCase(mateRole, newUser)
+            createUserUseCase.createNewUser(mateRole, newUser, "")
         }
     }
 
     @Test
     fun `should create user for admins`() {
         // Given
-        val newUser = User(UUID.randomUUID(), "User2", "", UserRole.MATE, listOf())
-        every { userRepository.addUser(newUser) } returns true
+        val newUser = User(UUID.randomUUID(), "User2", UserRole.MATE, listOf())
+        every { userRepository.addUser(any(), any()) } returns true
 
         // When
-        val result = createUserUseCase(adminRole, newUser)
+        val result = createUserUseCase.createNewUser(adminRole, newUser, "")
 
         // Then
         assertTrue(result)
-        verify(exactly = 1) { userRepository.addUser(newUser) }
+        verify(exactly = 1) { userRepository.addUser(any(), any()) }
     }
 }

@@ -11,11 +11,9 @@ class CreateProjectUseCase(
     private val projectsRepository: ProjectsRepository
 ) {
     operator fun invoke(name: String, isAdmin: Boolean): UUID {
-
         if (!isAdmin) {
             throw NotAdminException()
         }
-
 
         if (name.isBlank()) {
             throw InvalidProjectNameException()

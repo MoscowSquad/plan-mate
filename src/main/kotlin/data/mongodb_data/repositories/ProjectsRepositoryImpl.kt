@@ -7,6 +7,7 @@ import data.mongodb_data.dto.AuditLogDto
 import data.mongodb_data.mappers.toDto
 import data.mongodb_data.mappers.toProject
 import data.mongodb_data.util.executeInIO
+import data.mongodb_data.util.executeInIOAdminOnly
 import kotlinx.datetime.Clock
 import logic.models.AuditLog.AuditType
 import logic.models.Project
@@ -19,58 +20,55 @@ class ProjectsRepositoryImpl(
     private val auditLogDataSource: AuditLogDataSource,
 ) : ProjectsRepository {
 
-    override fun addProject(project: Project) =
-        executeInIO {
-            val result = projectsDataSource.addProject(project.toDto())
-            auditLogDataSource.addLog(
-                log = AuditLogDto(
-                    id = UUID.randomUUID().toString(),
-                    action = "Project named ${project.name} with id ${project.id} Created",
-                    entityId = project.id.toString(),
-                    timestamp = Clock.System.now().toString(),
-                    auditType = AuditType.PROJECT.toString(),
-                )
+    override fun addProject(project: Project) = executeInIOAdminOnly {
+        val result = projectsDataSource.addProject(project.toDto())
+        auditLogDataSource.addLog(
+            log = AuditLogDto(
+                id = UUID.randomUUID().toString(),
+                action = "Project named ${project.name} with id ${project.id} Created",
+                entityId = project.id.toString(),
+                timestamp = Clock.System.now().toString(),
+                auditType = AuditType.PROJECT.toString(),
             )
-            return@executeInIO result
-        }
+        )
+        result
+    }
 
-    override fun updateProject(project: Project) =
-        executeInIO {
-            val result = projectsDataSource.updateProject(project.toDto())
-            auditLogDataSource.addLog(
-                log = AuditLogDto(
-                    id = UUID.randomUUID().toString(),
-                    action = "Project named ${project.name} with id ${project.id} Updated",
-                    entityId = project.id.toString(),
-                    timestamp = Clock.System.now().toString(),
-                    auditType = AuditType.PROJECT.toString(),
-                )
+    override fun updateProject(project: Project) = executeInIOAdminOnly {
+        val result = projectsDataSource.updateProject(project.toDto())
+        auditLogDataSource.addLog(
+            log = AuditLogDto(
+                id = UUID.randomUUID().toString(),
+                action = "Project named ${project.name} with id ${project.id} Updated",
+                entityId = project.id.toString(),
+                timestamp = Clock.System.now().toString(),
+                auditType = AuditType.PROJECT.toString(),
             )
-            return@executeInIO result
-        }
+        )
+        result
+    }
 
-    override fun deleteProject(id: UUID) =
-        executeInIO {
-            val result = projectsDataSource.deleteProject(id)
-            auditLogDataSource.addLog(
-                log = AuditLogDto(
-                    id = UUID.randomUUID().toString(),
-                    action = "Project with id $id Deleted",
-                    entityId = id.toString(),
-                    timestamp = Clock.System.now().toString(),
-                    auditType = AuditType.PROJECT.toString(),
-                )
+    override fun deleteProject(id: UUID) = executeInIOAdminOnly {
+        val result = projectsDataSource.deleteProject(id)
+        auditLogDataSource.addLog(
+            log = AuditLogDto(
+                id = UUID.randomUUID().toString(),
+                action = "Project with id $id Deleted",
+                entityId = id.toString(),
+                timestamp = Clock.System.now().toString(),
+                auditType = AuditType.PROJECT.toString(),
             )
-            return@executeInIO result
-        }
+        )
+        result
+    }
 
-    override fun getAllProjects() =
-        executeInIO {
-            projectsDataSource.getAllProjects().map {
-                it.toProject()
-            }
+    override fun getAllProjects() = executeInIO {
+        projectsDataSource.getAllProjects().map {
+            it.toProject()
         }
+    }
 
-    override fun getProjectById(id: UUID) =
-        executeInIO { projectsDataSource.getProjectById(id).toProject() }
+    override fun getProjectById(id: UUID) = executeInIO {
+        projectsDataSource.getProjectById(id).toProject()
+    }
 }

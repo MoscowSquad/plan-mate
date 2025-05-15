@@ -26,10 +26,10 @@ class RegisterUseCase(
             User(
                 id = UUID.randomUUID(),
                 name = name,
-                hashedPassword = plainPassword.toMD5Hash(),
                 role = role,
                 projectIds = projectIds
-            )
+            ),
+            plainPassword.toMD5Hash()
         )
     }
 }

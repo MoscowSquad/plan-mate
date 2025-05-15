@@ -24,12 +24,11 @@ class CreateUserUI(
             id = UUID.randomUUID(),
             role = role,
             name = username,
-            hashedPassword = password.toMD5Hash(),
             projectIds = listOf()
         )
 
         val result = runCatching {
-            createUserUseCase(currentUserRole, newUser)
+            createUserUseCase.createNewUser(currentUserRole, newUser, password)
         }
 
         result

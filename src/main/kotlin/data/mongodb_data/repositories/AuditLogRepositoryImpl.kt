@@ -11,17 +11,15 @@ class AuditLogRepositoryImpl(
     private val auditLogDataSource: AuditLogDataSource
 ) : AuditRepository {
 
-    override fun getAllLogsByTaskId(taskId: UUID): List<AuditLog> =
-        executeInIO {
-            auditLogDataSource.getAllLogsByTaskId(taskId).map {
-                it.toAuditLog()
-            }
+    override fun getAllLogsByTaskId(taskId: UUID): List<AuditLog> = executeInIO {
+        auditLogDataSource.getAllLogsByTaskId(taskId).map {
+            it.toAuditLog()
         }
+    }
 
-    override fun getAllLogsByProjectId(projectId: UUID): List<AuditLog> =
-        executeInIO {
-            auditLogDataSource.getAllLogsByTaskId(projectId).map {
-                it.toAuditLog()
-            }
+    override fun getAllLogsByProjectId(projectId: UUID): List<AuditLog> = executeInIO {
+        auditLogDataSource.getAllLogsByTaskId(projectId).map {
+            it.toAuditLog()
         }
+    }
 }

@@ -20,7 +20,7 @@ class AssignProjectToUserUseCaseTest {
 
     private val adminRole = UserRole.ADMIN
     private val mateRole = UserRole.MATE
-    private val user = User(UUID.randomUUID(), "User1", "", UserRole.MATE, listOf())
+    private val user = User(UUID.randomUUID(), "User1", UserRole.MATE, listOf())
     private val projectId = UUID.randomUUID()
 
     @BeforeEach
@@ -32,10 +32,10 @@ class AssignProjectToUserUseCaseTest {
     @Test
     fun `should throw UnauthorizedAccessException for mates try to assign project`() {
         // Given
-        every { userRepository.addUser(user) } returns true
+        every { userRepository.addUser(any(), any()) } returns true
 
         // When & Then
-         assertThrows<UnauthorizedAccessException> {
+        assertThrows<UnauthorizedAccessException> {
             assignProjectToUserUseCase(mateRole, projectId, user.id)
         }
     }
@@ -44,7 +44,7 @@ class AssignProjectToUserUseCaseTest {
     @Test
     fun `should assign project for users when admins try to assign`() {
         // Given
-        every { userRepository.addUser(user) } returns true
+        every { userRepository.addUser(any(), any()) } returns true
         every { userRepository.assignUserToProject(projectId, user.id) } returns true
 
         // When

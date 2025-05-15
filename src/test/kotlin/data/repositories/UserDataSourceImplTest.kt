@@ -23,6 +23,7 @@ class UserDataSourceImplTest {
     private lateinit var dataSource: UserDataSource
     private lateinit var repository: UserRepositoryImpl
     private lateinit var user: User
+    private val hashedPassword = "hashed"
 
     @BeforeEach
     fun setUp() {
@@ -33,7 +34,6 @@ class UserDataSourceImplTest {
         user = User(
             id = UUID.randomUUID(),
             name = "Test User",
-            hashedPassword = "hashed",
             role = UserRole.MATE,
             projectIds = listOf()
         )
@@ -41,23 +41,23 @@ class UserDataSourceImplTest {
 
     @Test
     fun `add user successfully`() {
-        val result = repository.addUser(user)
+        val result = repository.addUser(user, hashedPassword)
         assertTrue(result)
         assertEquals(user, repository.getUserById(user.id))
     }
 
     @Test
     fun `add user with duplicate ID throws exception`() {
-        repository.addUser(user)
+        repository.addUser(user, hashedPassword)
         val duplicateUser = user.copy(name = "Duplicate")
         assertThrows<IllegalArgumentException> {
-            repository.addUser(duplicateUser)
+            repository.addUser(duplicateUser, hashedPassword)
         }
     }
 
     @Test
     fun `delete existing user successfully`() {
-        repository.addUser(user)
+        repository.addUser(user, hashedPassword)
         val result = repository.deleteUser(user.id)
         assertTrue(result)
     }
@@ -72,7 +72,7 @@ class UserDataSourceImplTest {
 
     @Test
     fun `assign user to project successfully`() {
-        repository.addUser(user)
+        repository.addUser(user, hashedPassword)
         val projectId = UUID.randomUUID()
         val result = repository.assignUserToProject(projectId, user.id)
         assertTrue(result)
@@ -81,7 +81,7 @@ class UserDataSourceImplTest {
 
     @Test
     fun `assign user to already assigned project throws exception`() {
-        repository.addUser(user)
+        repository.addUser(user, hashedPassword)
         val projectId = UUID.randomUUID()
         repository.assignUserToProject(projectId, user.id)
         assertThrows<IllegalStateException> {
@@ -101,7 +101,7 @@ class UserDataSourceImplTest {
     @Test
     fun `revoke user from project successfully`() {
         val projectId = UUID.randomUUID()
-        repository.addUser(user)
+        repository.addUser(user, hashedPassword)
         repository.assignUserToProject(projectId, user.id)
         val result = repository.unassignUserFromProject(projectId, user.id)
         assertTrue(result)
@@ -111,7 +111,7 @@ class UserDataSourceImplTest {
     @Test
     fun `revoke project not assigned throws exception`() {
         val projectId = UUID.randomUUID()
-        repository.addUser(user)
+        repository.addUser(user, hashedPassword)
         assertThrows<IllegalStateException> {
             repository.unassignUserFromProject(projectId, user.id)
         }
@@ -128,7 +128,7 @@ class UserDataSourceImplTest {
 
     @Test
     fun `getById returns user when found`() {
-        repository.addUser(user)
+        repository.addUser(user, hashedPassword)
         val result = repository.getUserById(user.id)
         assertEquals(user.id, result.id)
     }
@@ -137,9 +137,9 @@ class UserDataSourceImplTest {
     fun `getById returns correct user from multiple users`() {
         val user2 = user.copy(id = UUID.randomUUID(), name = "User2")
         val user3 = user.copy(id = UUID.randomUUID(), name = "User3")
-        repository.addUser(user)
-        repository.addUser(user2)
-        repository.addUser(user3)
+        repository.addUser(user, hashedPassword)
+        repository.addUser(user2, hashedPassword)
+        repository.addUser(user3, hashedPassword)
 
         val result = repository.getUserById(user2.id)
         assertEquals(user2.id, result.id)
@@ -157,8 +157,8 @@ class UserDataSourceImplTest {
     @Test
     fun `getAll returns all users`() {
         val user2 = user.copy(id = UUID.randomUUID(), name = "Second")
-        repository.addUser(user)
-        repository.addUser(user2)
+        repository.addUser(user, hashedPassword)
+        repository.addUser(user2, hashedPassword)
         val allUsers = repository.getAllUsers()
         assertEquals(2, allUsers.size)
         assertTrue(allUsers.contains(user))
@@ -174,7 +174,7 @@ class UserDataSourceImplTest {
             UserDto(
                 it.id.toString(),
                 it.name,
-                it.hashedPassword,
+                hashedPassword,
                 it.role.toString(),
                 it.projectIds.map { id -> id.toString() })
         }
@@ -186,7 +186,7 @@ class UserDataSourceImplTest {
 
     @Test
     fun `getAllUsers returns cached data when users list is not empty`() {
-        repository.addUser(user)
+        repository.addUser(user, hashedPassword)
 
         repository.getAllUsers()
 

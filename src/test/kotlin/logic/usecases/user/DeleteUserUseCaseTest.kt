@@ -7,7 +7,6 @@ import logic.models.User
 import logic.models.User.UserRole
 import logic.repositories.UserRepository
 import logic.util.UnauthorizedAccessException
-import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -20,7 +19,7 @@ class DeleteUserUseCaseTest {
 
     private val adminRole = UserRole.ADMIN
     private val mateRole = UserRole.MATE
-    private val user = User(UUID.randomUUID(), "User1", "", UserRole.MATE, listOf())
+    private val user = User(UUID.randomUUID(), "User1", UserRole.MATE, listOf())
 
     @BeforeEach
     fun setup() {
@@ -31,7 +30,7 @@ class DeleteUserUseCaseTest {
     @Test
     fun `should throw UnauthorizedAccessException for mates`() {
         // Given
-        every { userRepository.addUser(user) } returns true
+        every { userRepository.addUser(any(), any()) } returns true
 
         // When & Then
         assertThrows<UnauthorizedAccessException> {

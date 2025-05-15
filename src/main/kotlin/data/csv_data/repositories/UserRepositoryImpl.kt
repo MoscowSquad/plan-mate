@@ -12,7 +12,7 @@ class UserRepositoryImpl(
 
     private val users = mutableListOf<User>()
 
-    override fun addUser(user: User): Boolean {
+    override fun addUser(user: User, hashedPassword: String): Boolean {
         if (users.any { it.id == user.id }) {
             throw IllegalArgumentException("User with id ${user.id} already exists")
         }

@@ -6,6 +6,7 @@ import data.mongodb_data.dto.AuditLogDto
 import data.mongodb_data.mappers.toDto
 import data.mongodb_data.mappers.toTaskState
 import data.mongodb_data.util.executeInIO
+import data.mongodb_data.util.executeInIOAdminOnly
 import kotlinx.datetime.Clock
 import logic.models.AuditLog.AuditType
 import logic.models.TaskState
@@ -27,49 +28,46 @@ class TaskStateRepositoryImpl(
         }
     }
 
-    override fun updateTaskState(state: TaskState): Boolean =
-        executeInIO {
-            val result = taskStateDataSource.updateTaskState(state.toDto())
-            auditLogDataSource.addLog(
-                log = AuditLogDto(
-                    id = UUID.randomUUID().toString(),
-                    action = "State with id ${state.id} in project id ${state.projectId} is Updated",
-                    entityId = state.id.toString(),
-                    timestamp = Clock.System.now().toString(),
-                    auditType = AuditType.TASK_STATE.toString(),
-                )
+    override fun updateTaskState(state: TaskState): Boolean = executeInIOAdminOnly {
+        val result = taskStateDataSource.updateTaskState(state.toDto())
+        auditLogDataSource.addLog(
+            log = AuditLogDto(
+                id = UUID.randomUUID().toString(),
+                action = "State with id ${state.id} in project id ${state.projectId} is Updated",
+                entityId = state.id.toString(),
+                timestamp = Clock.System.now().toString(),
+                auditType = AuditType.TASK_STATE.toString(),
             )
-            return@executeInIO result
-        }
+        )
+        result
+    }
 
-    override fun addTaskState(projectId: UUID, state: TaskState): Boolean =
-        executeInIO {
-            val result = taskStateDataSource.addTaskState(projectId, state.toDto())
-            auditLogDataSource.addLog(
-                log = AuditLogDto(
-                    id = UUID.randomUUID().toString(),
-                    action = "New State with id ${state.id} in project id $projectId is Added",
-                    entityId = state.id.toString(),
-                    timestamp = Clock.System.now().toString(),
-                    auditType = AuditType.TASK_STATE.toString(),
-                )
+    override fun addTaskState(projectId: UUID, state: TaskState): Boolean = executeInIOAdminOnly {
+        val result = taskStateDataSource.addTaskState(projectId, state.toDto())
+        auditLogDataSource.addLog(
+            log = AuditLogDto(
+                id = UUID.randomUUID().toString(),
+                action = "New State with id ${state.id} in project id $projectId is Added",
+                entityId = state.id.toString(),
+                timestamp = Clock.System.now().toString(),
+                auditType = AuditType.TASK_STATE.toString(),
             )
-            return@executeInIO result
-        }
+        )
+        result
+    }
 
-    override fun deleteTaskState(projectId: UUID, stateId: UUID): Boolean =
-        executeInIO {
-            val result = taskStateDataSource.deleteTaskState(projectId, stateId)
-            auditLogDataSource.addLog(
-                log = AuditLogDto(
-                    id = UUID.randomUUID().toString(),
-                    action = "State with id $stateId in project id $projectId is Deleted",
-                    entityId = stateId.toString(),
-                    timestamp = Clock.System.now().toString(),
-                    auditType = AuditType.TASK_STATE.toString(),
-                )
+    override fun deleteTaskState(projectId: UUID, stateId: UUID): Boolean = executeInIOAdminOnly {
+        val result = taskStateDataSource.deleteTaskState(projectId, stateId)
+        auditLogDataSource.addLog(
+            log = AuditLogDto(
+                id = UUID.randomUUID().toString(),
+                action = "State with id $stateId in project id $projectId is Deleted",
+                entityId = stateId.toString(),
+                timestamp = Clock.System.now().toString(),
+                auditType = AuditType.TASK_STATE.toString(),
             )
-            return@executeInIO result
-        }
+        )
+        result
+    }
 
 }

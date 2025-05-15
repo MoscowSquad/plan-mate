@@ -15,13 +15,12 @@ fun UserDto.toUser(): User {
     return User(
         id = id.toUUID(),
         name = name,
-        hashedPassword = hashedPassword,
         role = if (role == ADMIN) UserRole.ADMIN else UserRole.MATE,
         projectIds = projectIds.map { it.toUUID() }
     )
 }
 
-fun User.toDto(): UserDto {
+fun User.toDto(hashedPassword:String): UserDto {
     return UserDto(
         id = id.toString(),
         name = name,

@@ -15,11 +15,8 @@ object SessionManager {
     var currentUser: LoggedInUser? = null
 
     fun setCurrentUser(role: UserRole) {
-        currentUser = currentUser?.copy(
-            role = role
-        ) ?: throw UserNotLoggedInException()
+        currentUser = currentUser?.copy(role = role) ?: throw UserNotLoggedInException()
     }
 
-    fun getCurrentUserRole(): UserRole = currentUser?.role
-        ?: throw UserNotLoggedInException()
+    fun getCurrentUserRole(): UserRole = currentUser?.role ?: throw UserNotLoggedInException()
 }

@@ -1,54 +1,42 @@
 package data.csv_data.repositories
 
 import data.csv_data.datasource.UserDataSource
+import data.csv_data.dto.UserDto
 import data.csv_data.mappers.toDto
 import data.csv_data.mappers.toUser
 import data.session_manager.LoggedInUser
 import data.session_manager.SessionManager
 import logic.models.User
-import logic.models.User.UserRole
 import logic.repositories.AuthenticationRepository
 import logic.util.UserNotFoundException
 import logic.util.toMD5Hash
-import java.util.*
 
 class AuthenticationRepositoryImpl(
     private val dataSource: UserDataSource,
 ) : AuthenticationRepository {
 
-    val users = mutableListOf<User>()
+    val users = mutableListOf<UserDto>()
 
     init {
-        users.addAll(dataSource.fetch().map { it.toUser() })
+        users.addAll(dataSource.fetch())
     }
 
-    override fun register(user: User): User {
+    override fun register(user: User, hashedPassword: String): User {
         require(users.none { it.name == user.name }) { "Username already exists" }
-        users.add(user)
-        dataSource.save(users.map { it.toDto() })
+        users.add(user.toDto(hashedPassword))
+        dataSource.save(users)
         SessionManager.currentUser = LoggedInUser(user.id, user.name, user.role, user.projectIds)
         return user
     }
 
     override fun login(name: String, password: String): User {
         val hashedPassword = password.toMD5Hash()
-        val user = users.find { it.name == name && it.hashedPassword == hashedPassword }
+        val userDto = users.find { it.name == name && it.hashedPassword == hashedPassword }
             ?: throw UserNotFoundException(name)
-        SessionManager.currentUser = LoggedInUser(user.id, user.name, user.role, user.projectIds)
-        return user
-    }
+        val user = userDto.toUser()
 
-    fun createDefaultAdmin() {
-        if (users.none { it.role == UserRole.ADMIN }) {
-            register(
-                User(
-                    id = UUID.randomUUID(),
-                    name = "admin",
-                    hashedPassword = "admin123".toMD5Hash(),
-                    role = UserRole.ADMIN,
-                    projectIds = emptyList()
-                )
-            )
-        }
+        SessionManager.currentUser = LoggedInUser(user.id, user.name, user.role, user.projectIds)
+
+        return user
     }
 }

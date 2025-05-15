@@ -30,7 +30,6 @@ class MapperKtTest {
 
         assertEquals(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"), user.id)
         assertEquals("Test User", user.name)
-        assertEquals("hashed123", user.hashedPassword)
         assertEquals(UserRole.ADMIN, user.role)
         assertEquals(1, user.projectIds.size)
         assertEquals(UUID.fromString("550e8400-e29b-41d4-a716-446655440001"), user.projectIds[0])
@@ -38,15 +37,15 @@ class MapperKtTest {
 
     @Test
     fun `test User to UserDto conversion`() {
+        val hashedPassword = "hashed123"
         val user = User(
             id = UUID.fromString("550e8400-e29b-41d4-a716-446655440000"),
             name = "Test User",
-            hashedPassword = "hashed123",
             role = UserRole.MATE,
             projectIds = listOf(UUID.fromString("550e8400-e29b-41d4-a716-446655440001"))
         )
 
-        val userDto = user.toDto()
+        val userDto = user.toDto(hashedPassword)
 
         assertEquals("550e8400-e29b-41d4-a716-446655440000", userDto.id)
         assertEquals("Test User", userDto.name)
@@ -241,23 +240,22 @@ class MapperKtTest {
 
     @Test
     fun `test User to UserDto role conversion with different roles`() {
+        val hashedPassword = "hashed123"
         val adminUser = User(
             id = UUID.fromString("550e8400-e29b-41d4-a716-446655440000"),
             name = "Admin User",
-            hashedPassword = "hashed123",
             role = UserRole.ADMIN,
             projectIds = listOf()
         )
-        assertEquals(ADMIN, adminUser.toDto().role)
+        assertEquals(ADMIN, adminUser.toDto(hashedPassword).role)
 
         val mateUser = User(
             id = UUID.fromString("550e8400-e29b-41d4-a716-446655440000"),
             name = "Mate User",
-            hashedPassword = "hashed123",
             role = UserRole.MATE,
             projectIds = listOf()
         )
-        assertEquals(MATE, mateUser.toDto().role)
+        assertEquals(MATE, mateUser.toDto(hashedPassword).role)
     }
 
     @Test
