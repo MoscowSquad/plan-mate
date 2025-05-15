@@ -4,7 +4,6 @@ import data.session_manager.SessionManager
 import logic.models.User
 import logic.models.User.UserRole
 import logic.usecases.user.CreateUserUseCase
-import logic.util.toMD5Hash
 import presentation.io.ConsoleIO
 import java.util.*
 
@@ -24,7 +23,8 @@ class CreateUserUI(
             id = UUID.randomUUID(),
             role = role,
             name = username,
-            projectIds = listOf()
+            projectIds = listOf(),
+            taskIds = listOf()
         )
 
         val result = runCatching {
