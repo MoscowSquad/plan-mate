@@ -23,7 +23,8 @@ class MapperKtTest {
             name = "Test User",
             hashedPassword = "hashed123",
             role = ADMIN,
-            projectIds = listOf("550e8400-e29b-41d4-a716-446655440001")
+            projectIds = listOf("550e8400-e29b-41d4-a716-446655440001"),
+            taskIds = emptyList()
         )
 
         val user = userDto.toUser()
@@ -42,7 +43,8 @@ class MapperKtTest {
             id = UUID.fromString("550e8400-e29b-41d4-a716-446655440000"),
             name = "Test User",
             role = UserRole.MATE,
-            projectIds = listOf(UUID.fromString("550e8400-e29b-41d4-a716-446655440001"))
+            projectIds = listOf(UUID.fromString("550e8400-e29b-41d4-a716-446655440001")),
+            taskIds = emptyList()
         )
 
         val userDto = user.toDto(hashedPassword)
@@ -214,7 +216,8 @@ class MapperKtTest {
             name = "Admin User",
             hashedPassword = "hashed123",
             role = ADMIN,
-            projectIds = listOf()
+            projectIds = listOf(),
+            taskIds = listOf()
         )
         assertEquals(UserRole.ADMIN, adminDto.toUser().role)
 
@@ -224,7 +227,8 @@ class MapperKtTest {
             name = "Mate User",
             hashedPassword = "hashed123",
             role = MATE,
-            projectIds = listOf()
+            projectIds = listOf(),
+            taskIds = listOf()
         )
         assertEquals(UserRole.MATE, mateDto.toUser().role)
 
@@ -233,7 +237,8 @@ class MapperKtTest {
             name = "Unknown Role User",
             hashedPassword = "hashed123",
             role = "UNKNOWN_ROLE",
-            projectIds = listOf()
+            projectIds = listOf(),
+            taskIds = listOf()
         )
         assertEquals(UserRole.MATE, unknownRoleDto.toUser().role)
     }
@@ -245,7 +250,8 @@ class MapperKtTest {
             id = UUID.fromString("550e8400-e29b-41d4-a716-446655440000"),
             name = "Admin User",
             role = UserRole.ADMIN,
-            projectIds = listOf()
+            projectIds = listOf(),
+            taskIds = listOf()
         )
         assertEquals(ADMIN, adminUser.toDto(hashedPassword).role)
 
@@ -253,7 +259,8 @@ class MapperKtTest {
             id = UUID.fromString("550e8400-e29b-41d4-a716-446655440000"),
             name = "Mate User",
             role = UserRole.MATE,
-            projectIds = listOf()
+            projectIds = listOf(),
+            taskIds = listOf()
         )
         assertEquals(MATE, mateUser.toDto(hashedPassword).role)
     }

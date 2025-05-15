@@ -17,7 +17,10 @@ class GetUserByIdUseCaseTest {
     private lateinit var userRepository: UserRepository
     private lateinit var getUserByIdUseCase: GetUserByIdUseCase
 
-    private val user = User(UUID.randomUUID(), "User1", UserRole.MATE, listOf())
+    private val user = User(
+        UUID.randomUUID(), "User1", UserRole.MATE, listOf(),
+        taskIds = listOf()
+    )
 
     @BeforeEach
     fun setup() {

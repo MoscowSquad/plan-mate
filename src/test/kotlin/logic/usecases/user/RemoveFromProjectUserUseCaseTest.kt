@@ -20,7 +20,10 @@ class RemoveFromProjectUserUseCaseTest {
 
     private val adminRole = UserRole.ADMIN
     private val mateRole = UserRole.MATE
-    private val user = User(UUID.randomUUID(), "User1", UserRole.MATE, listOf())
+    private val user = User(
+        UUID.randomUUID(), "User1", UserRole.MATE, listOf(),
+        taskIds = listOf()
+    )
     private val projectId = UUID.randomUUID()
 
     @BeforeEach

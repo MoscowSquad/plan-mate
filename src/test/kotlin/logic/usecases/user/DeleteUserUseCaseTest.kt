@@ -19,7 +19,10 @@ class DeleteUserUseCaseTest {
 
     private val adminRole = UserRole.ADMIN
     private val mateRole = UserRole.MATE
-    private val user = User(UUID.randomUUID(), "User1", UserRole.MATE, listOf())
+    private val user = User(
+        UUID.randomUUID(), "User1", UserRole.MATE, listOf(),
+        taskIds = listOf()
+    )
 
     @BeforeEach
     fun setup() {
