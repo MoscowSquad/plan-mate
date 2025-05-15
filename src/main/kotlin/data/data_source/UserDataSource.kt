@@ -12,4 +12,5 @@ interface UserDataSource {
     suspend fun unassignUserFromProject(projectId: UUID, userId: UUID): Boolean
     suspend fun getUserById(id: UUID): UserDto
     suspend fun getAllUsers(): List<UserDto>
+    suspend fun assignUserToTask(taskId: UUID, userId: UUID): Boolean
 }
