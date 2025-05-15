@@ -10,16 +10,17 @@ import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import logic.models.*
-import java.util.*
-import logic.models.User.UserRole
 import logic.models.AuditLog.AuditType
+import logic.models.User.UserRole
+import java.util.*
 
 fun UserDto.toUser(): User {
     return User(
         id = id.toUUID(),
         name = name,
         role = if (role == ADMIN) UserRole.ADMIN else UserRole.MATE,
-        projectIds = projectIds.map { it.toUUID() }
+        projectIds = projectIds.map { it.toUUID() },
+        taskIds = taskIds.map { it.toUUID() },
     )
 }
 
@@ -29,7 +30,8 @@ fun User.toDto(hashedPassword:String): UserDto {
         name = name,
         hashedPassword = hashedPassword,
         role = if (role == UserRole.ADMIN) ADMIN else MATE,
-        projectIds = projectIds.map { it.toString() }
+        projectIds = projectIds.map { it.toString() },
+        taskIds = taskIds.map { it.toString() }
     )
 }
 
