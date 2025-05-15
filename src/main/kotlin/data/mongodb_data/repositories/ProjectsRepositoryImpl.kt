@@ -8,6 +8,7 @@ import data.mongodb_data.mappers.toDto
 import data.mongodb_data.mappers.toProject
 import data.mongodb_data.util.executeInIO
 import data.mongodb_data.util.executeInIOAdminOnly
+import data.session_manager.SessionManager
 import kotlinx.datetime.Clock
 import logic.models.AuditLog.AuditType
 import logic.models.Project
@@ -62,10 +63,11 @@ class ProjectsRepositoryImpl(
         result
     }
 
-    override fun getAllProjects() = executeInIO {
-        projectsDataSource.getAllProjects().map {
-            it.toProject()
-        }
+    override fun getAllProjectsByUser(userId: UUID) = executeInIO {
+        val userProjects = SessionManager.currentUser!!.projectIds
+        projectsDataSource.getAllProjects()
+            .map { it.toProject() }
+            .filter { project -> userProjects.contains(project.id) }
     }
 
     override fun getProjectById(id: UUID) = executeInIO {

@@ -27,7 +27,7 @@ class GetAllProjectsUseCaseTest {
             Project(UUID.randomUUID(), "Project 2"),
             Project(UUID.randomUUID(), "Project 3")
         )
-        every { projectsRepository.getAllProjects() } returns projects
+        every { projectsRepository.getAllProjectsByUser(any()) } returns projects
 
         // When
         val result = getAllProjectsUseCase.invoke()
@@ -39,7 +39,7 @@ class GetAllProjectsUseCaseTest {
     @Test
     fun `should return empty list when repository has no projects`() {
         // Given
-        every { projectsRepository.getAllProjects() } returns emptyList()
+        every { projectsRepository.getAllProjectsByUser(any()) } returns emptyList()
 
         // When
         val result = getAllProjectsUseCase.invoke()

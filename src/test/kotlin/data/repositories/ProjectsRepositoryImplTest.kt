@@ -5,6 +5,7 @@ import data.csv_data.datasource.ProjectDataSource
 import data.csv_data.mappers.toDto
 import data.csv_data.mappers.toProject
 import data.csv_data.repositories.ProjectsRepositoryImpl
+import data.session_manager.SessionManager
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -13,6 +14,7 @@ import logic.util.ProjectNotFoundException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import test_helper.createLoginUser
 import java.util.*
 
 class ProjectsRepositoryImplTest {
@@ -22,11 +24,13 @@ class ProjectsRepositoryImplTest {
     private lateinit var testProject1: Project
     private lateinit var testProject2: Project
     private lateinit var testProject3: Project
+    private val userUUID = UUID.randomUUID()
 
     @BeforeEach
     fun setUp() {
         dataSource = mockk(relaxed = true)
 
+        SessionManager.currentUser = createLoginUser(userUUID)
         testProject1 = Project(UUID.fromString("11111111-1111-1111-1111-111111111111"), "Project 1")
         testProject2 = Project(UUID.fromString("22222222-2222-2222-2222-222222222222"), "Project 2")
         testProject3 = Project(UUID.fromString("33333333-3333-3333-3333-333333333333"), "Project 3")
@@ -130,23 +134,31 @@ class ProjectsRepositoryImplTest {
     }
 
     @Test
-    fun `getAllProjects should return empty list when repository is empty`() {
+    fun `getAllProjectsByUserByUser should return empty list when repository is empty`() {
         // When
-        val result = repository.getAllProjects()
+        val result = repository.getAllProjectsByUser(userUUID)
 
         // Then
         assertThat(result).isEmpty()
     }
 
     @Test
-    fun `getAllProjects should return all projects in repository`() {
+    fun `getAllProjectsByUser should return all projects in repository`() {
         // Given
+        SessionManager.currentUser = createLoginUser(
+            userUUID,
+            listOf(
+                testProject1.id,
+                testProject2.id,
+                testProject3.id,
+            )
+        )
         repository.addProject(testProject1)
         repository.addProject(testProject2)
         repository.addProject(testProject3)
 
         // When
-        val result = repository.getAllProjects()
+        val result = repository.getAllProjectsByUser(userUUID)
 
         // Then
         assertThat(result).containsExactly(testProject1, testProject2, testProject3)
@@ -177,12 +189,12 @@ class ProjectsRepositoryImplTest {
     }
 
     @Test
-    fun `getAllProjects should return a copy of the internal list`() {
+    fun `getAllProjectsByUser should return a copy of the internal list`() {
         // Given
         repository.addProject(testProject1)
 
         // When
-        val projects = repository.getAllProjects()
+        val projects = repository.getAllProjectsByUser(userUUID)
         projects.toMutableList().add(testProject2)
 
         // Then

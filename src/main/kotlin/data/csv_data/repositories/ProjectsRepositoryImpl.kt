@@ -3,6 +3,7 @@ package data.csv_data.repositories
 import data.csv_data.datasource.ProjectDataSource
 import data.csv_data.mappers.toDto
 import data.csv_data.mappers.toProject
+import data.session_manager.SessionManager
 import logic.models.Project
 import logic.repositories.ProjectsRepository
 import logic.util.ProjectNotFoundException
@@ -39,8 +40,9 @@ class ProjectsRepositoryImpl(
         return removed
     }
 
-    override fun getAllProjects(): List<Project> {
-        return projects.toList()
+    override fun getAllProjectsByUser(userId: UUID): List<Project> {
+        val userProjects = SessionManager.currentUser!!.projectIds
+        return projects.filter { project -> userProjects.contains(project.id) }
     }
 
     override fun getProjectById(id: UUID): Project {
