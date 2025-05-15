@@ -1,7 +1,7 @@
 package logic.usecases.auth
 
 import logic.models.User
-import logic.models.UserRole
+import logic.models.User.UserRole
 import logic.repositories.AuthenticationRepository
 import logic.util.isValidPasswordFormat
 import logic.util.toMD5Hash

@@ -1,6 +1,6 @@
 package logic.usecases.user
 
-import logic.models.UserRole
+import logic.models.User.UserRole
 import logic.repositories.UserRepository
 import logic.util.UnauthorizedAccessException
 import java.util.*

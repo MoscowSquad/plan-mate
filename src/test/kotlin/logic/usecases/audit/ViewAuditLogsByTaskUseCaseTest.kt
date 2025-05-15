@@ -9,7 +9,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Assertions.*
 import kotlinx.datetime.LocalDateTime
-import logic.models.AuditType
+import logic.models.AuditLog.AuditType
 import java.util.UUID
 
 class ViewAuditLogsByTaskUseCaseTest {

@@ -2,7 +2,7 @@ package presentation.audit
 
 import io.mockk.*
 import logic.models.AuditLog
-import logic.models.AuditType
+import logic.models.AuditLog.AuditType
 import logic.usecases.audit.ViewAuditLogsByProjectUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

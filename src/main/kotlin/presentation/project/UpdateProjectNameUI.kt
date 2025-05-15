@@ -1,8 +1,8 @@
 package presentation.project
 
 import data.mongodb_data.mappers.toUUID
-import di.SessionManager
-import logic.models.UserRole
+import data.session_manager.SessionManager
+import logic.models.User.UserRole
 import logic.usecases.project.UpdateProjectUseCase
 import presentation.io.ConsoleIO
 import java.util.*

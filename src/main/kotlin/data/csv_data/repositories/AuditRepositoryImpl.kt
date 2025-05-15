@@ -3,7 +3,7 @@ package data.csv_data.repositories
 import data.csv_data.datasource.AuditLogDataSource
 import data.csv_data.mappers.toAudiLog
 import logic.models.AuditLog
-import logic.models.AuditType
+import logic.models.AuditLog.AuditType
 import logic.repositories.AuditRepository
 import java.util.*
 

@@ -1,7 +1,7 @@
 package presentation.project
 
-import di.SessionManager
-import logic.models.UserRole
+import data.session_manager.SessionManager
+import logic.models.User.UserRole
 import logic.usecases.project.CreateProjectUseCase
 import presentation.io.ConsoleIO
 

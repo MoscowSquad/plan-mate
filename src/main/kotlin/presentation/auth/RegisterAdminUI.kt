@@ -1,6 +1,6 @@
 package presentation.auth
 
-import logic.models.UserRole
+import logic.models.User.UserRole
 import logic.usecases.auth.RegisterUseCase
 import presentation.io.ConsoleIO
 

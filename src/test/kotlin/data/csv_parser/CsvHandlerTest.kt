@@ -2,7 +2,8 @@ package data.csv_parser
 
 import com.google.common.truth.Truth
 import data.csv_data.csv_parser.CsvHandler
-import data.csv_data.util.TEST_FILE
+import test_helper.getTestLines
+import test_helper.getTestText
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.io.File
@@ -138,25 +139,5 @@ class CsvHandlerTest {
 
         // Then
         Truth.assertThat(result).isEmpty()
-    }
-
-    private fun getTestLines(): List<String> {
-        return listOf(
-            "This is line 1",
-            "This is line 2",
-            "This is line 3",
-            "This is line 4",
-            "This is line 5",
-            "This is line 6"
-        )
-    }
-
-    private fun getTestText(): String {
-        return "This is line 1\n" +
-                "This is line 2\n" +
-                "This is line 3\n" +
-                "This is line 4\n" +
-                "This is line 5\n" +
-                "This is line 6"
     }
 }

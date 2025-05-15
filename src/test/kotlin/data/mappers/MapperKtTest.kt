@@ -8,6 +8,8 @@ import data.csv_data.util.PROJECT
 import data.csv_data.util.TASK
 import kotlinx.datetime.LocalDateTime
 import logic.models.*
+import logic.models.AuditLog.AuditType
+import logic.models.User.UserRole
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import java.util.*
@@ -205,6 +207,7 @@ class MapperKtTest {
 
         assertEquals(LocalDateTime.parse(dateTimeString), dateTime)
     }
+
     @Test
     fun `test UserDto to User role conversion with different roles`() {
         val adminDto = UserDto(
@@ -235,6 +238,7 @@ class MapperKtTest {
         )
         assertEquals(UserRole.MATE, unknownRoleDto.toUser().role)
     }
+
     @Test
     fun `test User to UserDto role conversion with different roles`() {
         val adminUser = User(

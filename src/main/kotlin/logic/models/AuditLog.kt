@@ -9,6 +9,13 @@ data class AuditLog(
     val auditType: AuditType,
     val timestamp: LocalDateTime,
     val entityId: UUID,
-)
+) {
+    enum class AuditType {
+        PROJECT,
+        TASK,
+        TASK_STATE,
+        USER
+    }
+}
 
 

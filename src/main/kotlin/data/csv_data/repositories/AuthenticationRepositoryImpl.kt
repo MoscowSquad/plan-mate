@@ -3,10 +3,10 @@ package data.csv_data.repositories
 import data.csv_data.datasource.UserDataSource
 import data.csv_data.mappers.toDto
 import data.csv_data.mappers.toUser
-import di.LoggedInUser
-import di.SessionManager
+import data.session_manager.LoggedInUser
+import data.session_manager.SessionManager
 import logic.models.User
-import logic.models.UserRole
+import logic.models.User.UserRole
 import logic.repositories.AuthenticationRepository
 import logic.util.UserNotFoundException
 import logic.util.toMD5Hash

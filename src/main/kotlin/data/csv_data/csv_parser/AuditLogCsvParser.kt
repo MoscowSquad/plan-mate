@@ -1,18 +1,23 @@
 package data.csv_data.csv_parser
 
 import data.csv_data.dto.AuditLogDto
-import data.csv_data.util.AuditLogIndex
+
+private const val ID: Int = 0
+private const val ACTION: Int = 1
+private const val AUDIT_TYPE: Int = 2
+private const val TIMESTAMP: Int = 3
+private const val ENTITY_ID: Int = 4
 
 class AuditLogCsvParser : CsvParser<AuditLogDto> {
     override fun parse(data: List<CsvData>): List<AuditLogDto> {
         return data.drop(1).map { line ->
             val it = line.split(",")
             AuditLogDto(
-                id = it[AuditLogIndex.ID],
-                action = it[AuditLogIndex.ACTION],
-                auditType = it[AuditLogIndex.AUDIT_TYPE],
-                timestamp = it[AuditLogIndex.TIMESTAMP],
-                entityId = it[AuditLogIndex.ENTITY_ID],
+                id = it[ID],
+                action = it[ACTION],
+                auditType = it[AUDIT_TYPE],
+                timestamp = it[TIMESTAMP],
+                entityId = it[ENTITY_ID],
             )
         }
     }

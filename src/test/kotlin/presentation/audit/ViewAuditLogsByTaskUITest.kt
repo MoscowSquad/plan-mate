@@ -4,7 +4,7 @@ import data.mongodb_data.mappers.toUUID
 import io.mockk.*
 import kotlinx.datetime.toLocalDateTime
 import logic.models.AuditLog
-import logic.models.AuditType
+import logic.models.AuditLog.AuditType
 import logic.usecases.audit.ViewAuditLogsByTaskUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

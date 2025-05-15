@@ -8,8 +8,13 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import java.io.File
 
-val csvDataSourceModule = module {
+private const val USERS_FILE = "src/main/resources/users.csv"
+private const val PROJECTS_FILE = "src/main/resources/projects.csv"
+private const val TASKS_FILE = "src/main/resources/tasks.csv"
+private const val TASK_STATES_FILE = "src/main/resources/states.csv"
+private const val AUDIT_LOG_FILE = "src/main/resources/audit_log.csv"
 
+val csvDataSourceModule = module {
     single(named(USERS_FILE)) { File(USERS_FILE) }
     single(named(PROJECTS_FILE)) { File(PROJECTS_FILE) }
     single(named(TASKS_FILE)) { File(TASKS_FILE) }

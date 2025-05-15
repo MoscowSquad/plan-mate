@@ -2,7 +2,7 @@ package logic.usecases.auth
 
 import logic.util.toMD5Hash
 import logic.models.User
-import logic.models.UserRole
+import logic.models.User.UserRole
 import logic.repositories.AuthenticationRepository
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

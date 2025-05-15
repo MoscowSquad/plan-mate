@@ -8,7 +8,7 @@ import data.mongodb_data.mappers.toDto
 import data.mongodb_data.mappers.toProject
 import data.mongodb_data.util.executeInIO
 import kotlinx.datetime.Clock
-import logic.models.AuditType
+import logic.models.AuditLog.AuditType
 import logic.models.Project
 import logic.repositories.ProjectsRepository
 import java.util.*

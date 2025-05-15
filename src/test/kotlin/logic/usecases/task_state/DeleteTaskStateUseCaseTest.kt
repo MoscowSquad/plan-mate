@@ -1,15 +1,12 @@
 package logic.usecases.task_state
 
-import di.SessionManager
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifyOrder
 import logic.models.TaskState
-import logic.models.UserRole
 import logic.repositories.TaskStateRepository
 import logic.util.NoStateExistException
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows

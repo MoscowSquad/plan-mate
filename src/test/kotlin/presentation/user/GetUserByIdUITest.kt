@@ -3,7 +3,7 @@ package presentation.user
     import io.mockk.*
     import logic.usecases.user.GetUserByIdUseCase
     import logic.models.User
-    import logic.models.UserRole
+    import logic.models.User.UserRole
     import org.junit.jupiter.api.BeforeEach
     import org.junit.jupiter.api.Test
     import presentation.io.ConsoleIO

@@ -1,15 +1,17 @@
 package data.csv_data.csv_parser
 
 import data.csv_data.dto.ProjectDto
-import data.csv_data.util.ProjectIndex
+
+private const val ID: Int = 0
+private const val NAME: Int = 1
 
 class ProjectCsvParser : CsvParser<ProjectDto> {
     override fun parse(data: List<CsvData>): List<ProjectDto> {
         return data.drop(1).map { line ->
             val it = line.split(",")
             ProjectDto(
-                id = it[ProjectIndex.ID],
-                name = it[ProjectIndex.NAME],
+                id = it[ID],
+                name = it[NAME],
             )
         }
     }

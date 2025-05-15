@@ -7,6 +7,8 @@ import data.csv_data.util.PROJECT
 import data.csv_data.util.TASK
 import kotlinx.datetime.LocalDateTime
 import logic.models.*
+import logic.models.AuditLog.AuditType
+import logic.models.User.UserRole
 import java.util.*
 
 fun UserDto.toUser(): User {

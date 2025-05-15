@@ -1,8 +1,7 @@
 package presentation.user
 
 import data.mongodb_data.mappers.toUUID
-import di.SessionManager
-import logic.models.UserRole
+import data.session_manager.SessionManager
 import logic.usecases.user.AssignProjectToUserUseCase
 import presentation.io.ConsoleIO
 import presentation.project.GetAllProjectsUI

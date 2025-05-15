@@ -1,6 +1,6 @@
 package presentation.user
 
-import di.SessionManager
+import data.session_manager.SessionManager
 import logic.models.User
 import logic.usecases.user.GetAllUsersUseCase
 import presentation.io.ConsoleIO

@@ -7,7 +7,7 @@ import data.mongodb_data.mappers.toDto
 import data.mongodb_data.mappers.toTaskState
 import data.mongodb_data.util.executeInIO
 import kotlinx.datetime.Clock
-import logic.models.AuditType
+import logic.models.AuditLog.AuditType
 import logic.models.TaskState
 import logic.repositories.TaskStateRepository
 import java.util.*

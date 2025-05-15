@@ -8,4 +8,8 @@ data class User(
     val hashedPassword: String,
     val role: UserRole,
     val projectIds: List<UUID>
-)
+) {
+    enum class UserRole {
+        ADMIN, MATE
+    }
+}

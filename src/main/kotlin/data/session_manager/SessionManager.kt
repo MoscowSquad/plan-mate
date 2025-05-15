@@ -1,6 +1,6 @@
-package di
+package data.session_manager
 
-import logic.models.UserRole
+import logic.models.User.UserRole
 import logic.util.UserNotLoggedInException
 import java.util.*
 
@@ -13,9 +13,6 @@ data class LoggedInUser(
 
 object SessionManager {
     var currentUser: LoggedInUser? = null
-    fun isLoggedIn(): Boolean {
-        return currentUser != null
-    }
 
     fun setCurrentUser(role: UserRole) {
         currentUser = currentUser?.copy(

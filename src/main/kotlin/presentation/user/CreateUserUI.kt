@@ -1,8 +1,8 @@
 package presentation.user
 
-import di.SessionManager
+import data.session_manager.SessionManager
 import logic.models.User
-import logic.models.UserRole
+import logic.models.User.UserRole
 import logic.usecases.user.CreateUserUseCase
 import logic.util.toMD5Hash
 import presentation.io.ConsoleIO

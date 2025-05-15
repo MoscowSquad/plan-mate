@@ -1,8 +1,8 @@
 package presentation.state
 
 import data.mongodb_data.mappers.toUUID
-import di.SessionManager
-import logic.models.UserRole
+import data.session_manager.SessionManager
+import logic.models.User.UserRole
 import logic.usecases.task_state.DeleteTaskStateUseCase
 import presentation.io.ConsoleIO
 import java.util.*

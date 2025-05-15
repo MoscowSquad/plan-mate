@@ -1,11 +1,11 @@
 package presentation.project
 
-import di.LoggedInUser
-import di.SessionManager
+import data.session_manager.LoggedInUser
+import data.session_manager.SessionManager
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
-import logic.models.UserRole
+import logic.models.User.UserRole
 import logic.usecases.project.CreateProjectUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

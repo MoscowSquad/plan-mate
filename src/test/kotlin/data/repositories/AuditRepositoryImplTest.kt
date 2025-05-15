@@ -9,7 +9,7 @@ package data.repositories
     import io.mockk.verify
     import kotlinx.datetime.LocalDateTime
     import logic.models.AuditLog
-    import logic.models.AuditType
+    import logic.models.AuditLog.AuditType
     import org.junit.jupiter.api.Assertions.assertTrue
     import org.junit.jupiter.api.BeforeEach
     import org.junit.jupiter.api.Test

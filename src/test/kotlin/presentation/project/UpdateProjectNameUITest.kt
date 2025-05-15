@@ -1,10 +1,10 @@
 package presentation.project
 
 import data.mongodb_data.mappers.toUUID
-import di.LoggedInUser
-import di.SessionManager
+import data.session_manager.LoggedInUser
+import data.session_manager.SessionManager
 import io.mockk.*
-import logic.models.UserRole
+import logic.models.User.UserRole
 import logic.usecases.project.UpdateProjectUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

@@ -4,6 +4,8 @@ import com.google.common.truth.Truth
 import data.csv_data.csv_parser.CsvHandler
 import data.csv_data.csv_parser.ProjectCsvParser
 import data.csv_data.dto.ProjectDto
+import test_helper.getProjectCsvLines
+import test_helper.getProjects
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
@@ -22,7 +24,7 @@ class ProjectCsvParserTest {
     @Test
     fun `should return projects when parse data from project file`() {
         // Given
-        val csvLines = getCsvLines()
+        val csvLines = getProjectCsvLines()
         every { csvHandler.getLines() } returns csvLines
 
         // When
@@ -72,7 +74,7 @@ class ProjectCsvParserTest {
         val result = parser.serialize(projects)
 
         // Then
-        val csvLines = getCsvLines()
+        val csvLines = getProjectCsvLines()
         Truth.assertThat(result).isEqualTo(csvLines)
     }
 
@@ -87,26 +89,5 @@ class ProjectCsvParserTest {
         // Then
         val csvLines = listOf("id,name")
         Truth.assertThat(result).isEqualTo(csvLines)
-    }
-
-    private fun getProjects(): List<ProjectDto> {
-        return listOf(
-            createProject("045e2ef6-a9f8-43d9-9c33-da8cf3a0ff2f", "The chance"),
-            createProject("045e2ef6-a9f8-43d9-9c33-da8cf3a0ff2f", "Work"),
-            createProject("045e2ef6-a9f8-43d9-9c33-da8cf3a0ff2f", "Homework"),
-        )
-    }
-
-    private fun createProject(id: String, name: String): ProjectDto {
-        return ProjectDto(id, name)
-    }
-
-    private fun getCsvLines(): List<String> {
-        return listOf(
-            "id,name",
-            "045e2ef6-a9f8-43d9-9c33-da8cf3a0ff2f,The chance",
-            "045e2ef6-a9f8-43d9-9c33-da8cf3a0ff2f,Work",
-            "045e2ef6-a9f8-43d9-9c33-da8cf3a0ff2f,Homework",
-        )
     }
 }

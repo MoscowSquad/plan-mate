@@ -4,6 +4,8 @@ import com.google.common.truth.Truth
 import data.csv_data.csv_parser.CsvHandler
 import data.csv_data.csv_parser.TaskStateCsvParser
 import data.csv_data.dto.TaskStateDto
+import test_helper.createTaskState
+import test_helper.getTaskStateCsvLines
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
@@ -22,7 +24,7 @@ class TaskStateCsvParserTest {
     @Test
     fun `should return states when parse data from state file`() {
         // Given
-        val csvLines = getCsvLines()
+        val csvLines = getTaskStateCsvLines()
         every { csvHandler.getLines() } returns csvLines
 
         // When
@@ -70,7 +72,7 @@ class TaskStateCsvParserTest {
         val result = parser.serialize(states)
 
         // Then
-        val csvLines = getCsvLines()
+        val csvLines = getTaskStateCsvLines()
         Truth.assertThat(result).isEqualTo(csvLines)
     }
 
@@ -89,26 +91,9 @@ class TaskStateCsvParserTest {
 
     private fun getStates(): List<TaskStateDto> {
         return listOf(
-            createState("caf22bb1-90ff-409d-bef2-3b8bc9759354", "Todo", "caf22bb1-90ff-409d-bef2-3b8bc9759354"),
-            createState("caf22bb1-90ff-409d-bef2-3b8bc9759354", "In Progress", "caf22bb1-90ff-409d-bef2-3b8bc9759354"),
-            createState("caf22bb1-90ff-409d-bef2-3b8bc9759354", "Done", "caf22bb1-90ff-409d-bef2-3b8bc9759354"),
+            createTaskState("caf22bb1-90ff-409d-bef2-3b8bc9759354", "Todo", "caf22bb1-90ff-409d-bef2-3b8bc9759354"),
+            createTaskState("caf22bb1-90ff-409d-bef2-3b8bc9759354", "In Progress", "caf22bb1-90ff-409d-bef2-3b8bc9759354"),
+            createTaskState("caf22bb1-90ff-409d-bef2-3b8bc9759354", "Done", "caf22bb1-90ff-409d-bef2-3b8bc9759354"),
         )
-    }
-
-    private fun getCsvLines(): List<String> {
-        return listOf(
-            "id,title,projectId",
-            "caf22bb1-90ff-409d-bef2-3b8bc9759354,Todo,caf22bb1-90ff-409d-bef2-3b8bc9759354",
-            "caf22bb1-90ff-409d-bef2-3b8bc9759354,In Progress,caf22bb1-90ff-409d-bef2-3b8bc9759354",
-            "caf22bb1-90ff-409d-bef2-3b8bc9759354,Done,caf22bb1-90ff-409d-bef2-3b8bc9759354",
-        )
-    }
-
-    private fun createState(
-        id: String,
-        title: String,
-        projectId: String,
-    ): TaskStateDto {
-        return TaskStateDto(id, title, projectId)
     }
 }

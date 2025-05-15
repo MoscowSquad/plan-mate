@@ -1,7 +1,7 @@
 package logic.usecases.user
 
 import logic.models.User
-import logic.models.UserRole
+import logic.models.User.UserRole
 import logic.repositories.UserRepository
 import logic.util.UnauthorizedAccessException
 

@@ -1,8 +1,8 @@
 package presentation.session
 
-import di.LoggedInUser
-import di.SessionManager
-import logic.models.UserRole
+import data.session_manager.LoggedInUser
+import data.session_manager.SessionManager
+import logic.models.User.UserRole
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach

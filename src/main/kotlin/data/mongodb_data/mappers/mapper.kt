@@ -11,6 +11,8 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import logic.models.*
 import java.util.*
+import logic.models.User.UserRole
+import logic.models.AuditLog.AuditType
 
 fun UserDto.toUser(): User {
     return User(

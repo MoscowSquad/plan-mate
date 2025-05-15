@@ -1,18 +1,23 @@
 package data.csv_data.csv_parser
 
 import data.csv_data.dto.UserDto
-import data.csv_data.util.UserIndex
+
+private const val ID: Int = 0
+private const val NAME: Int = 1
+private const val HASHED_PASSWORD: Int = 2
+private const val ROLE: Int = 3
+private const val PROJECT_IDS: Int = 4
 
 class UserCsvParser : CsvParser<UserDto> {
     override fun parse(data: List<CsvData>): List<UserDto> {
         return data.drop(1).map { line ->
             val it = line.split(",", limit = 5)
             UserDto(
-                id = it[UserIndex.ID],
-                name = it[UserIndex.NAME],
-                hashedPassword = it[UserIndex.HASHED_PASSWORD],
-                role = it[UserIndex.ROLE],
-                projectIds = it[UserIndex.PROJECT_IDS].toProjectIds(),
+                id = it[ID],
+                name = it[NAME],
+                hashedPassword = it[HASHED_PASSWORD],
+                role = it[ROLE],
+                projectIds = it[PROJECT_IDS].toProjectIds(),
             )
         }
     }

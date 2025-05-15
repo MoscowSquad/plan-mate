@@ -1,8 +1,8 @@
 package presentation.state
 
-import di.SessionManager
+import data.session_manager.SessionManager
 import logic.models.TaskState
-import logic.models.UserRole
+import logic.models.User.UserRole
 import logic.usecases.task_state.AddTaskStateUseCase
 import presentation.io.ConsoleIO
 import java.util.*
