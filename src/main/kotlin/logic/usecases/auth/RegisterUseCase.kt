@@ -14,7 +14,8 @@ class RegisterUseCase(
         name: String,
         plainPassword: String,
         role: UserRole,
-        projectIds: List<UUID> = emptyList()
+        projectIds: List<UUID> = emptyList(),
+        taskIds: List<UUID> = emptyList()
     ): User {
         require(name.isNotBlank()) { "Username cannot be blank" }
         require(plainPassword.isNotBlank()) { "Password cannot be blank" }
@@ -27,7 +28,8 @@ class RegisterUseCase(
                 id = UUID.randomUUID(),
                 name = name,
                 role = role,
-                projectIds = projectIds
+                projectIds = projectIds,
+                taskIds = taskIds
             ),
             plainPassword.toMD5Hash()
         )
