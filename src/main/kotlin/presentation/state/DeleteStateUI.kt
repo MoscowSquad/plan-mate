@@ -13,7 +13,7 @@ class DeleteStateUI(
 ) : ConsoleIO by consoleIO {
     operator fun invoke(projectId: UUID) {
         write("Please enter the state ID:")
-        val stateId = runCatching { read().trimIndent().toUUID() }.getOrNull()
+        val stateId = readUUID()
 
         if (stateId == null) {
             write("❌ Invalid state ID.")

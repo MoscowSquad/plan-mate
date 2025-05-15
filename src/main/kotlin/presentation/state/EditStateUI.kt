@@ -14,7 +14,7 @@ class EditStateUI(
 ) : ConsoleIO by consoleIO {
     operator fun invoke(projectId: UUID) {
         write("Please enter the state ID:")
-        val stateId = runCatching { read().trimIndent().toUUID() }.getOrNull()
+        val stateId = readUUID()
 
         write("Please enter the new state name:")
         val stateName = read()

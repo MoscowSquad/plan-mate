@@ -12,10 +12,10 @@ class EditTaskUI(
 ) : ConsoleIO by consoleIO {
     operator fun invoke(projectId: UUID) {
         write("Please enter the task ID:")
-        val taskId = runCatching { read().trimIndent().toUUID() }.getOrNull()
+        val taskId = readUUID()
 
         write("Please enter the state ID:")
-        val stateId = runCatching { read().trimIndent().toUUID() }.getOrNull()
+        val stateId = readUUID()
 
         write("Please enter the task name:")
         val taskName = read()

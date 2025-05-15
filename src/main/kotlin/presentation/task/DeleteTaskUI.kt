@@ -10,7 +10,7 @@ class DeleteTaskUI(
 ) : ConsoleIO by consoleIO {
     operator fun invoke() {
         write("Please enter task ID:")
-        val taskId = runCatching { read().trimIndent().toUUID() }.getOrNull()
+        val taskId = readUUID()
 
         if (taskId == null) {
             write("❌ Invalid task ID.")

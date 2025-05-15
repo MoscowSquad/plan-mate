@@ -1,5 +1,6 @@
 package presentation.io
 
+import data.mongodb_data.mappers.toUUID
 import java.util.*
 
 class ConsoleIOImpl(
@@ -7,6 +8,10 @@ class ConsoleIOImpl(
 ) : ConsoleIO {
     override fun read(): String {
         return scanner.nextLine()
+    }
+
+    override fun readUUID(): UUID? {
+        return runCatching { read().trimIndent().toUUID() }.getOrNull()
     }
 
     override fun write(message: String?) {

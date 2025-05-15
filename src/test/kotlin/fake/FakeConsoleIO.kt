@@ -8,6 +8,10 @@ open class FakeConsoleIO(
     val outputs: MutableList<String?> = mutableListOf()
 ) : ConsoleIO {
     override fun read(): String = inputs.poll()
+    override fun readUUID(): UUID? {
+        return UUID.randomUUID()
+    }
+
     override fun write(message: String?) {
         outputs.add(message)
     }
