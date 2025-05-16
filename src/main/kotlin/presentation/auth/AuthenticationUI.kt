@@ -8,7 +8,7 @@ class AuthenticationUI(
     private val loginUserUI: LoginUserUI,
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
-    operator fun invoke() {
+    suspend operator fun invoke() {
         write(
             """
 Please choose an option:

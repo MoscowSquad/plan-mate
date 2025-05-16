@@ -3,9 +3,9 @@ package presentation.project
 import data.csv_data.mappers.toUUID
 import data.session_manager.LoggedInUser
 import data.session_manager.SessionManager
+import domain.models.User.UserRole
+import domain.usecases.project.DeleteProjectUseCase
 import io.mockk.*
-import logic.models.User.UserRole
-import logic.usecases.project.DeleteProjectUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.io.ConsoleIO

@@ -7,10 +7,10 @@ import data.mongodb_data.dto.AuditLogDto
 import data.mongodb_data.mappers.toDto
 import data.mongodb_data.mappers.toTask
 import data.mongodb_data.util.executeInIO
+import domain.models.AuditLog.AuditType
+import domain.models.Task
+import domain.repositories.TasksRepository
 import kotlinx.datetime.Clock
-import logic.models.AuditLog.AuditType
-import logic.models.Task
-import logic.repositories.TasksRepository
 import java.util.*
 
 
@@ -18,13 +18,13 @@ class TaskRepositoryImpl(
     private val taskDataSource: TaskDataSource,
     private val auditLogDataSource: AuditLogDataSource
 ) : TasksRepository {
-    override fun getAllTasks() = executeInIO {
+    override suspend fun getAllTasks() = executeInIO {
         taskDataSource.getAllTasks().map {
             it.toTask()
         }
     }
 
-    override fun addTask(task: Task) = executeInIO {
+    override suspend fun addTask(task: Task) = executeInIO {
         val result = taskDataSource.addTask(task.toDto())
         auditLogDataSource.addLog(
             log = AuditLogDto(
@@ -39,7 +39,7 @@ class TaskRepositoryImpl(
     }
 
 
-    override fun editTask(updatedTask: Task) = executeInIO {
+    override suspend fun editTask(updatedTask: Task) = executeInIO {
         val result = taskDataSource.editTask(updatedTask.toDto())
         auditLogDataSource.addLog(
             log = AuditLogDto(
@@ -54,7 +54,7 @@ class TaskRepositoryImpl(
     }
 
 
-    override fun deleteTask(taskId: UUID) = executeInIO {
+    override suspend fun deleteTask(taskId: UUID) = executeInIO {
         val result = taskDataSource.deleteTask(taskId)
         auditLogDataSource.addLog(
             log = AuditLogDto(
@@ -68,12 +68,12 @@ class TaskRepositoryImpl(
         return@executeInIO result
     }
 
-    override fun getTaskById(taskId: UUID) = executeInIO {
+    override suspend fun getTaskById(taskId: UUID) = executeInIO {
         taskDataSource.getTaskById(taskId).toTask()
     }
 
 
-    override fun getTaskByProjectId(taskId: UUID) = executeInIO {
+    override suspend fun getTaskByProjectId(taskId: UUID) = executeInIO {
         taskDataSource.getTaskByProjectId(taskId).map {
             it.toTask()
         }

@@ -5,11 +5,11 @@ import data.csv_data.mappers.toDto
 import data.csv_data.mappers.toUser
 import data.csv_data.repositories.AuthenticationRepositoryImpl
 import data.session_manager.SessionManager
+import domain.models.User
+import domain.models.User.UserRole
+import domain.util.UserNotFoundException
+import domain.util.toMD5Hash
 import io.mockk.*
-import logic.models.User
-import logic.models.User.UserRole
-import logic.util.UserNotFoundException
-import logic.util.toMD5Hash
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.*

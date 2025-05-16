@@ -4,7 +4,7 @@ import data.csv_data.dto.UserDto
 import data.csv_data.util.ADMIN
 import data.csv_data.util.MATE
 import data.session_manager.LoggedInUser
-import logic.models.User
+import domain.models.User
 import java.util.*
 
 fun getUsers(): List<UserDto> {

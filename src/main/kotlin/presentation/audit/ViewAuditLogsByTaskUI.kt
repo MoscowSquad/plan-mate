@@ -1,8 +1,8 @@
 package presentation.audit
 
 import data.mongodb_data.mappers.toUUID
-import logic.models.AuditLog
-import logic.usecases.audit.ViewAuditLogsByTaskUseCase
+import domain.models.AuditLog
+import domain.usecases.audit.ViewAuditLogsByTaskUseCase
 import presentation.io.ConsoleIO
 import java.util.*
 
@@ -11,7 +11,7 @@ class ViewAuditLogsByTaskUI(
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
 
-    operator fun invoke() {
+    suspend operator fun invoke() {
         while (true) {
             try {
                 val taskId = readUUIDInput("Enter task ID (or type 'exit' to quit): ") ?: return

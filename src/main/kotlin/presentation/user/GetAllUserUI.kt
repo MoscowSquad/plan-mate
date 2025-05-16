@@ -1,15 +1,15 @@
 package presentation.user
 
 import data.session_manager.SessionManager
-import logic.models.User
-import logic.usecases.user.GetAllUsersUseCase
+import domain.models.User
+import domain.usecases.user.GetAllUsersUseCase
 import presentation.io.ConsoleIO
 
 class GetAllUserUI(
     private val getAllUsersUseCase: GetAllUsersUseCase,
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
-    operator fun invoke() {
+    suspend operator fun invoke() {
         val currentUserRole = SessionManager.getCurrentUserRole()
         printHeader()
 

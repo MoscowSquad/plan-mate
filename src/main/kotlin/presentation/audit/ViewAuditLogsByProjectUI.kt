@@ -1,8 +1,11 @@
 package presentation.audit
 
 import data.mongodb_data.mappers.toUUID
-import logic.models.AuditLog
-import logic.usecases.audit.ViewAuditLogsByProjectUseCase
+import domain.models.AuditLog
+import domain.usecases.audit.ViewAuditLogsByProjectUseCase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import presentation.io.ConsoleIO
 import java.util.*
 
@@ -10,14 +13,14 @@ class ViewAuditLogsByProjectUI(
     private val viewAuditLogsByProjectUseCase: ViewAuditLogsByProjectUseCase,
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
-
-    operator fun invoke() {
+    private val scope = CoroutineScope(Dispatchers.IO)
+    suspend operator fun invoke() {
         while (true) {
             try {
                 val projectId = readUUIDInput("Enter project ID (or type 'exit' to quit): ") ?: return
 
-                val logs = viewAuditLogsByProjectUseCase(projectId)
-                displayLogs(logs, "Project ID: $projectId")
+                val logs = scope.async { viewAuditLogsByProjectUseCase(projectId) }
+                displayLogs(logs.await(), "Project ID: $projectId")
             } catch (e: Exception) {
                 write("\n❌ Error retrieving project logs: ${e.message}")
             }

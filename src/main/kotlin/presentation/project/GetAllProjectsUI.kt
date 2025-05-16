@@ -1,6 +1,6 @@
 package presentation.project
 
-import logic.usecases.project.GetAllProjectsUseCase
+import domain.usecases.project.GetAllProjectsUseCase
 import presentation.io.ConsoleIO
 
 class GetAllProjectsUI(
@@ -8,7 +8,7 @@ class GetAllProjectsUI(
     private val consoleIO: ConsoleIO,
 ) : ConsoleIO by consoleIO {
 
-    operator fun invoke() {
+    suspend operator fun invoke() {
         runCatching {
             getAllProjectsUseCase()
         }

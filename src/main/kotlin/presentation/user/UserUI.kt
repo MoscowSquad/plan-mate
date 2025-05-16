@@ -11,7 +11,7 @@ class UserUI(
     private val consoleIO: ConsoleIO,
 ) : ConsoleIO by consoleIO {
 
-    operator fun invoke() {
+    suspend operator fun invoke() {
         while (true) {
             getAllUserUI()
             write("\n========== User Management ==========")

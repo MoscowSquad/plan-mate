@@ -2,26 +2,21 @@ package data.mongodb_data.util
 
 import data.session_manager.SessionManager
 import data.util.AdminOnlyException
+import domain.models.User
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
-import logic.models.User
+import kotlinx.coroutines.withContext
 
-inline fun <T> executeInIO(crossinline block: suspend () -> T): T {
-    return runBlocking(Dispatchers.IO) {
-        async {
-            block()
-        }.await()
-    }
-}
-
-inline fun <T> executeInIOAdminOnly(crossinline block: suspend () -> T): T {
-    return runBlocking(Dispatchers.IO) {
-        async {
-            if (SessionManager.currentUser == null || SessionManager.currentUser?.role != User.UserRole.ADMIN) {
+suspend inline fun <T> executeInIO(
+    requireAdmin: Boolean = false,
+    crossinline block: suspend () -> T
+): T {
+    return withContext(Dispatchers.IO) {
+        if (requireAdmin) {
+            val user = SessionManager.currentUser
+            if (user == null || user.role != User.UserRole.ADMIN) {
                 throw AdminOnlyException()
             }
-            block()
-        }.await()
+        }
+        block()
     }
 }

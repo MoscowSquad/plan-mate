@@ -4,11 +4,11 @@ import com.mongodb.client.model.Filters
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.data_source.UserDataSource
 import data.mongodb_data.dto.UserDto
+import domain.util.InvalidUserCreation
+import domain.util.ProjectNotFoundException
+import domain.util.UserNotFoundException
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
-import logic.util.InvalidUserCreation
-import logic.util.ProjectNotFoundException
-import logic.util.UserNotFoundException
 import java.util.*
 
 class UserDataSourceImpl(

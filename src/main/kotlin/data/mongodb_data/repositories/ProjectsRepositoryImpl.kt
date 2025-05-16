@@ -7,12 +7,11 @@ import data.mongodb_data.dto.AuditLogDto
 import data.mongodb_data.mappers.toDto
 import data.mongodb_data.mappers.toProject
 import data.mongodb_data.util.executeInIO
-import data.mongodb_data.util.executeInIOAdminOnly
 import data.session_manager.SessionManager
+import domain.models.AuditLog.AuditType
+import domain.models.Project
+import domain.repositories.ProjectsRepository
 import kotlinx.datetime.Clock
-import logic.models.AuditLog.AuditType
-import logic.models.Project
-import logic.repositories.ProjectsRepository
 import java.util.*
 
 
@@ -21,7 +20,7 @@ class ProjectsRepositoryImpl(
     private val auditLogDataSource: AuditLogDataSource,
 ) : ProjectsRepository {
 
-    override fun addProject(project: Project) = executeInIOAdminOnly {
+    override suspend fun addProject(project: Project) = executeInIO {
         val result = projectsDataSource.addProject(project.toDto())
         auditLogDataSource.addLog(
             log = AuditLogDto(
@@ -35,7 +34,7 @@ class ProjectsRepositoryImpl(
         result
     }
 
-    override fun updateProject(project: Project) = executeInIOAdminOnly {
+    override suspend fun updateProject(project: Project) = executeInIO {
         val result = projectsDataSource.updateProject(project.toDto())
         auditLogDataSource.addLog(
             log = AuditLogDto(
@@ -49,7 +48,7 @@ class ProjectsRepositoryImpl(
         result
     }
 
-    override fun deleteProject(id: UUID) = executeInIOAdminOnly {
+    override suspend fun deleteProject(id: UUID) = executeInIO {
         val result = projectsDataSource.deleteProject(id)
         auditLogDataSource.addLog(
             log = AuditLogDto(
@@ -63,14 +62,14 @@ class ProjectsRepositoryImpl(
         result
     }
 
-    override fun getAllProjectsByUser(userId: UUID) = executeInIO {
+    override suspend fun getAllProjectsByUser(userId: UUID) = executeInIO {
         val userProjects = SessionManager.currentUser!!.projectIds
         projectsDataSource.getAllProjects()
             .map { it.toProject() }
             .filter { project -> userProjects.contains(project.id) }
     }
 
-    override fun getProjectById(id: UUID) = executeInIO {
+    override suspend fun getProjectById(id: UUID) = executeInIO {
         projectsDataSource.getProjectById(id).toProject()
     }
 }

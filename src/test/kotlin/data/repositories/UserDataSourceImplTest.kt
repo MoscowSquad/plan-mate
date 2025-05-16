@@ -5,11 +5,11 @@ import data.csv_data.csv_parser.UserCsvParser
 import data.csv_data.datasource.UserDataSource
 import data.csv_data.dto.UserDto
 import data.csv_data.repositories.UserRepositoryImpl
+import domain.models.User
+import domain.models.User.UserRole
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.models.User
-import logic.models.User.UserRole
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

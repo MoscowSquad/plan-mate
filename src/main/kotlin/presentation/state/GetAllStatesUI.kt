@@ -1,6 +1,6 @@
 package presentation.state
 
-import logic.usecases.task_state.GetTaskStatesByProjectIdUseCase
+import domain.usecases.task_state.GetTaskStatesByProjectIdUseCase
 import presentation.io.ConsoleIO
 import java.util.*
 
@@ -8,7 +8,7 @@ class GetAllStatesUI(
     private val getTaskStatesByProjectIdUseCase: GetTaskStatesByProjectIdUseCase,
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
-    operator fun invoke(projectId: UUID) {
+    suspend operator fun invoke(projectId: UUID) {
         runCatching { getTaskStatesByProjectIdUseCase(projectId) }
             .onSuccess { states ->
                 if (states.isEmpty()) {

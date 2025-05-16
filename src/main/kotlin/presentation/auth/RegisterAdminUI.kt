@@ -1,7 +1,7 @@
 package presentation.auth
 
-import logic.models.User.UserRole
-import logic.usecases.auth.RegisterUseCase
+import domain.models.User.UserRole
+import domain.usecases.auth.RegisterUseCase
 import presentation.io.ConsoleIO
 
 class RegisterAdminUI(
@@ -9,7 +9,7 @@ class RegisterAdminUI(
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
 
-    operator fun invoke() {
+    suspend operator fun invoke() {
         write("🛡️ Register Admin")
 
         var isRegistered = false

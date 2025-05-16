@@ -4,18 +4,18 @@ package data.repositories
     import data.csv_data.datasource.AuditLogDataSource
     import data.csv_data.mappers.toDto
     import data.csv_data.repositories.AuditRepositoryImpl
+    import domain.models.AuditLog
+    import domain.models.AuditLog.AuditType
     import io.mockk.every
     import io.mockk.mockk
     import io.mockk.verify
     import kotlinx.datetime.LocalDateTime
-    import logic.models.AuditLog
-    import logic.models.AuditLog.AuditType
     import org.junit.jupiter.api.Assertions.assertTrue
     import org.junit.jupiter.api.BeforeEach
     import org.junit.jupiter.api.Test
     import java.util.*
 
-    class AuditRepositoryImplTest {
+class AuditRepositoryImplTest {
         private lateinit var auditLogDataSource: AuditLogDataSource
         private lateinit var repository: AuditRepositoryImpl
 

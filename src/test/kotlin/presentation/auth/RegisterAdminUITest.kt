@@ -1,12 +1,12 @@
 package presentation.auth
 
+import domain.models.User.UserRole
+import domain.usecases.auth.RegisterUseCase
 import fake.FakeConsoleIO
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import io.mockk.verifySequence
-import logic.models.User.UserRole
-import logic.usecases.auth.RegisterUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.*
@@ -26,7 +26,7 @@ class RegisterAdminUITest {
     @Test
     fun `should register admin successfully on first attempt`() {
         // Given
-        every { registerUseCase("test admin", "test password", UserRole.ADMIN) } returns mockk<logic.models.User>(
+        every { registerUseCase("test admin", "test password", UserRole.ADMIN) } returns mockk<domain.models.User>(
             relaxed = true
         )
         // When
@@ -59,7 +59,13 @@ class RegisterAdminUITest {
         registerAdminUI = RegisterAdminUI(registerUseCase, consoleIO)
 
         every { registerUseCase("existing", "pass1", UserRole.ADMIN) } throws Exception("Username already exists")
-        every { registerUseCase("new admin", "pass2", UserRole.ADMIN) } returns mockk<logic.models.User>(relaxed = true)
+        every {
+            registerUseCase(
+                "new admin",
+                "pass2",
+                UserRole.ADMIN
+            )
+        } returns mockk<domain.models.User>(relaxed = true)
         // When
         registerAdminUI.invoke()
 
@@ -101,7 +107,7 @@ class RegisterAdminUITest {
 
         every { registerUseCase("user1", "weak", UserRole.ADMIN) } throws Exception("Password too weak")
         every { registerUseCase("user2", "short", UserRole.ADMIN) } throws Exception("Password too short")
-        every { registerUseCase("user3", "valid123", UserRole.ADMIN) } returns mockk<logic.models.User>(relaxed = true)
+        every { registerUseCase("user3", "valid123", UserRole.ADMIN) } returns mockk<domain.models.User>(relaxed = true)
         // When
         registerAdminUI.invoke()
 

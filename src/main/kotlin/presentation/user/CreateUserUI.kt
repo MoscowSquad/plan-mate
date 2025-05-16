@@ -2,9 +2,9 @@ package presentation.user
 
 import data.mongodb_data.dto.TaskDto
 import data.session_manager.SessionManager
-import logic.models.User
-import logic.models.User.UserRole
-import logic.usecases.user.CreateUserUseCase
+import domain.models.User
+import domain.models.User.UserRole
+import domain.usecases.user.CreateUserUseCase
 import presentation.io.ConsoleIO
 import java.util.*
 
@@ -13,7 +13,7 @@ class CreateUserUI(
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
 
-    operator fun invoke() {
+    suspend operator fun invoke() {
         val currentUserRole = SessionManager.getCurrentUserRole()
         write("\n╔══════════════════════════╗")
         write("║      CREATE NEW USER     ║")
@@ -33,7 +33,7 @@ class CreateUserUI(
         )
 
         runCatching {
-            val success = createUserUseCase.createNewUser(currentUserRole, newUser, password)
+            val success = createUserUseCase(currentUserRole, newUser, password)
             if (success) {
                 write("\n✅ User '$username' created successfully!")
 

@@ -1,9 +1,9 @@
 package presentation.task
 
 import data.mongodb_data.mappers.toUUID
-import logic.models.Task
-import logic.usecases.task.AddTaskUseCase
-import logic.usecases.task_state.GetTaskStatesByProjectIdUseCase
+import domain.models.Task
+import domain.usecases.task.AddTaskUseCase
+import domain.usecases.task_state.GetTaskStatesByProjectIdUseCase
 import presentation.io.ConsoleIO
 import java.util.*
 
@@ -12,7 +12,7 @@ class CreateTaskUI(
     private val getTaskStatesByProjectIdUseCase: GetTaskStatesByProjectIdUseCase,
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
-    operator fun invoke(projectId: UUID) {
+    suspend operator fun invoke(projectId: UUID) {
         write("Please enter the task name:")
         val taskName = read()
 

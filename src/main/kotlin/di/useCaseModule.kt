@@ -1,13 +1,13 @@
 package di
 
-import logic.usecases.audit.ViewAuditLogsByProjectUseCase
-import logic.usecases.audit.ViewAuditLogsByTaskUseCase
-import logic.usecases.auth.LoginUseCase
-import logic.usecases.auth.RegisterUseCase
-import logic.usecases.project.*
-import logic.usecases.task.*
-import logic.usecases.task_state.*
-import logic.usecases.user.*
+import domain.usecases.audit.ViewAuditLogsByProjectUseCase
+import domain.usecases.audit.ViewAuditLogsByTaskUseCase
+import domain.usecases.auth.LoginUseCase
+import domain.usecases.auth.RegisterUseCase
+import domain.usecases.project.*
+import domain.usecases.task.*
+import domain.usecases.task_state.*
+import domain.usecases.user.*
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 

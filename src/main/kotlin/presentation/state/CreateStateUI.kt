@@ -1,9 +1,9 @@
 package presentation.state
 
 import data.session_manager.SessionManager
-import logic.models.TaskState
-import logic.models.User.UserRole
-import logic.usecases.task_state.AddTaskStateUseCase
+import domain.models.TaskState
+import domain.models.User.UserRole
+import domain.usecases.task_state.AddTaskStateUseCase
 import presentation.io.ConsoleIO
 import java.util.*
 
@@ -11,7 +11,7 @@ class CreateStateUI(
     private val addTaskStateUseCase: AddTaskStateUseCase,
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
-    operator fun invoke(projectId: UUID) {
+    suspend operator fun invoke(projectId: UUID) {
         write("Please enter the state name:")
         val stateName = read()
 

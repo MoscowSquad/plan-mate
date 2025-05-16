@@ -1,7 +1,7 @@
 package di
 
 import data.mongodb_data.repositories.*
-import logic.repositories.*
+import domain.repositories.*
 import org.koin.dsl.module
 
 val mongodbRepositoryModule = module {

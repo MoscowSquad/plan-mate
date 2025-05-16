@@ -1,16 +1,19 @@
 package presentation.audit
 
-import io.mockk.*
-import logic.models.AuditLog
-import logic.models.AuditLog.AuditType
-import logic.usecases.audit.ViewAuditLogsByProjectUseCase
+import domain.models.AuditLog
+import domain.models.AuditLog.AuditType
+import domain.usecases.audit.ViewAuditLogsByProjectUseCase
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
+import io.mockk.verifySequence
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.io.ConsoleIO
 import java.util.*
-import kotlinx.datetime.Instant
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 class ViewAuditLogsByProjectUITest {
     private lateinit var viewAuditLogsByProjectUseCase: ViewAuditLogsByProjectUseCase

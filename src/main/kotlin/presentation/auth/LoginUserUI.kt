@@ -1,6 +1,6 @@
 package presentation.auth
 
-import logic.usecases.auth.LoginUseCase
+import domain.usecases.auth.LoginUseCase
 import presentation.io.ConsoleIO
 
 class LoginUserUI(
@@ -8,7 +8,7 @@ class LoginUserUI(
     private val consoleIO: ConsoleIO,
 ) : ConsoleIO by consoleIO {
 
-    operator fun invoke() {
+    suspend operator fun invoke() {
         write("🔐 Login")
 
         var isLoggedIn = false

@@ -2,7 +2,7 @@ package presentation.session
 
 import data.session_manager.LoggedInUser
 import data.session_manager.SessionManager
-import logic.models.User.UserRole
+import domain.models.User.UserRole
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
