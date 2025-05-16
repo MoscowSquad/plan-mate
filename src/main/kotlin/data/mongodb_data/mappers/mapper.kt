@@ -116,7 +116,7 @@ fun String.toUUID(): UUID {
 }
 
 fun String.toTimeStamp(): LocalDateTime {
-    val instant = Instant.fromEpochMilliseconds(this.toLong())
-    val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-    return localDateTime
+    val instant = Instant.parse(this)
+    return instant.toLocalDateTime(TimeZone.currentSystemDefault())
 }
+
