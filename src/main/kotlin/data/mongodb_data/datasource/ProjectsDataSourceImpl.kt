@@ -5,9 +5,9 @@ import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.data_source.ProjectsDataSource
 import data.mongodb_data.dto.ProjectDto
 import data.mongodb_data.mappers.toUUID
+import domain.util.ProjectNotFoundException
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.toList
-import logic.util.ProjectNotFoundException
 import java.util.*
 
 class ProjectsDataSourceImpl(
@@ -17,14 +17,12 @@ class ProjectsDataSourceImpl(
         return collection.insertOne(project).wasAcknowledged()
     }
 
-
     override suspend fun updateProject(project: ProjectDto): Boolean {
         val existingProject = getProjectById(project.id.toUUID())
 
         val updatedProject = project.copy(objectId = existingProject.objectId)
         return collection.replaceOne(Filters.eq("id", project.id), updatedProject).modifiedCount > 0
     }
-
 
     override suspend fun deleteProject(id: UUID):Boolean {
         val filter = Filters.eq("id", id.toString())

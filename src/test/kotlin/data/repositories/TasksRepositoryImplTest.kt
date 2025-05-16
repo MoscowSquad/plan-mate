@@ -5,12 +5,12 @@ import data.csv_data.datasource.TaskDataSource
 import data.csv_data.mappers.toDto
 import data.csv_data.mappers.toTask
 import data.csv_data.repositories.TasksRepositoryImpl
+import domain.models.Task
+import domain.util.TaskIsExist
+import domain.util.TaskIsNotFoundException
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.models.Task
-import logic.util.TaskIsExist
-import logic.util.TaskIsNotFoundException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

@@ -8,7 +8,7 @@ class AuditUI(
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
 
-    operator fun invoke() {
+    suspend operator fun invoke() {
         while (true) {
             write(
                 """

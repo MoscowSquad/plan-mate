@@ -2,8 +2,8 @@ package presentation.project
 
 import data.mongodb_data.mappers.toUUID
 import data.session_manager.SessionManager
-import logic.models.User.UserRole
-import logic.usecases.project.UpdateProjectUseCase
+import domain.models.User.UserRole
+import domain.usecases.project.UpdateProjectUseCase
 import presentation.io.ConsoleIO
 import java.util.*
 
@@ -11,7 +11,7 @@ class UpdateProjectNameUI(
     private val updateProjectUseCase: UpdateProjectUseCase,
     private val consoleIO: ConsoleIO,
 ) : ConsoleIO by consoleIO {
-    operator fun invoke() {
+    suspend operator fun invoke() {
         write("Enter the project ID to update:")
         lateinit var projectId: UUID
         runCatching {

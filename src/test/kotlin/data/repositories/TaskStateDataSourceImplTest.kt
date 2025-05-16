@@ -5,11 +5,11 @@ import data.csv_data.datasource.TaskStateDataSource
 import data.csv_data.mappers.toDto
 import data.csv_data.mappers.toTaskState
 import data.csv_data.repositories.TaskStateRepositoryImpl
+import domain.models.TaskState
+import domain.util.NoStateExistException
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.models.TaskState
-import logic.util.NoStateExistException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

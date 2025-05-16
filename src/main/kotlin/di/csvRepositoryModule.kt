@@ -1,7 +1,7 @@
 package di
 
 import data.csv_data.repositories.*
-import logic.repositories.*
+import domain.repositories.*
 import org.koin.dsl.module
 
 val csvRepositoryModule = module {

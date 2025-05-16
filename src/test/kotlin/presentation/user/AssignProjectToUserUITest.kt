@@ -1,14 +1,14 @@
 package presentation.user
 
 import data.mongodb_data.mappers.toUUID
+import data.session_manager.SessionManager
+import domain.models.User.UserRole
+import domain.usecases.user.AssignProjectToUserUseCase
 import io.mockk.*
-import logic.models.User.UserRole
-import logic.usecases.user.AssignProjectToUserUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.io.ConsoleIO
 import presentation.project.GetAllProjectsUI
-import data.session_manager.SessionManager
 import java.util.*
 
 class AssignProjectToUserUITest {

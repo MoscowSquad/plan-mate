@@ -6,11 +6,10 @@ import data.mongodb_data.dto.AuditLogDto
 import data.mongodb_data.mappers.toDto
 import data.mongodb_data.mappers.toTaskState
 import data.mongodb_data.util.executeInIO
-import data.mongodb_data.util.executeInIOAdminOnly
+import domain.models.AuditLog.AuditType
+import domain.models.TaskState
+import domain.repositories.TaskStateRepository
 import kotlinx.datetime.Clock
-import logic.models.AuditLog.AuditType
-import logic.models.TaskState
-import logic.repositories.TaskStateRepository
 import java.util.*
 
 class TaskStateRepositoryImpl(
@@ -18,17 +17,17 @@ class TaskStateRepositoryImpl(
     private val auditLogDataSource: AuditLogDataSource,
 ) : TaskStateRepository {
 
-    override fun getTaskStateById(id: UUID): TaskState =
+    override suspend fun getTaskStateById(id: UUID): TaskState =
         executeInIO { taskStateDataSource.getTaskStateById(id).toTaskState() }
 
 
-    override fun getTaskStateByProjectId(projectId: UUID): List<TaskState> = executeInIO {
+    override suspend fun getTaskStateByProjectId(projectId: UUID): List<TaskState> = executeInIO {
         taskStateDataSource.getTaskStateByProjectId(projectId).map {
             it.toTaskState()
         }
     }
 
-    override fun updateTaskState(state: TaskState): Boolean = executeInIOAdminOnly {
+    override suspend fun updateTaskState(state: TaskState): Boolean = executeInIO {
         val result = taskStateDataSource.updateTaskState(state.toDto())
         auditLogDataSource.addLog(
             log = AuditLogDto(
@@ -42,7 +41,7 @@ class TaskStateRepositoryImpl(
         result
     }
 
-    override fun addTaskState(projectId: UUID, state: TaskState): Boolean = executeInIOAdminOnly {
+    override suspend fun addTaskState(projectId: UUID, state: TaskState): Boolean = executeInIO {
         val result = taskStateDataSource.addTaskState(projectId, state.toDto())
         auditLogDataSource.addLog(
             log = AuditLogDto(
@@ -56,7 +55,7 @@ class TaskStateRepositoryImpl(
         result
     }
 
-    override fun deleteTaskState(projectId: UUID, stateId: UUID): Boolean = executeInIOAdminOnly {
+    override suspend fun deleteTaskState(projectId: UUID, stateId: UUID): Boolean = executeInIO {
         val result = taskStateDataSource.deleteTaskState(projectId, stateId)
         auditLogDataSource.addLog(
             log = AuditLogDto(

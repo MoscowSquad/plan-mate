@@ -9,7 +9,7 @@ import presentation.task.TasksUI
 import presentation.user.UserUI
 import kotlin.system.exitProcess
 
-open class PlanMateConsoleUI(
+class PlanMateConsoleUI(
     val authenticationUI: AuthenticationUI,
     private val projectsUI: ProjectsUI,
     private val tasksUI: TasksUI,
@@ -19,7 +19,7 @@ open class PlanMateConsoleUI(
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
 
-    fun start() {
+    suspend fun start() {
         write(
             """
 🔷 Welcome to PlanMate v2.0 🔷
@@ -30,14 +30,14 @@ Let's set up the app. Please sign up as the admin user.
         menuLoop()
     }
 
-    fun menuLoop() {
+    private suspend fun menuLoop() {
         while (true) {
             showOptions()
             goToScreen()
         }
     }
 
-    fun showOptions() {
+    private fun showOptions() {
         write(
             """
 🏠 Main Menu:
@@ -52,7 +52,7 @@ Enter your option:""".trimIndent()
         )
     }
 
-    fun goToScreen() {
+    private suspend fun goToScreen() {
         val input = read().toIntOrNull()
         when (input) {
             1 -> projectsUI()

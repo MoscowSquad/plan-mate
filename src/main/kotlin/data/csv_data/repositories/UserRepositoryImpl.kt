@@ -2,8 +2,8 @@ package data.csv_data.repositories
 
 import data.csv_data.datasource.UserDataSource
 import data.csv_data.mappers.toUser
-import logic.models.User
-import logic.repositories.UserRepository
+import domain.models.User
+import domain.repositories.UserRepository
 import java.util.*
 
 class UserRepositoryImpl(
@@ -12,14 +12,14 @@ class UserRepositoryImpl(
 
     private val users = mutableListOf<User>()
 
-    override fun addUser(user: User, hashedPassword: String): Boolean {
+    override suspend fun addUser(user: User, hashedPassword: String): Boolean {
         if (users.any { it.id == user.id }) {
             throw IllegalArgumentException("User with id ${user.id} already exists")
         }
         return users.add(user)
     }
 
-    override fun deleteUser(id: UUID): Boolean {
+    override suspend fun deleteUser(id: UUID): Boolean {
         val removed = users.removeIf { it.id == id }
         if (!removed) {
             throw NoSuchElementException("Cannot delete: User with id $id not found")
@@ -27,7 +27,7 @@ class UserRepositoryImpl(
         return true
     }
 
-    override fun assignUserToProject(projectId: UUID, userId: UUID): Boolean {
+    override suspend fun assignUserToProject(projectId: UUID, userId: UUID): Boolean {
         val index = users.indexOfFirst { it.id == userId }
         if (index == -1) {
             throw NoSuchElementException("User with id $userId not found")
@@ -42,7 +42,7 @@ class UserRepositoryImpl(
         return true
     }
 
-    override fun unassignUserFromProject(projectId: UUID, userId: UUID): Boolean {
+    override suspend fun unassignUserFromProject(projectId: UUID, userId: UUID): Boolean {
         val index = users.indexOfFirst { it.id == userId }
         if (index == -1) {
             throw NoSuchElementException("User with id $userId not found")
@@ -57,12 +57,12 @@ class UserRepositoryImpl(
         return true
     }
 
-    override fun getUserById(id: UUID): User {
+    override suspend fun getUserById(id: UUID): User {
         return users.find { it.id == id }
             ?: throw NoSuchElementException("User with id $id not found")
     }
 
-    override fun getAllUsers(): List<User> {
+    override suspend fun getAllUsers(): List<User> {
         return if (users.isEmpty()) {
             userDataSource.fetch()
                 .map { it.toUser() }
@@ -71,7 +71,8 @@ class UserRepositoryImpl(
             users.toList()
         }
     }
-    override fun assignUserToTask(taskId: UUID, userId: UUID): Boolean {
+
+    override suspend fun assignUserToTask(taskId: UUID, userId: UUID): Boolean {
         val index = users.indexOfFirst { it.id == userId }
         if (index == -1) {
             throw NoSuchElementException("User with id $userId not found")

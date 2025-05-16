@@ -6,14 +6,13 @@ import data.mongodb_data.dto.AuditLogDto
 import data.mongodb_data.mappers.toDto
 import data.mongodb_data.mappers.toUser
 import data.mongodb_data.util.executeInIO
-import data.mongodb_data.util.executeInIOAdminOnly
 import data.session_manager.LoggedInUser
 import data.session_manager.SessionManager
+import domain.models.AuditLog.AuditType
+import domain.models.User
+import domain.repositories.AuthenticationRepository
+import domain.repositories.UserRepository
 import kotlinx.datetime.Clock
-import logic.models.AuditLog.AuditType
-import logic.models.User
-import logic.repositories.AuthenticationRepository
-import logic.repositories.UserRepository
 import java.util.*
 
 class UserRepositoryImpl(
@@ -21,7 +20,7 @@ class UserRepositoryImpl(
     private val auditLogDataSource: AuditLogDataSource
 ) : UserRepository, AuthenticationRepository {
 
-    override fun addUser(user: User, hashedPassword: String): Boolean = executeInIOAdminOnly {
+    override suspend fun addUser(user: User, hashedPassword: String): Boolean = executeInIO {
         val result = userDataSource.addUser(user.toDto(hashedPassword))
         auditLogDataSource.addLog(
             log = AuditLogDto(
@@ -35,7 +34,7 @@ class UserRepositoryImpl(
         result
     }
 
-    override fun deleteUser(id: UUID): Boolean = executeInIOAdminOnly {
+    override suspend fun deleteUser(id: UUID): Boolean = executeInIO {
         val result = userDataSource.deleteUser(id)
         auditLogDataSource.addLog(
             log = AuditLogDto(
@@ -49,43 +48,21 @@ class UserRepositoryImpl(
         result
     }
 
-    override fun assignUserToProject(projectId: UUID, userId: UUID): Boolean = executeInIOAdminOnly {
-        val result = userDataSource.assignUserToProject(projectId, userId)
-        auditLogDataSource.addLog(
-            log = AuditLogDto(
-                id = UUID.randomUUID().toString(),
-                action = "User with id $userId Assigned to Project with id $projectId",
-                entityId = userId.toString(),
-                timestamp = Clock.System.now().toString(),
-                auditType = AuditType.USER.toString(),
-            )
-        )
-        result
-    }
+    override suspend fun assignUserToProject(projectId: UUID, userId: UUID): Boolean =
+        modifyUserAssignment(projectId, userId, assign = true)
 
-    override fun unassignUserFromProject(projectId: UUID, userId: UUID): Boolean = executeInIOAdminOnly {
-        val result = userDataSource.unassignUserFromProject(projectId, userId)
-        auditLogDataSource.addLog(
-            log = AuditLogDto(
-                id = UUID.randomUUID().toString(),
-                action = "User with id $userId Unassigned from Project with id $projectId",
-                entityId = userId.toString(),
-                timestamp = Clock.System.now().toString(),
-                auditType = AuditType.USER.toString(),
-            )
-        )
-        result
-    }
+    override suspend fun unassignUserFromProject(projectId: UUID, userId: UUID): Boolean =
+        modifyUserAssignment(projectId, userId, assign = false)
 
-    override fun getUserById(id: UUID): User = executeInIO { userDataSource.getUserById(id).toUser() }
+    override suspend fun getUserById(id: UUID): User = executeInIO { userDataSource.getUserById(id).toUser() }
 
-    override fun getAllUsers(): List<User> = executeInIO {
+    override suspend fun getAllUsers(): List<User> = executeInIO {
         userDataSource.getAllUsers().toList().map {
             it.toUser()
         }
     }
 
-    override fun assignUserToTask(taskId: UUID, userId: UUID): Boolean = executeInIOAdminOnly {
+    override suspend fun assignUserToTask(taskId: UUID, userId: UUID): Boolean = executeInIO {
         val result = userDataSource.assignUserToTask(taskId, userId)
         auditLogDataSource.addLog(
             log = AuditLogDto(
@@ -99,7 +76,7 @@ class UserRepositoryImpl(
         result
     }
 
-    override fun register(user: User, hashedPassword: String) = executeInIO {
+    override suspend fun register(user: User, hashedPassword: String) = executeInIO {
         val result = userDataSource.register(user.toDto(hashedPassword)).toUser()
         auditLogDataSource.addLog(
             log = AuditLogDto(
@@ -119,7 +96,7 @@ class UserRepositoryImpl(
         result
     }
 
-    override fun login(name: String, password: String) = executeInIO {
+    override suspend fun login(name: String, password: String) = executeInIO {
         val result = userDataSource.login(name, password).toUser()
         auditLogDataSource.addLog(
             log = AuditLogDto(
@@ -136,6 +113,28 @@ class UserRepositoryImpl(
             role = result.role,
             projectIds = result.projectIds
         )
+        result
+    }
+
+    private suspend fun modifyUserAssignment(projectId: UUID, userId: UUID, assign: Boolean): Boolean = executeInIO {
+        val result = if (assign) {
+            userDataSource.assignUserToProject(projectId, userId)
+        } else {
+            userDataSource.unassignUserFromProject(projectId, userId)
+        }
+
+        val actionVerb = if (assign) "Assigned" else "Unassigned"
+
+        auditLogDataSource.addLog(
+            log = AuditLogDto(
+                id = UUID.randomUUID().toString(),
+                action = "User with id $userId $actionVerb to Project with id $projectId",
+                entityId = userId.toString(),
+                timestamp = Clock.System.now().toString(),
+                auditType = AuditType.USER.toString(),
+            )
+        )
+
         result
     }
 

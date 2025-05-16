@@ -1,7 +1,7 @@
 package presentation.task
 
 import data.mongodb_data.mappers.toUUID
-import logic.usecases.project.GetProjectByIdUseCase
+import domain.usecases.project.GetProjectByIdUseCase
 import presentation.io.ConsoleIO
 import presentation.project.GetAllProjectsUI
 
@@ -14,7 +14,7 @@ class TasksUI(
     private val getAllProjectsUI: GetAllProjectsUI,
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
-    operator fun invoke() {
+    suspend operator fun invoke() {
         getAllProjectsUI()
         write("Enter the project ID:")
         val projectId = runCatching { read().trimIndent().toUUID() }.getOrElse {

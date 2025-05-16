@@ -1,10 +1,10 @@
 package presentation.project
 
+import domain.models.Project
+import domain.usecases.project.GetAllProjectsUseCase
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.models.Project
-import logic.usecases.project.GetAllProjectsUseCase
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.io.ConsoleIO

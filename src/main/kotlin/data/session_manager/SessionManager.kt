@@ -1,7 +1,7 @@
 package data.session_manager
 
-import logic.models.User.UserRole
-import logic.util.UserNotLoggedInException
+import domain.models.User.UserRole
+import domain.util.UserNotLoggedInException
 import java.util.*
 
 data class LoggedInUser(

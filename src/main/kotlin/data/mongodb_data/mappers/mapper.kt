@@ -5,13 +5,13 @@ import data.mongodb_data.util.Constants.ADMIN
 import data.mongodb_data.util.Constants.MATE
 import data.mongodb_data.util.Constants.PROJECT
 import data.mongodb_data.util.Constants.TASK
+import domain.models.*
+import domain.models.AuditLog.AuditType
+import domain.models.User.UserRole
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDateTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import logic.models.*
-import logic.models.AuditLog.AuditType
-import logic.models.User.UserRole
 import java.util.*
 
 fun UserDto.toUser(): User {
@@ -116,7 +116,7 @@ fun String.toUUID(): UUID {
 }
 
 fun String.toTimeStamp(): LocalDateTime {
-    val instant = Instant.fromEpochMilliseconds(this.toLong())
-    val localDateTime = instant.toLocalDateTime(TimeZone.currentSystemDefault())
-    return localDateTime
+    val instant = Instant.parse(this)
+    return instant.toLocalDateTime(TimeZone.currentSystemDefault())
 }
+

@@ -1,8 +1,8 @@
 package presentation.user
 
 import data.mongodb_data.mappers.toUUID
-import logic.usecases.task.GetTaskByIdUseCase
-import logic.usecases.user.GetUserByIdUseCase
+import domain.usecases.task.GetTaskByIdUseCase
+import domain.usecases.user.GetUserByIdUseCase
 import presentation.io.ConsoleIO
 
 class GetUserByIdUI(
@@ -11,7 +11,7 @@ class GetUserByIdUI(
     consoleIO: ConsoleIO,
 ) : ConsoleIO by consoleIO {
 
-    operator fun invoke() {
+    suspend operator fun invoke() {
         write("\nEnter user ID:")
         val id = try {
             read().trim().toUUID()

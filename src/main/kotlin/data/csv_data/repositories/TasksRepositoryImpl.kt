@@ -3,10 +3,10 @@ package data.csv_data.repositories
 import data.csv_data.datasource.TaskDataSource
 import data.csv_data.mappers.toDto
 import data.csv_data.mappers.toTask
-import logic.models.Task
-import logic.repositories.TasksRepository
-import logic.util.TaskIsExist
-import logic.util.TaskIsNotFoundException
+import domain.models.Task
+import domain.repositories.TasksRepository
+import domain.util.TaskIsExist
+import domain.util.TaskIsNotFoundException
 import java.util.*
 
 class TasksRepositoryImpl(
@@ -19,16 +19,16 @@ class TasksRepositoryImpl(
         tasks.addAll(taskDataSource.fetch().map { it.toTask() })
     }
 
-    override fun getAllTasks(): List<Task> = tasks.toList()
+    override suspend fun getAllTasks(): List<Task> = tasks.toList()
 
-    override fun addTask(task: Task): Boolean {
+    override suspend fun addTask(task: Task): Boolean {
         if (tasks.any { it.id == task.id }) throw TaskIsExist(task.id)
         tasks.add(task)
         taskDataSource.save(tasks.map { it.toDto() })
         return true
     }
 
-    override fun editTask(updatedTask: Task): Boolean {
+    override suspend fun editTask(updatedTask: Task): Boolean {
         val index = tasks.indexOfFirst { it.id == updatedTask.id }
         if (index == -1) throw TaskIsNotFoundException(updatedTask.id)
 
@@ -37,7 +37,7 @@ class TasksRepositoryImpl(
         return true
     }
 
-    override fun deleteTask(taskId: UUID): Boolean {
+    override suspend fun deleteTask(taskId: UUID): Boolean {
         val removed = tasks.removeIf { it.id == taskId }
         if (!removed) throw TaskIsNotFoundException(taskId)
 
@@ -45,11 +45,11 @@ class TasksRepositoryImpl(
         return true
     }
 
-    override fun getTaskById(taskId: UUID): Task {
+    override suspend fun getTaskById(taskId: UUID): Task {
         return tasks.find { it.id == taskId } ?: throw TaskIsNotFoundException(taskId)
     }
 
-    override fun getTaskByProjectId(taskId: UUID): List<Task> {
+    override suspend fun getTaskByProjectId(taskId: UUID): List<Task> {
         return tasks.filter { it.projectId == taskId }
     }
 }

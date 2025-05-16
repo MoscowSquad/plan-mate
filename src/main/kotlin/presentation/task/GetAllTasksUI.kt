@@ -1,6 +1,6 @@
 package presentation.task
 
-import logic.usecases.task.GetTaskByProjectIdUseCase
+import domain.usecases.task.GetTaskByProjectIdUseCase
 import presentation.io.ConsoleIO
 import java.util.*
 
@@ -8,7 +8,7 @@ class GetAllTasksUI(
     private val getTaskByProjectIdUseCase: GetTaskByProjectIdUseCase,
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
-    operator fun invoke(projectId: UUID) {
+    suspend operator fun invoke(projectId: UUID) {
         runCatching { getTaskByProjectIdUseCase(projectId) }
             .onSuccess { tasks ->
                 if (tasks.isEmpty()) {

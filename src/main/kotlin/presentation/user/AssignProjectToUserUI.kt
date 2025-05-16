@@ -2,7 +2,7 @@ package presentation.user
 
 import data.mongodb_data.mappers.toUUID
 import data.session_manager.SessionManager
-import logic.usecases.user.AssignProjectToUserUseCase
+import domain.usecases.user.AssignProjectToUserUseCase
 import presentation.io.ConsoleIO
 import presentation.project.GetAllProjectsUI
 
@@ -11,7 +11,7 @@ class AssignProjectToUserUI(
     private val consoleIO: ConsoleIO,
     private val getAllProjectsUI: GetAllProjectsUI
 ) : ConsoleIO by consoleIO {
-    operator fun invoke() {
+    suspend operator fun invoke() {
         val currentUserRole = SessionManager.getCurrentUserRole()
         getAllProjectsUI.invoke()
         write("\n=== Assign Project to User ===")

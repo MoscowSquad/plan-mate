@@ -9,7 +9,7 @@ class ProjectsUI(
     private val deleteProjectUI: DeleteProjectUI,
     private val consoleIO: ConsoleIO,
 ) : ConsoleIO by consoleIO {
-    operator fun invoke() {
+    suspend operator fun invoke() {
         getAllProjectsUI()
 
         write(

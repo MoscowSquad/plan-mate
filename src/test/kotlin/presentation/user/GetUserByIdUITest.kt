@@ -1,15 +1,15 @@
 package presentation.user
 
+    import domain.models.User
+    import domain.models.User.UserRole
+    import domain.usecases.user.GetUserByIdUseCase
     import io.mockk.*
-    import logic.usecases.user.GetUserByIdUseCase
-    import logic.models.User
-    import logic.models.User.UserRole
     import org.junit.jupiter.api.BeforeEach
     import org.junit.jupiter.api.Test
     import presentation.io.ConsoleIO
     import java.util.*
 
-    class GetUserByIdUITest {
+class GetUserByIdUITest {
         private lateinit var getUserByIdUseCase: GetUserByIdUseCase
         private lateinit var consoleIO: ConsoleIO
         private lateinit var getUserByIdUI: GetUserByIdUI

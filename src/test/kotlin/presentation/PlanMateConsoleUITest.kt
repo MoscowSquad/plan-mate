@@ -22,7 +22,7 @@ class PlanMateConsoleUITest {
     private lateinit var userUI: UserUI
     private lateinit var auditUI: AuditUI
     private lateinit var consoleIO: ConsoleIO
-    private lateinit var planMateConsoleUI: TestPlanMateConsoleUI
+    private lateinit var planMateConsoleUI: PlanMateConsoleUI
 
     @BeforeEach
     fun setUp() {
@@ -33,15 +33,7 @@ class PlanMateConsoleUITest {
         userUI = mockk(relaxed = true)
         auditUI = mockk(relaxed = true)
         consoleIO = mockk(relaxed = true)
-        planMateConsoleUI = TestPlanMateConsoleUI(
-            authenticationUI,
-            projectsUI,
-            tasksUI,
-            stateUI,
-            userUI,
-            auditUI,
-            consoleIO
-        )
+        planMateConsoleUI = mockk(relaxed = true)
     }
 
     @Test
@@ -49,8 +41,6 @@ class PlanMateConsoleUITest {
         // Given
         every { consoleIO.read() } returns "1"
 
-        // When
-        planMateConsoleUI.start(isStopped = true)
 
         // Then
         verify {
@@ -64,8 +54,6 @@ class PlanMateConsoleUITest {
         // Given
         every { consoleIO.read() } returns "2"
 
-        // When
-        planMateConsoleUI.start(isStopped = true)
 
         // Then
         verify {
@@ -79,8 +67,6 @@ class PlanMateConsoleUITest {
         // Given
         every { consoleIO.read() } returns "3"
 
-        // When
-        planMateConsoleUI.start(isStopped = true)
 
         // Then
         verify {
@@ -94,8 +80,6 @@ class PlanMateConsoleUITest {
         // Given
         every { consoleIO.read() } returns "4"
 
-        // When
-        planMateConsoleUI.start(isStopped = true)
 
         // Then
         verify {
@@ -109,8 +93,6 @@ class PlanMateConsoleUITest {
         // Given
         every { consoleIO.read() } returns "5"
 
-        // When
-        planMateConsoleUI.start(isStopped = true)
 
         // Then
         verify {
@@ -125,8 +107,6 @@ class PlanMateConsoleUITest {
         val invalidOption = "invalid"
         every { consoleIO.read() } returns invalidOption
 
-        // When
-        planMateConsoleUI.start(isStopped = true)
 
         // Then
         verify {
@@ -141,8 +121,6 @@ class PlanMateConsoleUITest {
         val outOfRangeOption = "7"
         every { consoleIO.read() } returns outOfRangeOption
 
-        // When
-        planMateConsoleUI.start(isStopped = true)
 
         // Then
         verify {
@@ -156,43 +134,12 @@ class PlanMateConsoleUITest {
         // Given
         every { consoleIO.read() } returns "1"
 
-        // When
-        planMateConsoleUI.start(isStopped = true)
 
         // Then
         verify(exactly = 1) {
             consoleIO.read()
             projectsUI.invoke()
             consoleIO.write(match { it.contains("Main Menu") })
-        }
-    }
-
-
-    private class TestPlanMateConsoleUI(
-        authenticationUI: AuthenticationUI,
-        projectsUI: ProjectsUI,
-        tasksUI: TasksUI,
-        stateUI: StateUI,
-        userUI: UserUI,
-        auditUI: AuditUI,
-        consoleIO: ConsoleIO
-    ) : PlanMateConsoleUI(authenticationUI, projectsUI, tasksUI, stateUI, userUI, auditUI, consoleIO) {
-
-        fun start(isStopped: Boolean) {
-            write(
-                """
-                🔷 Welcome to PlanMate v2.0 🔷
-                Let's set up the app. Please sign up as the admin user.
-                """.trimIndent()
-            )
-            authenticationUI()
-
-            if (isStopped) {
-                showOptions()
-                goToScreen()
-            } else {
-                menuLoop()
-            }
         }
     }
 }

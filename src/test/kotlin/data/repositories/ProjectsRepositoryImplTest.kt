@@ -6,11 +6,11 @@ import data.csv_data.mappers.toDto
 import data.csv_data.mappers.toProject
 import data.csv_data.repositories.ProjectsRepositoryImpl
 import data.session_manager.SessionManager
+import domain.models.Project
+import domain.util.ProjectNotFoundException
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import logic.models.Project
-import logic.util.ProjectNotFoundException
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows

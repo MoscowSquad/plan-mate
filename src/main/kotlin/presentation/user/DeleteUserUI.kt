@@ -2,14 +2,14 @@ package presentation.user
 
 import data.mongodb_data.mappers.toUUID
 import data.session_manager.SessionManager
-import logic.usecases.user.DeleteUserUseCase
+import domain.usecases.user.DeleteUserUseCase
 import presentation.io.ConsoleIO
 
 class DeleteUserUI(
     private val deleteUserUseCase: DeleteUserUseCase,
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
-    operator fun invoke() {
+    suspend operator fun invoke() {
         val currentUserRole = SessionManager.getCurrentUserRole()
 
         write("\n=======================")

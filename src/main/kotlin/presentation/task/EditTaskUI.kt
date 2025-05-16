@@ -1,8 +1,7 @@
 package presentation.task
 
-import data.mongodb_data.mappers.toUUID
-import logic.models.Task
-import logic.usecases.task.EditTaskUseCase
+import domain.models.Task
+import domain.usecases.task.EditTaskUseCase
 import presentation.io.ConsoleIO
 import java.util.*
 
@@ -10,7 +9,7 @@ class EditTaskUI(
     private val editTaskUseCase: EditTaskUseCase,
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
-    operator fun invoke(projectId: UUID) {
+    suspend operator fun invoke(projectId: UUID) {
         write("Please enter the task ID:")
         val taskId = readUUID()
 
