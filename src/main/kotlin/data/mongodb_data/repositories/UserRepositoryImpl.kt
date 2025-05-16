@@ -48,33 +48,11 @@ class UserRepositoryImpl(
         result
     }
 
-    override suspend fun assignUserToProject(projectId: UUID, userId: UUID): Boolean = executeInIO {
-        val result = userDataSource.assignUserToProject(projectId, userId)
-        auditLogDataSource.addLog(
-            log = AuditLogDto(
-                id = UUID.randomUUID().toString(),
-                action = "User with id $userId Assigned to Project with id $projectId",
-                entityId = userId.toString(),
-                timestamp = Clock.System.now().toString(),
-                auditType = AuditType.USER.toString(),
-            )
-        )
-        result
-    }
+    override suspend fun assignUserToProject(projectId: UUID, userId: UUID): Boolean =
+        modifyUserAssignment(projectId, userId, assign = true)
 
-    override suspend fun unassignUserFromProject(projectId: UUID, userId: UUID): Boolean = executeInIO {
-        val result = userDataSource.unassignUserFromProject(projectId, userId)
-        auditLogDataSource.addLog(
-            log = AuditLogDto(
-                id = UUID.randomUUID().toString(),
-                action = "User with id $userId Unassigned from Project with id $projectId",
-                entityId = userId.toString(),
-                timestamp = Clock.System.now().toString(),
-                auditType = AuditType.USER.toString(),
-            )
-        )
-        result
-    }
+    override suspend fun unassignUserFromProject(projectId: UUID, userId: UUID): Boolean =
+        modifyUserAssignment(projectId, userId, assign = false)
 
     override suspend fun getUserById(id: UUID): User = executeInIO { userDataSource.getUserById(id).toUser() }
 
@@ -135,6 +113,28 @@ class UserRepositoryImpl(
             role = result.role,
             projectIds = result.projectIds
         )
+        result
+    }
+
+    private suspend fun modifyUserAssignment(projectId: UUID, userId: UUID, assign: Boolean): Boolean = executeInIO {
+        val result = if (assign) {
+            userDataSource.assignUserToProject(projectId, userId)
+        } else {
+            userDataSource.unassignUserFromProject(projectId, userId)
+        }
+
+        val actionVerb = if (assign) "Assigned" else "Unassigned"
+
+        auditLogDataSource.addLog(
+            log = AuditLogDto(
+                id = UUID.randomUUID().toString(),
+                action = "User with id $userId $actionVerb to Project with id $projectId",
+                entityId = userId.toString(),
+                timestamp = Clock.System.now().toString(),
+                auditType = AuditType.USER.toString(),
+            )
+        )
+
         result
     }
 
