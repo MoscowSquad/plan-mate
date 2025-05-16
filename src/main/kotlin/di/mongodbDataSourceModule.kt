@@ -29,8 +29,14 @@ val mongodbDataSourceModule = module {
 
     single<TaskDataSource> {
         val db: MongoDatabase = get()
-        val collection = db.getCollection<TaskDto>(Constants.TASK_COLLECTION)
-        TaskDataSourceImpl(collection)
+        val taskCollection = db.getCollection<TaskDto>(Constants.TASK_COLLECTION)
+        TaskDataSourceImpl(taskCollection)
+    }
+
+    single<SubTaskDataSource> {
+        val db: MongoDatabase = get()
+        val subTaskCollection = db.getCollection<SubTaskDto>(Constants.SUB_TASK_COLLECTION)
+        SubTaskDataSourceImpl(subTaskCollection)
     }
 
     single<ProjectsDataSource> {

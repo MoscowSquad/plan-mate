@@ -10,6 +10,7 @@ object Constants {
     const val TASK = "TASK"
 
     const val TASK_COLLECTION = "tasks"
+    const val SUB_TASK_COLLECTION = "sub_task"
     const val PROJECT_COLLECTION = "projects"
     const val AUDIT_LOG_COLLECTION = "audit_log"
     const val USER_COLLECTION = "user"
