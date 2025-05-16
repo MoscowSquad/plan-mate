@@ -55,7 +55,7 @@ fun TaskDto.toTask(): Task {
         title = name,
         description = description,
         projectId = projectId.toUUID(),
-        stateId = stateId.toUUID()
+        stateId = stateId.toUUID(),
     )
 }
 
@@ -65,7 +65,8 @@ fun Task.toDto(): TaskDto {
         name = title,
         description = description,
         projectId = projectId.toString(),
-        stateId = stateId.toString()
+        stateId = stateId.toString(),
+        subTasks = emptyList()     // change later
     )
 }
 
@@ -102,6 +103,26 @@ fun AuditLog.toDto(): AuditLogDto {
         auditType = if (auditType == AuditType.PROJECT) PROJECT else TASK,
         timestamp = timestamp.toString(),
         entityId = entityId.toString(),
+    )
+}
+
+fun SubTaskDto.toSubTask(): SubTask {
+    return SubTask(
+        id = UUID.fromString(id),
+        title = title,
+        description = description,
+        parentTaskId = UUID.fromString(parentTaskId),
+        isCompleted = isCompleted
+    )
+}
+
+fun SubTask.toDto(): SubTaskDto {
+    return SubTaskDto(
+        id = id.toString(),
+        title = title,
+        description = description,
+        parentTaskId = parentTaskId.toString(),
+        isCompleted = isCompleted
     )
 }
 
