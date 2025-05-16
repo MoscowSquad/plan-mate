@@ -18,7 +18,7 @@ class AuditLogRepositoryImpl(
     }
 
     override suspend fun getAllLogsByProjectId(projectId: UUID): List<AuditLog> = executeInIO {
-        auditLogDataSource.getAllLogsByTaskId(projectId).map {
+        auditLogDataSource.getAllLogsByProjectId(projectId).map {
             it.toAuditLog()
         }
     }
