@@ -5,6 +5,10 @@ import domain.usecases.audit.ViewAuditLogsByTaskUseCase
 import domain.usecases.auth.LoginUseCase
 import domain.usecases.auth.RegisterUseCase
 import domain.usecases.project.*
+import domain.usecases.sub_task.CreateSubTaskUseCase
+import domain.usecases.sub_task.DeleteSubTaskUseCase
+import domain.usecases.sub_task.GetSubTasksByTaskIdUseCase
+import domain.usecases.sub_task.UpdateSubTaskUseCase
 import domain.usecases.task.*
 import domain.usecases.task_state.*
 import domain.usecases.user.*
@@ -48,4 +52,10 @@ val useCaseModule = module {
     singleOf(::GetAllUsersUseCase)
     singleOf(::GetUserByIdUseCase)
     singleOf(::RemoveFromProjectUserUseCase)
+
+    // Subtask-related use cases
+    singleOf(::CreateSubTaskUseCase)
+    singleOf(::DeleteSubTaskUseCase)
+    singleOf(::UpdateSubTaskUseCase)
+    singleOf(::GetSubTasksByTaskIdUseCase)
 }
