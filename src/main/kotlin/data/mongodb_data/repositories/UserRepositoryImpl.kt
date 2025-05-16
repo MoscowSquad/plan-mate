@@ -85,6 +85,20 @@ class UserRepositoryImpl(
         }
     }
 
+    override fun assignUserToTask(taskId: UUID, userId: UUID): Boolean = executeInIOAdminOnly {
+        val result = userDataSource.assignUserToTask(taskId, userId)
+        auditLogDataSource.addLog(
+            log = AuditLogDto(
+                id = UUID.randomUUID().toString(),
+                action = "User with id $userId Assigned to Task with id $taskId",
+                entityId = userId.toString(),
+                timestamp = Clock.System.now().toString(),
+                auditType = AuditType.USER.toString(),
+            )
+        )
+        result
+    }
+
     override fun register(user: User, hashedPassword: String) = executeInIO {
         val result = userDataSource.register(user.toDto(hashedPassword)).toUser()
         auditLogDataSource.addLog(
@@ -124,4 +138,5 @@ class UserRepositoryImpl(
         )
         result
     }
+
 }

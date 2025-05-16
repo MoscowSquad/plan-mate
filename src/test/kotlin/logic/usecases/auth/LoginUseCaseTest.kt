@@ -24,7 +24,8 @@ class LoginUseCaseTest {
         id = UUID.randomUUID(),
         name = "validUser",
         role = UserRole.ADMIN,
-        projectIds = emptyList()
+        projectIds = emptyList(),
+        taskIds = emptyList()
     )
 
     @BeforeEach

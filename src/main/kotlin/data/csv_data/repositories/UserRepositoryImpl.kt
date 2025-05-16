@@ -71,4 +71,18 @@ class UserRepositoryImpl(
             users.toList()
         }
     }
+    override fun assignUserToTask(taskId: UUID, userId: UUID): Boolean {
+        val index = users.indexOfFirst { it.id == userId }
+        if (index == -1) {
+            throw NoSuchElementException("User with id $userId not found")
+        }
+
+        val user = users[index]
+        if (taskId in user.taskIds) {
+            throw IllegalStateException("Task $taskId is already assigned to user $userId")
+        }
+
+        users[index] = user.copy(taskIds = user.taskIds + taskId)
+        return true
+    }
 }

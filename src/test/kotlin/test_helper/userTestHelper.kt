@@ -43,7 +43,10 @@ fun createUser(
     role: String,
     projectIds: List<String>
 ): UserDto {
-    return UserDto(id, userName, hashedPassword, role, projectIds)
+    return UserDto(
+        id, userName, hashedPassword, role, projectIds,
+        taskIds = listOf()
+    )
 }
 
 

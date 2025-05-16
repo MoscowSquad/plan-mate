@@ -70,4 +70,12 @@ class UserDataSourceImpl(
         return collection.find().toList()
     }
 
+    override suspend fun assignUserToTask(taskId: UUID, userId: UUID): Boolean {
+        val filter = Filters.eq(UserDto::id.name, userId.toString())
+        val user = collection.find(filter).firstOrNull() ?: return false
+        val updatedTaskIds = user.projectIds.toMutableList().apply { add(taskId.toString()) }
+        val updatedUser = user.copy(taskIds = updatedTaskIds)
+        return collection.replaceOne(filter, updatedUser).modifiedCount > 0
+    }
+
 }

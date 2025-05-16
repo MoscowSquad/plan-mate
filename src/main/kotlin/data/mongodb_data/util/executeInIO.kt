@@ -18,7 +18,7 @@ inline fun <T> executeInIO(crossinline block: suspend () -> T): T {
 inline fun <T> executeInIOAdminOnly(crossinline block: suspend () -> T): T {
     return runBlocking(Dispatchers.IO) {
         async {
-            if (SessionManager.currentUser == null || SessionManager.currentUser?.role == User.UserRole.ADMIN) {
+            if (SessionManager.currentUser == null || SessionManager.currentUser?.role != User.UserRole.ADMIN) {
                 throw AdminOnlyException()
             }
             block()

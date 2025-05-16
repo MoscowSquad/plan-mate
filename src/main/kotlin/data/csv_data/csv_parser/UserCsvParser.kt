@@ -7,6 +7,7 @@ private const val NAME: Int = 1
 private const val HASHED_PASSWORD: Int = 2
 private const val ROLE: Int = 3
 private const val PROJECT_IDS: Int = 4
+private const val Task_IDS: Int = 5
 
 class UserCsvParser : CsvParser<UserDto> {
     override fun parse(data: List<CsvData>): List<UserDto> {
@@ -18,11 +19,22 @@ class UserCsvParser : CsvParser<UserDto> {
                 hashedPassword = it[HASHED_PASSWORD],
                 role = it[ROLE],
                 projectIds = it[PROJECT_IDS].toProjectIds(),
+                taskIds = it[Task_IDS].toTaskIds()
             )
         }
     }
 
     private fun String.toProjectIds(): List<String> {
+        if (this.isBlank() || this == "[]") {
+            return emptyList()
+        }
+
+        return this.removeSurrounding("[", "]")
+            .split(",")
+            .filter { it.trim().isNotBlank() }
+            .map { it.trim() }
+    }
+    private fun String.toTaskIds(): List<String> {
         if (this.isBlank() || this == "[]") {
             return emptyList()
         }

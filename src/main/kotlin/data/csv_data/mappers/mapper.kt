@@ -16,7 +16,8 @@ fun UserDto.toUser(): User {
         id = id.toUUID(),
         name = name,
         role = if (role == ADMIN) UserRole.ADMIN else UserRole.MATE,
-        projectIds = projectIds.map { it.toUUID() }
+        projectIds = projectIds.map { it.toUUID() },
+        taskIds = taskIds.map { it.toUUID() },
     )
 }
 
@@ -26,7 +27,8 @@ fun User.toDto(hashedPassword:String): UserDto {
         name = name,
         hashedPassword = hashedPassword,
         role = if (role == UserRole.ADMIN) ADMIN else MATE,
-        projectIds = projectIds.map { it.toString() }
+        projectIds = projectIds.map { it.toString() },
+        taskIds = taskIds.map { it.toString() }
     )
 }
 

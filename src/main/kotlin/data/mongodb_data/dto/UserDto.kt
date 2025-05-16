@@ -10,5 +10,6 @@ data class UserDto(
     val name: String,
     val hashedPassword: String,
     val role: String,
-    val projectIds: List<String>
+    val projectIds: List<String>,
+    val taskIds: List<String>
 )

@@ -84,7 +84,8 @@ val presentationModule = module {
     factory {
         GetUserByIdUI(
             getUserByIdUseCase = get(),
-            consoleIO = get()
+            consoleIO = get(),
+            getTaskByIdUseCase = get()
         )
     }
 

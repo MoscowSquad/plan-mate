@@ -10,4 +10,5 @@ interface UserRepository {
     fun unassignUserFromProject(projectId: UUID, userId: UUID): Boolean
     fun getUserById(id: UUID): User
     fun getAllUsers(): List<User>
+    fun assignUserToTask(taskId: UUID, userId: UUID): Boolean
 }

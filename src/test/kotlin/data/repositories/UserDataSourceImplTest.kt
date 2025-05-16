@@ -35,7 +35,8 @@ class UserDataSourceImplTest {
             id = UUID.randomUUID(),
             name = "Test User",
             role = UserRole.MATE,
-            projectIds = listOf()
+            projectIds = listOf(),
+            taskIds = emptyList()
         )
     }
 
@@ -176,7 +177,9 @@ class UserDataSourceImplTest {
                 it.name,
                 hashedPassword,
                 it.role.toString(),
-                it.projectIds.map { id -> id.toString() })
+                it.projectIds.map { id -> id.toString() },
+                taskIds = it.taskIds.map { id -> id.toString() }
+            )
         }
         val result = repository.getAllUsers()
 

@@ -32,27 +32,31 @@ class GetAllUserUI(
     }
 
     private fun printHeader() {
-        write("\n╔══════════════════════════════╗")
-        write("║        USER DIRECTORY        ║")
-        write("╚══════════════════════════════╝")
+        write("\n╔══════════════════════════════════════════════════════════╗")
+        write("║                   USER DIRECTORY                         ║")
+        write("╚══════════════════════════════════════════════════════════╝")
     }
 
     private fun printUserTable(users: List<User>) {
-        write("\n┌────────────────────────────────────────────────────────────────────────")
-        write("│        REGISTERED USERS       │                                          ")
-        write("├───────┬───────────────┬───────┤──────────────────────────────────────────")
-        write("│ Index │ Username      │ Role  │                   ID                     ")
-        write("├───────┼───────────────┼───────│──────────────────────────────────────────")
+        write("\n┌───────┬───────────────┬───────┬───────────────────────────────────────┐")
+        write("│ Index │ Username      │ Role  │ Assigned Tasks                        │")
+        write("├───────┼───────────────┼───────┼───────────────────────────────────────┤")
 
         users.forEachIndexed { index, user ->
+            val tasksInfo = if (user.taskIds.isNotEmpty()) {
+                user.taskIds.joinToString(", ") { it.toString().take(8) + "..." }
+            } else {
+                "No tasks assigned"
+            }
+
             write(
                 "│ ${(index + 1).toString().padEnd(5)} │ " +
                         "${user.name.padEnd(13)} │ " +
-                        "${user.role.toString().padEnd(5)} │" +
-                        "${user.id.toString().padEnd(5)} │"
+                        "${user.role.toString().padEnd(5)} │ " +
+                        tasksInfo.padEnd(35) + "│"
             )
         }
 
-        write("└───────┴───────────────┴────────────────────────┴───────────────────")
+        write("└───────┴───────────────┴───────┴───────────────────────────────────────┘")
     }
 }

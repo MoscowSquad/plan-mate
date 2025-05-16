@@ -46,16 +46,26 @@ class UserDataSourceTest {
     fun `fetch() should return parsed users when there is users returned by user csv-parser`() {
         // Given
         val users = listOf(
-            UserDto(UUID.randomUUID().toString(), "Aiman", "123456", ADMIN, emptyList()),
-            UserDto(UUID.randomUUID().toString(), "Muhammed", "123456", MATE, listOf(UUID.randomUUID().toString())),
+            UserDto(
+                UUID.randomUUID().toString(), "Aiman", "123456", ADMIN, emptyList(),
+                taskIds = emptyList()
+            ),
+            UserDto(
+                UUID.randomUUID().toString(), "Muhammed", "123456", MATE, listOf(UUID.randomUUID().toString()),
+                taskIds = emptyList()
+            ),
             UserDto(
                 UUID.randomUUID().toString(),
                 "Zeyad",
                 "123456",
                 MATE,
-                listOf(UUID.randomUUID().toString(), UUID.randomUUID().toString())
+                listOf(UUID.randomUUID().toString(), UUID.randomUUID().toString()),
+                taskIds = emptyList()
             ),
-            UserDto(UUID.randomUUID().toString(), "Yaser", "123456", MATE, emptyList()),
+            UserDto(
+                UUID.randomUUID().toString(), "Yaser", "123456", MATE, emptyList(),
+                taskIds = emptyList()
+            ),
         )
         every { csvHandler.getLines() } returns listOf("id,name,password,role,projectsIds")
         every { userCsvParser.parse(any()) } returns users
@@ -84,7 +94,10 @@ class UserDataSourceTest {
     @Test
     fun `save() should call CsvParser to serialize and CsvHandler to write when saving user data`() {
         // Given
-        val users = listOf(UserDto("1", "User1", "password", ADMIN, emptyList()))
+        val users = listOf(UserDto(
+            "1", "User1", "password", ADMIN, emptyList(),
+            taskIds = emptyList()
+        ))
         val serializedData = listOf("id,name,password,role,projectsIds", "1,User1,password,ADMIN,")
         every { userCsvParser.serialize(users) } returns serializedData
 

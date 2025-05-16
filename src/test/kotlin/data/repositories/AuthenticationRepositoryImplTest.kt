@@ -30,7 +30,8 @@ class AuthenticationRepositoryImplTest {
             id = UUID.randomUUID(),
             name = "testUser",
             role = UserRole.MATE,
-            projectIds = emptyList()
+            projectIds = emptyList(),
+            taskIds = emptyList()
         )
 
         every { userDataSource.fetch() } returns listOf(testUser.toDto(hashedPassword))
@@ -57,7 +58,8 @@ class AuthenticationRepositoryImplTest {
             id = UUID.randomUUID(),
             name = "newUser",
             role = UserRole.MATE,
-            projectIds = emptyList()
+            projectIds = emptyList(),
+            taskIds = emptyList()
         )
         every { userDataSource.save(any()) } just Runs
 
