@@ -21,11 +21,11 @@ class ProjectsDataSourceImpl(
         val existingProject = getProjectById(project.id.toUUID())
 
         val updatedProject = project.copy(objectId = existingProject.objectId)
-        return collection.replaceOne(Filters.eq("id", project.id), updatedProject).modifiedCount > 0
+        return collection.replaceOne(Filters.eq(ProjectDto::id.name, project.id), updatedProject).modifiedCount > 0
     }
 
     override suspend fun deleteProject(id: UUID):Boolean {
-        val filter = Filters.eq("id", id.toString())
+        val filter = Filters.eq(ProjectDto::id.name, id.toString())
         return collection.deleteOne(filter).deletedCount>0
     }
 
@@ -34,7 +34,7 @@ class ProjectsDataSourceImpl(
     }
 
     override suspend fun getProjectById(id: UUID): ProjectDto {
-        val filter = Filters.eq("id", id.toString())
+        val filter = Filters.eq(ProjectDto::id.name, id.toString())
         return collection.find(filter).firstOrNull()?:throw ProjectNotFoundException(id)
     }
 
