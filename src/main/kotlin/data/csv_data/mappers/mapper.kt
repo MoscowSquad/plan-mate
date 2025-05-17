@@ -62,7 +62,17 @@ fun Task.toDto(): TaskDto {
         name = title,
         description = description,
         projectId = projectId.toString(),
-        stateId = stateId.toString()
+        stateId = stateId.toString(),
+        subTasks=subTasks.map {it.toString()}
+    )
+}
+fun SubTaskDto.toSubTask(): SubTask{
+    return SubTask(
+        id = UUID.fromString(id),
+        title = title,
+        description = description,
+        parentTaskId = UUID.fromString(parentTaskId),
+        isCompleted = isCompleted.toBoolean()
     )
 }
 
