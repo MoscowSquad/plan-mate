@@ -6,7 +6,7 @@ import domain.repositories.AuditRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDateTime
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -26,7 +26,7 @@ class ViewAuditLogsByTaskUseCaseTest {
     }
 
     @Test
-    fun `invoke should return empty list when no logs exist for task`() = runBlocking {
+    fun `invoke should return empty list when no logs exist for task`() = runTest {
         // Given
         coEvery { repository.getAllLogsByTaskId(taskId) } returns emptyList()
 
@@ -39,7 +39,7 @@ class ViewAuditLogsByTaskUseCaseTest {
     }
 
     @Test
-    fun `invoke should return logs for given task ID`() = runBlocking {
+    fun `invoke should return logs for given task ID`() = runTest {
         // Given
         val expectedLog = AuditLog(
             id = UUID.randomUUID(),
@@ -62,7 +62,7 @@ class ViewAuditLogsByTaskUseCaseTest {
     }
 
     @Test
-    fun `invoke should return multiple logs when multiple logs exist`() = runBlocking {
+    fun `invoke should return multiple logs when multiple logs exist`() = runTest {
         // Given
         val log1 = AuditLog(
             id = UUID.randomUUID(),
