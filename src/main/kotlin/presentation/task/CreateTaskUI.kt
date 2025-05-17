@@ -1,6 +1,7 @@
 package presentation.task
 
 import data.mongodb_data.mappers.toUUID
+import domain.models.SubTask
 import domain.models.Task
 import domain.usecases.task.AddTaskUseCase
 import domain.usecases.task_state.GetTaskStatesByProjectIdUseCase
@@ -46,7 +47,7 @@ class CreateTaskUI(
             description = taskDescription,
             projectId = projectId,
             stateId = stateId,
-           // subTasks =
+            subTasks = listOf<SubTask>()
         )
 
         runCatching { addTaskUseCase(task) }
