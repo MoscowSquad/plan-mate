@@ -45,7 +45,8 @@ class CreateTaskUI(
             title = taskName,
             description = taskDescription,
             projectId = projectId,
-            stateId = stateId
+            stateId = stateId,
+            subTasks =
         )
 
         runCatching { addTaskUseCase(task) }
