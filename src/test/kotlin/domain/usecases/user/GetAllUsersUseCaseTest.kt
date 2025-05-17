@@ -4,10 +4,11 @@ import domain.models.User
 import domain.models.User.UserRole
 import domain.repositories.UserRepository
 import domain.util.UnauthorizedAccessException
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
-import org.junit.jupiter.api.Assertions.assertTrue
+import kotlinx.coroutines.runBlocking
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -27,32 +28,34 @@ class GetAllUsersUseCaseTest {
 
     @BeforeEach
     fun setup() {
-        userRepository = mockk(relaxed = true)
+        userRepository = mockk()
         getAllUsersUseCase = GetAllUsersUseCase(userRepository)
     }
 
     @Test
-    fun `should throw UnauthorizedAccessException for mates`() {
+    fun `should throw UnauthorizedAccessException when mate tries to get all users`() = runBlocking {
         // Given
-        every { userRepository.addUser(any(), any()) } returns true
+        coEvery { userRepository.getAllUsers() } returns listOf(user)
 
         // When & Then
         assertThrows<UnauthorizedAccessException> {
-            getAllUsersUseCase(mateRole)
+            runBlocking { getAllUsersUseCase(mateRole) }
         }
+
+        coVerify(exactly = 0) { userRepository.getAllUsers() }
     }
 
     @Test
-    fun `should return all users for admins`() {
+    fun `should return all users when admin requests them`() = runBlocking {
         // Given
-        every { userRepository.addUser(any(), any()) } returns true
-        every { userRepository.getAllUsers() } returns listOf(user)
+        val expectedUsers = listOf(user)
+        coEvery { userRepository.getAllUsers() } returns expectedUsers
 
         // When
         val result = getAllUsersUseCase(adminRole)
 
         // Then
-        assertTrue(result.isNotEmpty())
-        verify(exactly = 1) { userRepository.getAllUsers() }
+        assertEquals(expectedUsers, result)
+        coVerify(exactly = 1) { userRepository.getAllUsers() }
     }
 }
