@@ -4,7 +4,7 @@ import domain.repositories.TasksRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.*
@@ -22,7 +22,7 @@ class DeleteTaskUseCaseTest {
     }
 
     @Test
-    fun `should return true when task deleted successfully`() = runBlocking {
+    fun `should return true when task deleted successfully`() = runTest {
         // Given
         val id = UUID.fromString("00000000-0000-0000-0000-000000000001")
         coEvery { tasksRepository.deleteTask(id) } returns true
@@ -36,7 +36,7 @@ class DeleteTaskUseCaseTest {
     }
 
     @Test
-    fun `should return false when task is not deleted successfully`() = runBlocking {
+    fun `should return false when task is not deleted successfully`() = runTest {
         // Given
         val id = UUID.fromString("00000000-0000-0000-0000-000000000001")
         coEvery { tasksRepository.deleteTask(id) } returns false
@@ -50,7 +50,7 @@ class DeleteTaskUseCaseTest {
     }
 
     @Test
-    fun `should pass correct task ID to repository`() = runBlocking {
+    fun `should pass correct task ID to repository`() = runTest {
         // Given
         val id = UUID.randomUUID()
         coEvery { tasksRepository.deleteTask(any()) } returns true

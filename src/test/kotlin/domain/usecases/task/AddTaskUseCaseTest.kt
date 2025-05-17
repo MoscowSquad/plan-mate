@@ -5,14 +5,14 @@ package domain.usecases.task
     import io.mockk.coEvery
     import io.mockk.coVerify
     import io.mockk.mockk
-    import kotlinx.coroutines.runBlocking
+    import kotlinx.coroutines.test.runTest
     import org.junit.jupiter.api.BeforeEach
     import org.junit.jupiter.api.Test
     import java.util.*
     import kotlin.test.assertFalse
     import kotlin.test.assertTrue
 
-    class AddTaskUseCaseTest {
+class AddTaskUseCaseTest {
         private lateinit var addTaskUseCase: AddTaskUseCase
         private lateinit var tasksRepository: TasksRepository
 
@@ -23,7 +23,7 @@ package domain.usecases.task
         }
 
         @Test
-        fun `should return true when add task without any issue`() = runBlocking {
+        fun `should return true when add task without any issue`() = runTest {
             // Given
             val task = Task(
                 id = UUID.randomUUID(),
@@ -43,7 +43,7 @@ package domain.usecases.task
         }
 
         @Test
-        fun `should return false when repository fails to add task`() = runBlocking {
+        fun `should return false when repository fails to add task`() = runTest {
             // Given
             val task = Task(
                 id = UUID.randomUUID(),
@@ -63,7 +63,7 @@ package domain.usecases.task
         }
 
         @Test
-        fun `should pass correct Task object to repository`() = runBlocking {
+        fun `should pass correct Task object to repository`() = runTest {
             // Given
             val taskId = UUID.randomUUID()
             val projectId = UUID.randomUUID()

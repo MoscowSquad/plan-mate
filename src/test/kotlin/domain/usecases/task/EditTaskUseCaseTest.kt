@@ -5,7 +5,7 @@ import domain.repositories.TasksRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.*
@@ -24,7 +24,7 @@ class EditTaskUseCaseTest {
     }
 
     @Test
-    fun `should return true when task edited successfully`() = runBlocking {
+    fun `should return true when task edited successfully`() = runTest {
         // Given
         val task = Task(
             id = UUID.randomUUID(),
@@ -45,7 +45,7 @@ class EditTaskUseCaseTest {
     }
 
     @Test
-    fun `should return false when task is not edited successfully`() = runBlocking {
+    fun `should return false when task is not edited successfully`() = runTest {
         // Given
         val task = Task(
             id = UUID.randomUUID(),

@@ -5,7 +5,7 @@ import domain.repositories.TasksRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -22,7 +22,7 @@ class GetTaskByIdUseCaseTest {
     }
 
     @Test
-    fun `should return task model when found task successfully`() = runBlocking {
+    fun `should return task model when found task successfully`() = runTest {
         // Given
         val id = UUID.fromString("00000000-0000-0000-0000-000000000001")
 
