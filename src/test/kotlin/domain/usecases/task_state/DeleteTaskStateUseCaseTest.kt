@@ -8,7 +8,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.coVerifyOrder
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -27,7 +27,7 @@ class DeleteTaskStateUseCaseTest {
     }
 
     @Test
-    fun `should return true when state is successfully deleted`() = runBlocking {
+    fun `should return true when state is successfully deleted`() = runTest {
         // Given
         val projectId = UUID.fromString("00000000-0000-0000-0000-000000000001")
         val stateId = UUID.fromString("00000000-0000-0000-0000-000000000002")
@@ -49,14 +49,14 @@ class DeleteTaskStateUseCaseTest {
     }
 
     @Test
-    fun `should throw NotAdminException when user is not admin`() = runBlocking {
+    fun `should throw NotAdminException when user is not admin`() = runTest {
         // Given
         val projectId = UUID.fromString("00000000-0000-0000-0000-000000000001")
         val stateId = UUID.fromString("00000000-0000-0000-0000-000000000002")
 
         // When & Then
         assertThrows<NotAdminException> {
-            runBlocking { deleteStateUseCase(stateId, projectId, false) }
+            runTest { deleteStateUseCase(stateId, projectId, false) }
         }
 
         coVerify(exactly = 0) { stateRepository.getTaskStateByProjectId(any()) }
@@ -64,7 +64,7 @@ class DeleteTaskStateUseCaseTest {
     }
 
     @Test
-    fun `should throw NoStateExistException when state not found`() = runBlocking {
+    fun `should throw NoStateExistException when state not found`() = runTest {
         // Given
         val projectId = UUID.fromString("00000000-0000-0000-0000-000000000001")
         val stateId = UUID.fromString("00000000-0000-0000-0000-000000000002")
@@ -80,7 +80,7 @@ class DeleteTaskStateUseCaseTest {
     }
 
     @Test
-    fun `should propagate repository exceptions`() = runBlocking {
+    fun `should propagate repository exceptions`() = runTest {
         // Given
         val projectId = UUID.fromString("00000000-0000-0000-0000-000000000001")
         val stateId = UUID.fromString("00000000-0000-0000-0000-000000000002")
@@ -97,7 +97,7 @@ class DeleteTaskStateUseCaseTest {
     }
 
     @Test
-    fun `should throw IllegalStateException when deletion fails`() = runBlocking {
+    fun `should throw IllegalStateException when deletion fails`() = runTest {
         // Given
         val projectId = UUID.fromString("00000000-0000-0000-0000-000000000001")
         val stateId = UUID.fromString("00000000-0000-0000-0000-000000000002")

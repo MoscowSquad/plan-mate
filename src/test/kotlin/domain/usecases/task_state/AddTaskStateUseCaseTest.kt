@@ -7,7 +7,7 @@ import domain.util.NotAdminException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -25,7 +25,7 @@ class AddTaskStateUseCaseTest {
     }
 
     @Test
-    fun `should return true when state is successfully added`() = runBlocking {
+    fun `should return true when state is successfully added`() = runTest {
         // Given
         val validState = TaskState(
             id = UUID.randomUUID(),
@@ -44,7 +44,7 @@ class AddTaskStateUseCaseTest {
     }
 
     @Test
-    fun `should throw IllegalStateTitle when title is blank`() = runBlocking {
+    fun `should throw IllegalStateTitle when title is blank`() = runTest {
         // Given
         val invalidState = TaskState(
             id = UUID.randomUUID(),
@@ -54,13 +54,13 @@ class AddTaskStateUseCaseTest {
 
         // When & Then
         assertThrows<IllegalStateTitle> {
-            runBlocking { addStateUseCase(invalidState, true) }
+            runTest { addStateUseCase(invalidState, true) }
         }
         coVerify(exactly = 0) { stateRepository.addTaskState(any(), any()) }
     }
 
     @Test
-    fun `should throw IllegalStateTitle when title is too long`() = runBlocking {
+    fun `should throw IllegalStateTitle when title is too long`() = runTest {
         // Given
         val longTitle = "a".repeat(101)
         val invalidState = TaskState(
@@ -71,13 +71,13 @@ class AddTaskStateUseCaseTest {
 
         // When & Then
         assertThrows<IllegalStateTitle> {
-            runBlocking { addStateUseCase(invalidState, true) }
+            runTest { addStateUseCase(invalidState, true) }
         }
         coVerify(exactly = 0) { stateRepository.addTaskState(any(), any()) }
     }
 
     @Test
-    fun `should throw NotAdminException when user is not admin`() = runBlocking {
+    fun `should throw NotAdminException when user is not admin`() = runTest {
         // Given
         val validState = TaskState(
             id = UUID.randomUUID(),
@@ -87,13 +87,13 @@ class AddTaskStateUseCaseTest {
 
         // When & Then
         assertThrows<NotAdminException> {
-            runBlocking { addStateUseCase(validState, false) }
+            runTest { addStateUseCase(validState, false) }
         }
         coVerify(exactly = 0) { stateRepository.addTaskState(any(), any()) }
     }
 
     @Test
-    fun `should throw when repository fails to add`() = runBlocking {
+    fun `should throw when repository fails to add`() = runTest {
         // Given
         val validState = TaskState(
             id = UUID.randomUUID(),
@@ -105,14 +105,14 @@ class AddTaskStateUseCaseTest {
 
         // When & Then
         assertThrows<IllegalStateException> {
-            runBlocking { addStateUseCase(validState, true) }
+            runTest { addStateUseCase(validState, true) }
         }
 
         coVerify(exactly = 1) { stateRepository.addTaskState(validState.projectId, validState) }
     }
 
     @Test
-    fun `should accept titles at boundary conditions`() = runBlocking {
+    fun `should accept titles at boundary conditions`() = runTest {
         // Given
         val minLengthState = TaskState(
             id = UUID.randomUUID(),

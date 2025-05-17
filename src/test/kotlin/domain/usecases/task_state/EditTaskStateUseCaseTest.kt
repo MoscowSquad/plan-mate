@@ -9,7 +9,7 @@ import domain.util.NotAdminException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -26,7 +26,7 @@ class EditTaskStateUseCaseTest {
     }
 
     @Test
-    fun `when valid title should return updated TaskState`() = runBlocking {
+    fun `when valid title should return updated TaskState`() = runTest {
         // Given
         val updatedState = TaskState(
             id = UUID.fromString("00000000-0000-0000-0000-000000000002"),
@@ -45,7 +45,7 @@ class EditTaskStateUseCaseTest {
     }
 
     @Test
-    fun `when title is blank should throw IllegalStateTitle`() = runBlocking {
+    fun `when title is blank should throw IllegalStateTitle`() = runTest {
         // Given
         val invalidState = TaskState(
             id = UUID.randomUUID(),
@@ -55,13 +55,13 @@ class EditTaskStateUseCaseTest {
 
         // When & Then
         assertThrows<IllegalStateTitle> {
-            runBlocking { editStateUseCase(invalidState, true) }
+            runTest { editStateUseCase(invalidState, true) }
         }
         coVerify(exactly = 0) { stateRepository.updateTaskState(any()) }
     }
 
     @Test
-    fun `when state not found should throw NoStateExistException`(): Unit = runBlocking {
+    fun `when state not found should throw NoStateExistException`(): Unit = runTest {
         // Given
         val state = TaskState(
             id = UUID.randomUUID(),
@@ -73,12 +73,12 @@ class EditTaskStateUseCaseTest {
 
         // When & Then
         assertThrows<NoStateExistException> {
-            runBlocking { editStateUseCase(state, true) }
+            runTest { editStateUseCase(state, true) }
         }
     }
 
     @Test
-    fun `when user is not admin should throw NotAdminException`() = runBlocking {
+    fun `when user is not admin should throw NotAdminException`() = runTest {
         // Given
         val state = TaskState(
             id = UUID.randomUUID(),
@@ -88,7 +88,7 @@ class EditTaskStateUseCaseTest {
 
         // When & Then
         assertThrows<NotAdminException> {
-            runBlocking { editStateUseCase(state, false) }
+            runTest { editStateUseCase(state, false) }
         }
         coVerify(exactly = 0) { stateRepository.updateTaskState(any()) }
     }

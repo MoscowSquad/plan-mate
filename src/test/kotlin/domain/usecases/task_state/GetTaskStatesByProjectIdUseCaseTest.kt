@@ -7,7 +7,7 @@ import domain.util.NoStateExistException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -25,21 +25,21 @@ class GetTaskStatesByProjectIdUseCaseTest {
     }
 
     @Test
-    fun `should throw NoStateExistException when project has no states`() = runBlocking {
+    fun `should throw NoStateExistException when project has no states`() = runTest {
         // Given
         val projectId = UUID.randomUUID()
         coEvery { stateRepository.getTaskStateByProjectId(projectId) } throws NoStateExistException()
 
         // When/Then
         assertThrows<NoStateExistException> {
-            runBlocking { useCase(projectId) }
+            runTest { useCase(projectId) }
         }
 
         coVerify(exactly = 1) { stateRepository.getTaskStateByProjectId(projectId) }
     }
 
     @Test
-    fun `should return states when they exist`() = runBlocking {
+    fun `should return states when they exist`() = runTest {
         // Given
         val projectId = UUID.fromString("00000000-0000-0000-0000-000000000002")
         val expectedStates = listOf(
