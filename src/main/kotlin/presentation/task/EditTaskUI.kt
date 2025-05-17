@@ -32,7 +32,8 @@ class EditTaskUI(
             title = taskName,
             description = taskDescription,
             projectId = projectId,
-            stateId = stateId
+            stateId = stateId,
+            subTasks = emptyList()
         )
 
         runCatching { editTaskUseCase(task) }

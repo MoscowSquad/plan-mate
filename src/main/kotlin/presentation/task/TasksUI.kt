@@ -51,8 +51,8 @@ class TasksUI(
             "2" -> editTaskUI(projectId)
             "3" -> deleteTaskUI()
             "4" -> subTaskUI()
-            "5" -> CalculatSubTaskPercentageUI()
-            "6" -> write("Navigating back...")
+            //"5" -> CalculatSubTaskPercentageUI()
+            "5" -> write("Navigating back...")
             else -> {
                 write("❌ Invalid option.")
                 invoke()

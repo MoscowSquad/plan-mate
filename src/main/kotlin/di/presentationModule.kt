@@ -14,6 +14,7 @@ import presentation.io.ConsoleIO
 import presentation.io.ConsoleIOImpl
 import presentation.project.*
 import presentation.state.*
+import presentation.sub_task.*
 import presentation.task.*
 import presentation.user.*
 import java.util.*
@@ -52,6 +53,53 @@ val presentationModule = module {
     factoryOf(::GetAllStatesUI)
     factoryOf(::EditStateUI)
     factoryOf(::StateUI)
+
+    //Subtask UI
+    factory {
+        CreateSubTaskUI(
+            createSubTaskUseCase = get(),
+            consoleIO = get()
+        )
+    }
+    factory {
+        GetSubTasksByTaskIdUI(
+            getSubTasksByTaskIdUseCase = get(),
+            consoleIO = get()
+        )
+    }
+    factory{
+        DeleteSubTaskUI(
+            deleteSubTaskUseCase = get(),
+            consoleIO = get()
+        )
+    }
+    factory {
+        EditSubTaskUI(
+            updateSubTaskUseCase = get(),
+            consoleIO = get()
+        )
+    }
+
+    factory{
+        SubTaskUI(
+            getProjectByIdUseCase = get(),
+            createSubTaskUI = get(),
+            deleteSubTaskUI = get(),
+            getAllTasksUI = get(),
+            editTaskUI = get(),
+            getAllProjectsUI = get(),
+            consoleIO = get(),
+            getSubTasksByTaskIdUI = get()
+        )
+    }
+
+    factory{
+        CalculatSubTaskPercentageUI(
+            getSubTaskPercentageUseCase = get(),
+            consoleIO = get()
+        )
+    }
+
 
     factory {
         CreateUserUI(

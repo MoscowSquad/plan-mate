@@ -18,6 +18,7 @@ class TaskCsvParser : CsvParser<TaskDto> {
                 description = it[DESCRIPTION],
                 projectId = it[PROJECT_ID],
                 stateId = it[STATE_ID],
+                subTasks = emptyList() // Assuming subTasks are not included in the CSV
             )
         }
     }

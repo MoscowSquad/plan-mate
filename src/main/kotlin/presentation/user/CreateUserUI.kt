@@ -46,14 +46,17 @@ class CreateUserUI(
                             name = "Implement Login Feature",
                             description = "Create user authentication system",
                             projectId = UUID.randomUUID().toString(),
-                            stateId = UUID.randomUUID().toString()
+                            stateId = UUID.randomUUID().toString(),
+                            subTasks = emptyList()
+
                         ),
                         TaskDto(
                             id = UUID.randomUUID().toString(),
                             name = "Design Dashboard UI",
                             description = "Create mockups for admin dashboard",
                             projectId = UUID.randomUUID().toString(),
-                            stateId = UUID.randomUUID().toString()
+                            stateId = UUID.randomUUID().toString(),
+                            subTasks = emptyList()
                         )
                     )
 
