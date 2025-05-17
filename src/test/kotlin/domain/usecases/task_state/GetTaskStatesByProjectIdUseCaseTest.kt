@@ -1,16 +1,17 @@
 package domain.usecases.task_state
 
+import com.google.common.truth.Truth.assertThat
 import domain.models.TaskState
 import domain.repositories.TaskStateRepository
 import domain.util.NoStateExistException
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.util.*
-import kotlin.test.assertTrue
 
 class GetTaskStatesByProjectIdUseCaseTest {
 
@@ -24,34 +25,34 @@ class GetTaskStatesByProjectIdUseCaseTest {
     }
 
     @Test
-    fun `should throw NoStateExistException when project has no states`() {
+    fun `should throw NoStateExistException when project has no states`() = runBlocking {
         // Given
         val projectId = UUID.randomUUID()
-        every { stateRepository.getTaskStateByProjectId(projectId) } throws NoStateExistException()
+        coEvery { stateRepository.getTaskStateByProjectId(projectId) } throws NoStateExistException()
 
         // When/Then
         assertThrows<NoStateExistException> {
-            useCase(projectId)
+            runBlocking { useCase(projectId) }
         }
 
-        verify(exactly = 1) { stateRepository.getTaskStateByProjectId(projectId) }
+        coVerify(exactly = 1) { stateRepository.getTaskStateByProjectId(projectId) }
     }
 
     @Test
-    fun `should return states with correct project ID`() {
+    fun `should return states when they exist`() = runBlocking {
         // Given
         val projectId = UUID.fromString("00000000-0000-0000-0000-000000000002")
-        val testStates = listOf(
+        val expectedStates = listOf(
             TaskState(UUID.randomUUID(), "To Do", projectId),
             TaskState(UUID.randomUUID(), "In Progress", projectId)
         )
-        every { stateRepository.getTaskStateByProjectId(projectId) } returns testStates
+        coEvery { stateRepository.getTaskStateByProjectId(projectId) } returns expectedStates
 
         // When
         val result = useCase(projectId)
 
-        // Then (Single assertion)
-        assertTrue(result.all { it.projectId == projectId })  // Only checks project ID match
+        // Then
+        assertThat(result).isEqualTo(expectedStates)
+        coVerify(exactly = 1) { stateRepository.getTaskStateByProjectId(projectId) }
     }
-
 }
