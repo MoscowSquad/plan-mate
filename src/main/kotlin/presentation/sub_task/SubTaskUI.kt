@@ -14,7 +14,7 @@ private val getAllTasksUI: GetAllTasksUI,
 private val editTaskUI: EditTaskUI,
 private val getAllProjectsUI: GetAllProjectsUI,
 private val consoleIO: ConsoleIO,
-    private val getAllSubTaskById: GetAllSubTaskById
+    private val getSubTasksByTaskIdUI: GetSubTasksByTaskIdUI
 ) : ConsoleIO by consoleIO {
 
 
@@ -47,9 +47,9 @@ private val consoleIO: ConsoleIO,
 
         when (read().trim()) {
             "1" -> createSubTaskUI()
-            "2" -> editTaskUI
-            "3" -> deleteSubTaskUI
-            "4" ->getAllSubTaskById
+            "2" -> editTaskUI(projectId)
+            "3" -> deleteSubTaskUI()
+            "4" ->getSubTasksByTaskIdUI()
             "5"-> write("Navigating back...")
 
             else -> {
