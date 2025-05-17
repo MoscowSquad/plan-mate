@@ -7,7 +7,7 @@ import domain.util.NotAdminException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -25,7 +25,7 @@ class DeleteProjectUseCaseTest {
     }
 
     @Test
-    fun `should delete project successfully when user is admin and project exists`() = runBlocking {
+    fun `should delete project successfully when user is admin and project exists`() = runTest {
         // Given
         val projectId = UUID.randomUUID()
         val isAdmin = true
@@ -40,7 +40,7 @@ class DeleteProjectUseCaseTest {
     }
 
     @Test
-    fun `should throw NoExistProjectException when project does not exist`(): Unit = runBlocking {
+    fun `should throw NoExistProjectException when project does not exist`(): Unit = runTest {
         // Given
         val projectId = UUID.randomUUID()
         val isAdmin = true
@@ -54,7 +54,7 @@ class DeleteProjectUseCaseTest {
     }
 
     @Test
-    fun `should throw NotAdminException when user is not admin`(): Unit = runBlocking {
+    fun `should throw NotAdminException when user is not admin`(): Unit = runTest {
         // Given
         val projectId = UUID.randomUUID()
         val isAdmin = false
@@ -67,7 +67,7 @@ class DeleteProjectUseCaseTest {
     }
 
     @Test
-    fun `should include project ID in NoExistProjectException message`(): Unit = runBlocking {
+    fun `should include project ID in NoExistProjectException message`(): Unit = runTest {
         // Given
         val projectId = UUID.randomUUID()
         val isAdmin = true
@@ -81,7 +81,7 @@ class DeleteProjectUseCaseTest {
     }
 
     @Test
-    fun `should not call repository when user is not admin`(): Unit = runBlocking {
+    fun `should not call repository when user is not admin`(): Unit = runTest {
         // Given
         val projectId = UUID.randomUUID()
         val isAdmin = false
@@ -94,7 +94,7 @@ class DeleteProjectUseCaseTest {
     }
 
     @Test
-    fun `should return true when project is successfully deleted`() = runBlocking {
+    fun `should return true when project is successfully deleted`() = runTest {
         // Given
         val projectId = UUID.randomUUID()
         val isAdmin = true

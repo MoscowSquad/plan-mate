@@ -9,7 +9,7 @@ import domain.util.ProjectCreationFailedException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -26,7 +26,7 @@ class CreateProjectUseCaseTest {
     }
 
     @Test
-    fun `should create project when user is admin`() = runBlocking {
+    fun `should create project when user is admin`() = runTest {
         // Given
         val projectName = "Test Project"
         val isAdmin = true
@@ -45,7 +45,7 @@ class CreateProjectUseCaseTest {
     }
 
     @Test
-    fun `should throw NotAdminException when user is not admin`(): Unit = runBlocking {
+    fun `should throw NotAdminException when user is not admin`(): Unit = runTest {
         // Given
         val projectName = "Test Project"
         val isAdmin = false
@@ -57,7 +57,7 @@ class CreateProjectUseCaseTest {
     }
 
     @Test
-    fun `should throw InvalidProjectNameException when project name is blank`(): Unit = runBlocking {
+    fun `should throw InvalidProjectNameException when project name is blank`(): Unit = runTest {
         // Given
         val projectName = "  "
         val isAdmin = true
@@ -69,7 +69,7 @@ class CreateProjectUseCaseTest {
     }
 
     @Test
-    fun `should throw InvalidProjectNameException when project name is empty`(): Unit = runBlocking {
+    fun `should throw InvalidProjectNameException when project name is empty`(): Unit = runTest {
         // Given
         val projectName = ""
         val isAdmin = true
@@ -81,7 +81,7 @@ class CreateProjectUseCaseTest {
     }
 
     @Test
-    fun `should throw ProjectCreationFailedException when repository fails to add project`(): Unit = runBlocking {
+    fun `should throw ProjectCreationFailedException when repository fails to add project`(): Unit = runTest {
         // Given
         val projectName = "Test Project"
         val isAdmin = true
@@ -94,7 +94,7 @@ class CreateProjectUseCaseTest {
     }
 
     @Test
-    fun `should create project with valid UUID`() = runBlocking {
+    fun `should create project with valid UUID`() = runTest {
         // Given
         val projectName = "Test Project"
         val isAdmin = true
@@ -112,7 +112,7 @@ class CreateProjectUseCaseTest {
     }
 
     @Test
-    fun `should pass project with correct name to repository`() = runBlocking {
+    fun `should pass project with correct name to repository`() = runTest {
         // Given
         val projectName = "Specific Project Name"
         val isAdmin = true
@@ -130,7 +130,7 @@ class CreateProjectUseCaseTest {
     }
 
     @Test
-    fun `should return generated UUID when project is created successfully`() = runBlocking {
+    fun `should return generated UUID when project is created successfully`() = runTest {
         // Given
         val projectName = "Test Project"
         val isAdmin = true

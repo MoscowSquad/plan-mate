@@ -6,7 +6,7 @@ import domain.repositories.ProjectsRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -23,7 +23,7 @@ class GetProjectByIdUseCaseTest {
     }
 
     @Test
-    fun `should return project when valid id is provided`() = runBlocking {
+    fun `should return project when valid id is provided`() = runTest {
         // Given
         val projectId = UUID.randomUUID()
         val expectedProject = Project(id = projectId, name = "Test Project")
@@ -39,7 +39,7 @@ class GetProjectByIdUseCaseTest {
     }
 
     @Test
-    fun `should throw exception when project does not exist`() = runBlocking {
+    fun `should throw exception when project does not exist`() = runTest {
         // Given
         val projectId = UUID.randomUUID()
 
@@ -54,7 +54,7 @@ class GetProjectByIdUseCaseTest {
     }
 
     @Test
-    fun `should call repository with correct id`() = runBlocking {
+    fun `should call repository with correct id`() = runTest {
         // Given
         val projectId = UUID.randomUUID()
         val project = Project(id = projectId, name = "Test Project")
@@ -69,7 +69,7 @@ class GetProjectByIdUseCaseTest {
     }
 
     @Test
-    fun `should handle random UUID correctly`() = runBlocking {
+    fun `should handle random UUID correctly`() = runTest {
         // Given
         val projectId1 = UUID.randomUUID()
         val projectId2 = UUID.randomUUID()

@@ -8,7 +8,7 @@ import domain.util.NotAdminException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -30,7 +30,7 @@ class UpdateProjectUseCaseTest {
     }
 
     @Test
-    fun `should update project when valid data and user is admin`() = runBlocking {
+    fun `should update project when valid data and user is admin`() = runTest {
         // Given
         val projectName = "Updated Project"
         coEvery { projectsRepository.updateProject(any()) } returns true
@@ -48,7 +48,7 @@ class UpdateProjectUseCaseTest {
     }
 
     @Test
-    fun `should throw NotAdminException when user is not admin`() = runBlocking {
+    fun `should throw NotAdminException when user is not admin`() = runTest {
         // Given
         val projectName = "Updated Project"
 
@@ -62,7 +62,7 @@ class UpdateProjectUseCaseTest {
     @ParameterizedTest
     @EmptySource
     @ValueSource(strings = ["  ", "\t", "\n"])
-    fun `should throw InvalidProjectNameException when project name is blank`(name: String) = runBlocking {
+    fun `should throw InvalidProjectNameException when project name is blank`(name: String) = runTest {
         // When & Then
         assertThrows<InvalidProjectNameException> {
             updateProjectUseCase(projectId, name, isAdmin = true)
@@ -71,7 +71,7 @@ class UpdateProjectUseCaseTest {
     }
 
     @Test
-    fun `should throw NoExistProjectException when project does not exist`(): Unit = runBlocking {
+    fun `should throw NoExistProjectException when project does not exist`(): Unit = runTest {
         // Given
         val projectName = "Non-existent Project"
         coEvery { projectsRepository.updateProject(any()) } returns false
@@ -83,7 +83,7 @@ class UpdateProjectUseCaseTest {
     }
 
     @Test
-    fun `should update project with empty user list when valid data and admin`() = runBlocking {
+    fun `should update project with empty user list when valid data and admin`() = runTest {
         // Given
         val projectName = "Updated Project"
         coEvery { projectsRepository.updateProject(any()) } returns true
@@ -101,7 +101,7 @@ class UpdateProjectUseCaseTest {
     }
 
     @Test
-    fun `should pass correct Project object to repository`() = runBlocking {
+    fun `should pass correct Project object to repository`() = runTest {
         // Given
         val projectName = "Test Project"
         coEvery { projectsRepository.updateProject(any()) } returns true

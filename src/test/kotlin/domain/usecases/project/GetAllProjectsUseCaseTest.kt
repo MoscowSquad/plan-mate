@@ -1,18 +1,13 @@
 package domain.usecases.project
 
 import com.google.common.truth.Truth.assertThat
-import data.session_manager.SessionManager
 import data.session_manager.LoggedInUser
+import data.session_manager.SessionManager
 import domain.models.Project
 import domain.repositories.ProjectsRepository
 import domain.util.NoUserLoginException
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.mockkObject
-import io.mockk.unmockkObject
-import kotlinx.coroutines.runBlocking
+import io.mockk.*
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -40,7 +35,7 @@ class GetAllProjectsUseCaseTest {
     }
 
     @Test
-    fun `should return all projects from repository when user is logged in`() = runBlocking {
+    fun `should return all projects from repository when user is logged in`() = runTest {
         // Given
         val projects = listOf(
             Project(UUID.randomUUID(), "Project 1"),
@@ -59,7 +54,7 @@ class GetAllProjectsUseCaseTest {
     }
 
     @Test
-    fun `should return empty list when repository has no projects`() = runBlocking {
+    fun `should return empty list when repository has no projects`() = runTest {
         // Given
         every { SessionManager.currentUser } returns mockUser
         coEvery { projectsRepository.getAllProjectsByUser(userId) } returns emptyList()
@@ -73,7 +68,7 @@ class GetAllProjectsUseCaseTest {
     }
 
     @Test
-    fun `should throw NoUserLoginException when no user is logged in`() = runBlocking {
+    fun `should throw NoUserLoginException when no user is logged in`() = runTest {
         // Given
         every { SessionManager.currentUser } returns null
 
