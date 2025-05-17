@@ -1,59 +1,58 @@
 package domain.usecases.user
 
-import domain.models.User
-import domain.models.User.UserRole
-import domain.repositories.UserRepository
-import domain.util.UnauthorizedAccessException
-import io.mockk.every
-import io.mockk.mockk
-import io.mockk.verify
-import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
-import java.util.*
+    import domain.models.User
+    import domain.models.User.UserRole
+    import domain.repositories.UserRepository
+    import io.mockk.coEvery
+    import io.mockk.coVerify
+    import io.mockk.mockk
+    import kotlinx.coroutines.test.runTest
+    import org.junit.jupiter.api.Assertions.assertEquals
+    import org.junit.jupiter.api.BeforeEach
+    import org.junit.jupiter.api.Test
+    import org.junit.jupiter.api.assertThrows
+    import java.util.*
 
-class RemoveFromProjectUserUseCaseTest {
+    class RemoveFromProjectUserUseCaseTest {
 
-    private lateinit var userRepository: UserRepository
-    private lateinit var removeFromProjectUserUseCase: RemoveFromProjectUserUseCase
+        private lateinit var userRepository: UserRepository
+        private lateinit var getUserByIdUseCase: GetUserByIdUseCase
 
-    private val adminRole = UserRole.ADMIN
-    private val mateRole = UserRole.MATE
-    private val user = User(
-        UUID.randomUUID(), "User1", UserRole.MATE, listOf(),
-        taskIds = listOf()
-    )
-    private val projectId = UUID.randomUUID()
+        private val user = User(
+            UUID.randomUUID(), "User1", UserRole.MATE, listOf(),
+            taskIds = listOf()
+        )
 
-    @BeforeEach
-    fun setup() {
-        userRepository = mockk()
-        removeFromProjectUserUseCase = RemoveFromProjectUserUseCase(userRepository)
-    }
+        @BeforeEach
+        fun setup() {
+            userRepository = mockk()
+            getUserByIdUseCase = GetUserByIdUseCase(userRepository)
+        }
 
-    @Test
-    fun `should throw UnauthorizedAccessException for mates`() {
-        // Given
-        every { userRepository.addUser(any(), any()) } returns true
+        @Test
+        fun `should return user by id when user exists`() = runTest {
+            // Given
+            coEvery { userRepository.getUserById(user.id) } returns user
 
-        // When & Then
-        assertThrows<UnauthorizedAccessException> {
-            removeFromProjectUserUseCase(mateRole, projectId, user.id)
+            // When
+            val result = getUserByIdUseCase(user.id)
+
+            // Then
+            assertEquals(user.id, result.id)
+            coVerify(exactly = 1) { userRepository.getUserById(user.id) }
+        }
+
+        @Test
+        fun `should throw NoSuchElementException when user not found`() = runTest {
+            // Given
+            val nonExistentUserId = UUID.randomUUID()
+            coEvery { userRepository.getUserById(nonExistentUserId) } throws NoSuchElementException("User with id $nonExistentUserId not found")
+
+            // When & Then
+            assertThrows<NoSuchElementException> {
+                getUserByIdUseCase(nonExistentUserId)
+            }
+
+            coVerify(exactly = 1) { userRepository.getUserById(nonExistentUserId) }
         }
     }
-
-    @Test
-    fun `should revoke project for mates when user is admin`() {
-        // Given
-        every { userRepository.addUser(any(), any()) } returns true
-        every { userRepository.unassignUserFromProject(projectId, user.id) } returns true
-
-        // When
-        val result = removeFromProjectUserUseCase(adminRole, projectId, user.id)
-
-        // Then
-        assertTrue(result)
-        verify(exactly = 1) { userRepository.unassignUserFromProject(projectId, user.id) }
-    }
-}

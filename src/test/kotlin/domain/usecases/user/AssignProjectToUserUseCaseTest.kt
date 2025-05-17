@@ -4,9 +4,10 @@ import domain.models.User
 import domain.models.User.UserRole
 import domain.repositories.UserRepository
 import domain.util.UnauthorizedAccessException
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -33,28 +34,26 @@ class AssignProjectToUserUseCaseTest {
     }
 
     @Test
-    fun `should throw UnauthorizedAccessException for mates try to assign project`() {
+    fun `should throw UnauthorizedAccessException for mates try to assign project`(): Unit = runTest {
         // Given
-        every { userRepository.addUser(any(), any()) } returns true
 
         // When & Then
         assertThrows<UnauthorizedAccessException> {
-            assignProjectToUserUseCase(mateRole, projectId, user.id)
+             assignProjectToUserUseCase(mateRole, projectId, user.id)
         }
     }
 
 
     @Test
-    fun `should assign project for users when admins try to assign`() {
+    fun `should assign project for users when admins try to assign`() = runTest {
         // Given
-        every { userRepository.addUser(any(), any()) } returns true
-        every { userRepository.assignUserToProject(projectId, user.id) } returns true
+        coEvery { userRepository.assignUserToProject(projectId, user.id) } returns true
 
         // When
         val result = assignProjectToUserUseCase(adminRole, projectId, user.id)
 
         // Then
         assertTrue(result)
-        verify(exactly = 1) { assignProjectToUserUseCase(adminRole, projectId, user.id) }
+        coVerify(exactly = 1) { userRepository.assignUserToProject(projectId, user.id) }
     }
 }

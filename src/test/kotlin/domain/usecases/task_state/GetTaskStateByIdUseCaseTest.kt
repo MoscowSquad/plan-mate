@@ -1,46 +1,58 @@
 package domain.usecases.task_state
 
+import com.google.common.truth.Truth.assertThat
 import domain.models.TaskState
 import domain.repositories.TaskStateRepository
 import domain.util.NoStateExistException
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
-import org.junit.jupiter.api.Assertions.assertEquals
+import kotlinx.coroutines.test.runTest
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.util.*
 
 class GetTaskStateByIdUseCaseTest {
-    private val stateRepository = mockk<TaskStateRepository>()
-    private val useCase = GetTaskStateByIdUseCase(stateRepository)
+    private lateinit var stateRepository: TaskStateRepository
+    private lateinit var useCase: GetTaskStateByIdUseCase
 
-    @Test
-    fun `should throw NoStateExistException when state not found`() {
-        // Given
-        val stateId = UUID.fromString("00000000-0000-0000-0000-000000000001")
-        every { stateRepository.getTaskStateById(stateId) } throws NoStateExistException()
-
-        // When/Then
-        assertThrows<NoStateExistException> {
-            useCase(stateId)
-        }
-
-        verify(exactly = 1) { stateRepository.getTaskStateById(stateId) }
+    @BeforeEach
+    fun setup() {
+        stateRepository = mockk()
+        useCase = GetTaskStateByIdUseCase(stateRepository)
     }
 
     @Test
-    fun `should return state when exists`() {
+    fun `should throw NoStateExistException when state not found`() = runTest {
+        // Given
+        val stateId = UUID.fromString("00000000-0000-0000-0000-000000000001")
+        coEvery { stateRepository.getTaskStateById(stateId) } throws NoStateExistException()
+
+        // When/Then
+        assertThrows<NoStateExistException> {
+             useCase(stateId)
+        }
+
+        coVerify(exactly = 1) { stateRepository.getTaskStateById(stateId) }
+    }
+
+    @Test
+    fun `should return state when exists`() = runTest {
         // Given
         val stateId = UUID.fromString("00000000-0000-0000-0000-000000000002")
-        val expectedState = TaskState(stateId, "To Do", UUID.randomUUID())
-        every { stateRepository.getTaskStateById(stateId) } returns expectedState
+        val expectedState = TaskState(
+            id = stateId,
+            name = "To Do",
+            projectId = UUID.randomUUID()
+        )
+        coEvery { stateRepository.getTaskStateById(stateId) } returns expectedState
 
         // When
         val result = useCase(stateId)
 
         // Then
-        assertEquals(expectedState, result)
-        verify(exactly = 1) { stateRepository.getTaskStateById(stateId) }
+        assertThat(result).isEqualTo(expectedState)
+        coVerify(exactly = 1) { stateRepository.getTaskStateById(stateId) }
     }
 }
