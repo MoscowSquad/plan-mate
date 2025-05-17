@@ -8,7 +8,7 @@ package domain.usecases.auth
     import io.mockk.coEvery
     import io.mockk.coVerify
     import io.mockk.mockk
-    import kotlinx.coroutines.runBlocking
+    import kotlinx.coroutines.test.runTest
     import org.junit.jupiter.api.BeforeEach
     import org.junit.jupiter.api.Test
     import org.junit.jupiter.api.assertThrows
@@ -16,7 +16,7 @@ package domain.usecases.auth
     import kotlin.test.assertEquals
     import kotlin.test.assertNotNull
 
-    class LoginUseCaseTest {
+class LoginUseCaseTest {
 
         private lateinit var loginUseCase: LoginUseCase
         private lateinit var authRepository: AuthenticationRepository
@@ -47,7 +47,7 @@ package domain.usecases.auth
         }
 
         @Test
-        fun `invoke should return user for successful authentication`() = runBlocking {
+        fun `invoke should return user for successful authentication`() = runTest {
             // Given
 
             // When
@@ -60,7 +60,7 @@ package domain.usecases.auth
         }
 
         @Test
-        fun `invoke should throw UserNotFoundException for failed authentication`() = runBlocking {
+        fun `invoke should throw UserNotFoundException for failed authentication`() = runTest {
             // Given
 
             // When & Then
@@ -72,7 +72,7 @@ package domain.usecases.auth
         }
 
         @Test
-        fun `invoke should throw when username is blank`() = runBlocking {
+        fun `invoke should throw when username is blank`() = runTest {
             // When & Then
             assertThrows<IllegalArgumentException> {
                 loginUseCase("", "password123")
@@ -82,7 +82,7 @@ package domain.usecases.auth
         }
 
         @Test
-        fun `invoke should throw when password is blank`() = runBlocking {
+        fun `invoke should throw when password is blank`() = runTest {
             // When & Then
             assertThrows<IllegalArgumentException> {
                 loginUseCase("username", "")
@@ -92,7 +92,7 @@ package domain.usecases.auth
         }
 
         @Test
-        fun `invoke should throw when password is too short`() = runBlocking {
+        fun `invoke should throw when password is too short`() = runTest {
             // When & Then
             assertThrows<IllegalArgumentException> {
                 loginUseCase("username", "short")
@@ -102,7 +102,7 @@ package domain.usecases.auth
         }
 
         @Test
-        fun `invoke should ignore case for username comparison`() = runBlocking {
+        fun `invoke should ignore case for username comparison`() = runTest {
             // Given
 
             // When
@@ -115,7 +115,7 @@ package domain.usecases.auth
         }
 
         @Test
-        fun `invoke should throw when users file does not exist`() = runBlocking {
+        fun `invoke should throw when users file does not exist`() = runTest {
             // Given
             coEvery { authRepository.login(any(), any()) } throws IllegalStateException("users.csv not found")
 
@@ -128,7 +128,7 @@ package domain.usecases.auth
         }
 
         @Test
-        fun `invoke should throw UserNotFoundException when user does not exist`() = runBlocking {
+        fun `invoke should throw UserNotFoundException when user does not exist`() = runTest {
             // Given
 
             // When & Then
@@ -140,7 +140,7 @@ package domain.usecases.auth
         }
 
         @Test
-        fun `invoke should handle malformed CSV lines without enough columns`() = runBlocking {
+        fun `invoke should handle malformed CSV lines without enough columns`() = runTest {
             // Given
 
             // When & Then

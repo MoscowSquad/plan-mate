@@ -7,7 +7,7 @@ import domain.models.User
 import domain.models.User.UserRole
 import domain.repositories.AuthenticationRepository
 import domain.util.toMD5Hash
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.util.*
@@ -39,7 +39,7 @@ class RegisterUseCaseTest {
     private val registerUseCase = RegisterUseCase(fakeRepository)
 
     @Test
-    fun `should return non-null user when registration succeeds`(): Unit = runBlocking {
+    fun `should return non-null user when registration succeeds`(): Unit = runTest {
         // When
         val result = registerUseCase(
             name = "test user",
@@ -52,7 +52,7 @@ class RegisterUseCaseTest {
     }
 
     @Test
-    fun `should handle password hashing failure`(): Unit = runBlocking {
+    fun `should handle password hashing failure`(): Unit = runTest {
         // Given
         val failingAuthRepository = object : AuthenticationRepository {
             override suspend fun register(user: User, hashedPassword: String): User {
@@ -77,7 +77,7 @@ class RegisterUseCaseTest {
     }
 
     @Test
-    fun `should handle repository registration failure`(): Unit = runBlocking {
+    fun `should handle repository registration failure`(): Unit = runTest {
         // Given
         fakeRepository.shouldThrow = true
 
@@ -92,7 +92,7 @@ class RegisterUseCaseTest {
     }
 
     @Test
-    fun `should add user to repository when registration succeeds`() = runBlocking {
+    fun `should add user to repository when registration succeeds`() = runTest {
         // When
         registerUseCase(
             name = "test user",
@@ -105,7 +105,7 @@ class RegisterUseCaseTest {
     }
 
     @Test
-    fun `should store correct username when registration succeeds`() = runBlocking {
+    fun `should store correct username when registration succeeds`() = runTest {
         // When
         registerUseCase(
             name = "test user",
@@ -118,7 +118,7 @@ class RegisterUseCaseTest {
     }
 
     @Test
-    fun `should store hashed password when registration succeeds`() = runBlocking {
+    fun `should store hashed password when registration succeeds`() = runTest {
         // Given
         val password = "Valid@Password123"
 
@@ -134,7 +134,7 @@ class RegisterUseCaseTest {
     }
 
     @Test
-    fun `should include single project ID when one is provided`() = runBlocking {
+    fun `should include single project ID when one is provided`() = runTest {
         // Given
         val projectId = UUID.randomUUID()
 
@@ -151,7 +151,7 @@ class RegisterUseCaseTest {
     }
 
     @Test
-    fun `should store correct project ID when one is provided`() = runBlocking {
+    fun `should store correct project ID when one is provided`() = runTest {
         // Given
         val projectId = UUID.randomUUID()
 
@@ -168,7 +168,7 @@ class RegisterUseCaseTest {
     }
 
     @Test
-    fun `should throw when username is blank`(): Unit = runBlocking {
+    fun `should throw when username is blank`(): Unit = runTest {
         // When & Then
         assertThrows<IllegalArgumentException> {
             registerUseCase(
@@ -180,7 +180,7 @@ class RegisterUseCaseTest {
     }
 
     @Test
-    fun `should throw with correct message when username is blank`() = runBlocking {
+    fun `should throw with correct message when username is blank`() = runTest {
         // When & Then
         val exception = assertThrows<IllegalArgumentException> {
             registerUseCase(
@@ -194,7 +194,7 @@ class RegisterUseCaseTest {
     }
 
     @Test
-    fun `should generate valid UUID for new user`() = runBlocking {
+    fun `should generate valid UUID for new user`() = runTest {
         // When
         val result = registerUseCase(
             name = "new user",
@@ -212,7 +212,7 @@ class RegisterUseCaseTest {
     }
 
     @Test
-    fun `should propagate repository exceptions`(): Unit = runBlocking {
+    fun `should propagate repository exceptions`(): Unit = runTest {
         // Given
         fakeRepository.shouldThrow = true
 
@@ -227,7 +227,7 @@ class RegisterUseCaseTest {
     }
 
     @Test
-    fun `should store correct role for admin user`() = runBlocking {
+    fun `should store correct role for admin user`() = runTest {
         // When
         registerUseCase(
             name = "admin user",
@@ -240,7 +240,7 @@ class RegisterUseCaseTest {
     }
 
     @Test
-    fun `should store empty project list when none provided`() = runBlocking {
+    fun `should store empty project list when none provided`() = runTest {
         // When
         registerUseCase(
             name = "no projects",
@@ -253,7 +253,7 @@ class RegisterUseCaseTest {
     }
 
     @Test
-    fun `should throw when password is blank`() = runBlocking {
+    fun `should throw when password is blank`() = runTest {
         // When & Then
         val exception = assertThrows<IllegalArgumentException> {
             registerUseCase(
@@ -267,7 +267,7 @@ class RegisterUseCaseTest {
     }
 
     @Test
-    fun `should throw when password format is invalid`() = runBlocking {
+    fun `should throw when password format is invalid`() = runTest {
         // When & Then
         val exception = assertThrows<IllegalArgumentException> {
             registerUseCase(
@@ -284,7 +284,7 @@ class RegisterUseCaseTest {
     }
 
     @Test
-    fun `should store task IDs when provided`() = runBlocking {
+    fun `should store task IDs when provided`() = runTest {
         // Given
         val taskId = UUID.randomUUID()
 
@@ -302,7 +302,7 @@ class RegisterUseCaseTest {
     }
 
     @Test
-    fun `should store both project and task IDs when provided`() = runBlocking {
+    fun `should store both project and task IDs when provided`() = runTest {
         // Given
         val projectId = UUID.randomUUID()
         val taskId = UUID.randomUUID()
