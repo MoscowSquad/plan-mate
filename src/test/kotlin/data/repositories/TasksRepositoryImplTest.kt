@@ -11,7 +11,7 @@ import domain.util.TaskIsNotFoundException
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -78,7 +78,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `getAllTasks should return empty list when repository is empty`() = runBlocking {
+    fun `getAllTasks should return empty list when repository is empty`() = runTest {
         // When
         val result = repository.getAllTasks()
 
@@ -87,7 +87,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `getAllTasks should return all tasks in repository`(): Unit = runBlocking {
+    fun `getAllTasks should return all tasks in repository`(): Unit = runTest {
         // Given
         repository.addTask(testTask1)
         repository.addTask(testTask2)
@@ -101,7 +101,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `getAllTasks should return a copy of the internal list`() = runBlocking {
+    fun `getAllTasks should return a copy of the internal list`() = runTest {
         // Given
         repository.addTask(testTask1)
 
@@ -114,7 +114,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `addTask should store task in repository`() = runBlocking {
+    fun `addTask should store task in repository`() = runTest {
         // When
         val result = repository.addTask(testTask1)
 
@@ -125,7 +125,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `addTask should throw TaskIsExist when task with same ID already exists`() = runBlocking {
+    fun `addTask should throw TaskIsExist when task with same ID already exists`() = runTest {
         // Given
         repository.addTask(testTask1)
         val duplicateTask = Task(testTask1.id, "Duplicate Task", "Duplicate Description", projectId1, UUID.randomUUID())
@@ -138,7 +138,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `editTask should modify existing task`() = runBlocking {
+    fun `editTask should modify existing task`() = runTest {
         // Given
         repository.addTask(testTask1)
         val updatedTask =
@@ -154,7 +154,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `editTask should throw TaskIsNotFoundException when task does not exist`() = runBlocking {
+    fun `editTask should throw TaskIsNotFoundException when task does not exist`() = runTest {
         // Given
         val nonExistingTask = Task(UUID.randomUUID(), "Non-existing", "Description", projectId1, UUID.randomUUID())
 
@@ -166,7 +166,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `deleteTask should remove task from repository`() = runBlocking {
+    fun `deleteTask should remove task from repository`() = runTest {
         // Given
         repository.addTask(testTask1)
         repository.addTask(testTask2)
@@ -182,7 +182,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `deleteTask should throw TaskIsNotFoundException when task does not exist`() = runBlocking {
+    fun `deleteTask should throw TaskIsNotFoundException when task does not exist`() = runTest {
         // Given
         val nonExistingId = UUID.randomUUID()
 
@@ -194,7 +194,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `getTaskById should return task when it exists`() = runBlocking {
+    fun `getTaskById should return task when it exists`() = runTest {
         // Given
         repository.addTask(testTask1)
         repository.addTask(testTask2)
@@ -207,7 +207,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `getTaskById should throw TaskIsNotFoundException when task does not exist`(): Unit = runBlocking {
+    fun `getTaskById should throw TaskIsNotFoundException when task does not exist`(): Unit = runTest {
         // Given
         val nonExistingId = UUID.randomUUID()
 
@@ -218,7 +218,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `getTaskByProjectId should return tasks with matching project ID`(): Unit = runBlocking {
+    fun `getTaskByProjectId should return tasks with matching project ID`(): Unit = runTest {
         // Given
         repository.addTask(testTask1)
         repository.addTask(testTask2)
@@ -232,7 +232,7 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `getTaskByProjectId should return empty list when no tasks match project ID`() = runBlocking {
+    fun `getTaskByProjectId should return empty list when no tasks match project ID`() = runTest {
         // Given
         repository.addTask(testTask1)
         repository.addTask(testTask2)

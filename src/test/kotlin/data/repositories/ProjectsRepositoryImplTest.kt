@@ -13,7 +13,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.verify
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -65,7 +65,7 @@ class ProjectsRepositoryImplTest {
     }
 
     @Test
-    fun `addProject should store project in repository`() = runBlocking {
+    fun `addProject should store project in repository`() = runTest {
         // When
         val result = repository.addProject(testProject1)
 
@@ -76,7 +76,7 @@ class ProjectsRepositoryImplTest {
     }
 
     @Test
-    fun `addProject should handle multiple projects`() = runBlocking {
+    fun `addProject should handle multiple projects`() = runTest {
         // When
         repository.addProject(testProject1)
         repository.addProject(testProject2)
@@ -88,7 +88,7 @@ class ProjectsRepositoryImplTest {
     }
 
     @Test
-    fun `updateProject should modify existing project`() = runBlocking {
+    fun `updateProject should modify existing project`() = runTest {
         // Given
         repository.addProject(testProject1)
         val updatedProject = testProject1.copy(name = "Updated Project")
@@ -103,7 +103,7 @@ class ProjectsRepositoryImplTest {
     }
 
     @Test
-    fun `updateProject should return false when project does not exist`() = runBlocking {
+    fun `updateProject should return false when project does not exist`() = runTest {
         // Given
         val nonExistingProject = Project(UUID.randomUUID(), "Non-existing")
 
@@ -116,7 +116,7 @@ class ProjectsRepositoryImplTest {
     }
 
     @Test
-    fun `deleteProject should remove project from repository`() = runBlocking {
+    fun `deleteProject should remove project from repository`() = runTest {
         // Given
         repository.addProject(testProject1)
         repository.addProject(testProject2)
@@ -132,7 +132,7 @@ class ProjectsRepositoryImplTest {
     }
 
     @Test
-    fun `deleteProject should return false when project does not exist`() = runBlocking {
+    fun `deleteProject should return false when project does not exist`() = runTest {
         // When
         val result = repository.deleteProject(UUID.randomUUID())
 
@@ -142,7 +142,7 @@ class ProjectsRepositoryImplTest {
     }
 
     @Test
-    fun `getAllProjectsByUser should return projects associated with user`() = runBlocking {
+    fun `getAllProjectsByUser should return projects associated with user`() = runTest {
         // Given
         SessionManager.currentUser = LoggedInUser(
             userId,
@@ -163,7 +163,7 @@ class ProjectsRepositoryImplTest {
     }
 
     @Test
-    fun `getAllProjectsByUser should return empty list when user has no projects`() = runBlocking {
+    fun `getAllProjectsByUser should return empty list when user has no projects`() = runTest {
         // Given
         SessionManager.currentUser = LoggedInUser(
             userId,
@@ -181,7 +181,7 @@ class ProjectsRepositoryImplTest {
     }
 
     @Test
-    fun `getProjectById should return project when it exists`() = runBlocking {
+    fun `getProjectById should return project when it exists`() = runTest {
         // Given
         repository.addProject(testProject1)
         repository.addProject(testProject2)
@@ -194,7 +194,7 @@ class ProjectsRepositoryImplTest {
     }
 
     @Test
-    fun `getProjectById should throw ProjectNotFoundException when project does not exist`(): Unit = runBlocking {
+    fun `getProjectById should throw ProjectNotFoundException when project does not exist`(): Unit = runTest {
         // Given
         val nonExistingId = UUID.randomUUID()
 
@@ -205,7 +205,7 @@ class ProjectsRepositoryImplTest {
     }
 
     @Test
-    fun `addProject should not save to data source when project cannot be added`() = runBlocking {
+    fun `addProject should not save to data source when project cannot be added`() = runTest {
         // Given
         val project = testProject1.copy()
         val mockList = mockk<MutableList<Project>>()

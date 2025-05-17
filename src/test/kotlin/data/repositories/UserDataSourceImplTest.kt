@@ -8,7 +8,7 @@ import domain.models.User.UserRole
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -36,7 +36,7 @@ class UserRepositoryImplTest {
     }
 
     @Test
-    fun `addUser successfully adds a user to the repository`() = runBlocking {
+    fun `addUser successfully adds a user to the repository`() = runTest {
         // When
         val result = repository.addUser(user, hashedPassword)
 
@@ -46,19 +46,19 @@ class UserRepositoryImplTest {
     }
 
     @Test
-    fun `addUser throws exception when adding user with duplicate ID`(): Unit = runBlocking {
+    fun `addUser throws exception when adding user with duplicate ID`(): Unit = runTest {
         // Given
         repository.addUser(user, hashedPassword)
         val duplicateUser = user.copy(name = "Duplicate")
 
         // When & Then
         assertThrows<IllegalArgumentException> {
-            runBlocking { repository.addUser(duplicateUser, hashedPassword) }
+            runTest { repository.addUser(duplicateUser, hashedPassword) }
         }
     }
 
     @Test
-    fun `deleteUser successfully removes existing user`(): Unit = runBlocking {
+    fun `deleteUser successfully removes existing user`(): Unit = runTest {
         // Given
         repository.addUser(user, hashedPassword)
 
@@ -68,23 +68,23 @@ class UserRepositoryImplTest {
         // Then
         assertTrue(result)
         assertThrows<NoSuchElementException> {
-            runBlocking { repository.getUserById(user.id) }
+            runTest { repository.getUserById(user.id) }
         }
     }
 
     @Test
-    fun `deleteUser throws exception when user does not exist`(): Unit = runBlocking {
+    fun `deleteUser throws exception when user does not exist`(): Unit = runTest {
         // Given
         val nonExistingId = UUID.randomUUID()
 
         // When & Then
         assertThrows<NoSuchElementException> {
-            runBlocking { repository.deleteUser(nonExistingId) }
+            runTest { repository.deleteUser(nonExistingId) }
         }
     }
 
     @Test
-    fun `assignUserToProject successfully assigns project to user`() = runBlocking {
+    fun `assignUserToProject successfully assigns project to user`() = runTest {
         // Given
         repository.addUser(user, hashedPassword)
         val projectId = UUID.randomUUID()
@@ -99,7 +99,7 @@ class UserRepositoryImplTest {
     }
 
     @Test
-    fun `assignUserToProject throws exception when user already assigned to project`(): Unit = runBlocking {
+    fun `assignUserToProject throws exception when user already assigned to project`(): Unit = runTest {
         // Given
         repository.addUser(user, hashedPassword)
         val projectId = UUID.randomUUID()
@@ -107,24 +107,24 @@ class UserRepositoryImplTest {
 
         // When & Then
         assertThrows<IllegalStateException> {
-            runBlocking { repository.assignUserToProject(projectId, user.id) }
+            runTest { repository.assignUserToProject(projectId, user.id) }
         }
     }
 
     @Test
-    fun `assignUserToProject throws exception when user does not exist`(): Unit = runBlocking {
+    fun `assignUserToProject throws exception when user does not exist`(): Unit = runTest {
         // Given
         val nonExistingId = UUID.randomUUID()
         val projectId = UUID.randomUUID()
 
         // When & Then
         assertThrows<NoSuchElementException> {
-            runBlocking { repository.assignUserToProject(projectId, nonExistingId) }
+            runTest { repository.assignUserToProject(projectId, nonExistingId) }
         }
     }
 
     @Test
-    fun `unassignUserFromProject successfully removes project from user`() = runBlocking {
+    fun `unassignUserFromProject successfully removes project from user`() = runTest {
         // Given
         repository.addUser(user, hashedPassword)
         val projectId = UUID.randomUUID()
@@ -140,31 +140,31 @@ class UserRepositoryImplTest {
     }
 
     @Test
-    fun `unassignUserFromProject throws exception when project not assigned to user`(): Unit = runBlocking {
+    fun `unassignUserFromProject throws exception when project not assigned to user`(): Unit = runTest {
         // Given
         repository.addUser(user, hashedPassword)
         val projectId = UUID.randomUUID()
 
         // When & Then
         assertThrows<IllegalStateException> {
-            runBlocking { repository.unassignUserFromProject(projectId, user.id) }
+            runTest { repository.unassignUserFromProject(projectId, user.id) }
         }
     }
 
     @Test
-    fun `unassignUserFromProject throws exception when user does not exist`(): Unit = runBlocking {
+    fun `unassignUserFromProject throws exception when user does not exist`(): Unit = runTest {
         // Given
         val nonExistingId = UUID.randomUUID()
         val projectId = UUID.randomUUID()
 
         // When & Then
         assertThrows<NoSuchElementException> {
-            runBlocking { repository.unassignUserFromProject(projectId, nonExistingId) }
+            runTest { repository.unassignUserFromProject(projectId, nonExistingId) }
         }
     }
 
     @Test
-    fun `getUserById returns correct user when found`() = runBlocking {
+    fun `getUserById returns correct user when found`() = runTest {
         // Given
         repository.addUser(user, hashedPassword)
 
@@ -178,7 +178,7 @@ class UserRepositoryImplTest {
     }
 
     @Test
-    fun `getUserById returns correct user from multiple users`() = runBlocking {
+    fun `getUserById returns correct user from multiple users`() = runTest {
         // Given
         val user2 = user.copy(id = UUID.randomUUID(), name = "User2")
         val user3 = user.copy(id = UUID.randomUUID(), name = "User3")
@@ -195,18 +195,18 @@ class UserRepositoryImplTest {
     }
 
     @Test
-    fun `getUserById throws exception when user not found`(): Unit = runBlocking {
+    fun `getUserById throws exception when user not found`(): Unit = runTest {
         // Given
         val nonExistingId = UUID.randomUUID()
 
         // When & Then
         assertThrows<NoSuchElementException> {
-            runBlocking { repository.getUserById(nonExistingId) }
+            runTest { repository.getUserById(nonExistingId) }
         }
     }
 
     @Test
-    fun `getAllUsers returns all users in the repository`() = runBlocking {
+    fun `getAllUsers returns all users in the repository`() = runTest {
         // Given
         val user2 = user.copy(id = UUID.randomUUID(), name = "Second User")
         repository.addUser(user, hashedPassword)
@@ -222,7 +222,7 @@ class UserRepositoryImplTest {
     }
 
     @Test
-    fun `getAllUsers loads data from data source when users list is empty`() = runBlocking {
+    fun `getAllUsers loads data from data source when users list is empty`() = runTest {
         // Given
         val userDtos = listOf(
             UserDto(
@@ -254,7 +254,7 @@ class UserRepositoryImplTest {
     }
 
     @Test
-    fun `getAllUsers returns cached data when users list is not empty`() = runBlocking {
+    fun `getAllUsers returns cached data when users list is not empty`() = runTest {
         // Given
         repository.addUser(user, hashedPassword)
 
@@ -266,7 +266,7 @@ class UserRepositoryImplTest {
     }
 
     @Test
-    fun `assignUserToTask successfully assigns task to user`() = runBlocking {
+    fun `assignUserToTask successfully assigns task to user`() = runTest {
         // Given
         repository.addUser(user, hashedPassword)
         val taskId = UUID.randomUUID()
@@ -281,7 +281,7 @@ class UserRepositoryImplTest {
     }
 
     @Test
-    fun `assignUserToTask throws exception when task already assigned to user`(): Unit = runBlocking {
+    fun `assignUserToTask throws exception when task already assigned to user`(): Unit = runTest {
         // Given
         repository.addUser(user, hashedPassword)
         val taskId = UUID.randomUUID()
@@ -289,19 +289,19 @@ class UserRepositoryImplTest {
 
         // When & Then
         assertThrows<IllegalStateException> {
-            runBlocking { repository.assignUserToTask(taskId, user.id) }
+            runTest { repository.assignUserToTask(taskId, user.id) }
         }
     }
 
     @Test
-    fun `assignUserToTask throws exception when user does not exist`(): Unit = runBlocking {
+    fun `assignUserToTask throws exception when user does not exist`(): Unit = runTest {
         // Given
         val nonExistingId = UUID.randomUUID()
         val taskId = UUID.randomUUID()
 
         // When & Then
         assertThrows<NoSuchElementException> {
-            runBlocking { repository.assignUserToTask(taskId, nonExistingId) }
+            runTest { repository.assignUserToTask(taskId, nonExistingId) }
         }
     }
 }

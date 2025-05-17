@@ -8,7 +8,7 @@ import domain.models.AuditLog.AuditType
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDateTime
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -87,7 +87,7 @@ class AuditRepositoryImplTest {
     }
 
     @Test
-    fun `getAllLogsByTaskId should return empty list when no matching logs exist`() = runBlocking {
+    fun `getAllLogsByTaskId should return empty list when no matching logs exist`() = runTest {
         val nonExistentTaskId = UUID.fromString("00000000-0000-0000-0000-000000000111")
         val result = repository.getAllLogsByTaskId(nonExistentTaskId)
 
@@ -95,7 +95,7 @@ class AuditRepositoryImplTest {
     }
 
     @Test
-    fun `getAllLogsByTaskId should return only logs for specified task ID`(): Unit = runBlocking {
+    fun `getAllLogsByTaskId should return only logs for specified task ID`(): Unit = runTest {
         val result = repository.getAllLogsByTaskId(testTaskId)
         val resultIds = result.map { it.id.toString() }
 
@@ -106,7 +106,7 @@ class AuditRepositoryImplTest {
     }
 
     @Test
-    fun `getAllLogsByTaskId should return only TASK type logs`(): Unit = runBlocking {
+    fun `getAllLogsByTaskId should return only TASK type logs`(): Unit = runTest {
         val result = repository.getAllLogsByTaskId(testTaskId)
         val resultAuditTypes = result.map { it.auditType }.toSet()
 
@@ -114,7 +114,7 @@ class AuditRepositoryImplTest {
     }
 
     @Test
-    fun `getAllLogsByProjectId should return empty list when no matching logs exist`() = runBlocking {
+    fun `getAllLogsByProjectId should return empty list when no matching logs exist`() = runTest {
         val nonExistentProjectId = UUID.randomUUID()
         val result = repository.getAllLogsByProjectId(nonExistentProjectId)
 
@@ -122,7 +122,7 @@ class AuditRepositoryImplTest {
     }
 
     @Test
-    fun `getAllLogsByProjectId should return only logs for specified project ID`(): Unit = runBlocking {
+    fun `getAllLogsByProjectId should return only logs for specified project ID`(): Unit = runTest {
         val result = repository.getAllLogsByProjectId(testProjectId)
         val resultIds = result.map { it.id.toString() }
 
@@ -130,7 +130,7 @@ class AuditRepositoryImplTest {
     }
 
     @Test
-    fun `getAllLogsByProjectId should return only PROJECT type logs`(): Unit = runBlocking {
+    fun `getAllLogsByProjectId should return only PROJECT type logs`(): Unit = runTest {
         val result = repository.getAllLogsByProjectId(testProjectId)
         val resultAuditTypes = result.map { it.auditType }.toSet()
 

@@ -11,7 +11,7 @@ import domain.util.TaskIsNotFoundException
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -65,7 +65,7 @@ class TaskStateDataSourceImplTest {
     }
 
     @Test
-    fun `init should fetch tasks from data source`() = runBlocking {
+    fun `init should fetch tasks from data source`() = runTest {
         // Given
         val taskDtos = listOf(testTask1.toDto(), testTask2.toDto())
         every { dataSource.fetch() } returns taskDtos
@@ -81,7 +81,7 @@ class TaskStateDataSourceImplTest {
     }
 
     @Test
-    fun `getAllTasks should return all tasks`(): Unit = runBlocking {
+    fun `getAllTasks should return all tasks`(): Unit = runTest {
         // Given
         repository.addTask(testTask1)
         repository.addTask(testTask2)
@@ -94,7 +94,7 @@ class TaskStateDataSourceImplTest {
     }
 
     @Test
-    fun `addTask should store task in repository`() = runBlocking {
+    fun `addTask should store task in repository`() = runTest {
         // When
         val result = repository.addTask(testTask1)
 
@@ -105,7 +105,7 @@ class TaskStateDataSourceImplTest {
     }
 
     @Test
-    fun `addTask should throw TaskIsExist when task with same ID already exists`() = runBlocking {
+    fun `addTask should throw TaskIsExist when task with same ID already exists`() = runTest {
         // Given
         repository.addTask(testTask1)
         val duplicateTask = Task(testTask1.id, "Duplicate Task", "Duplicate Description", projectId1, UUID.randomUUID())
@@ -118,7 +118,7 @@ class TaskStateDataSourceImplTest {
     }
 
     @Test
-    fun `editTask should modify existing task`() = runBlocking {
+    fun `editTask should modify existing task`() = runTest {
         // Given
         repository.addTask(testTask1)
         val updatedTask =
@@ -134,7 +134,7 @@ class TaskStateDataSourceImplTest {
     }
 
     @Test
-    fun `editTask should throw TaskIsNotFoundException when task does not exist`() = runBlocking {
+    fun `editTask should throw TaskIsNotFoundException when task does not exist`() = runTest {
         // Given
         val nonExistingTask = Task(UUID.randomUUID(), "Non-existing", "Description", projectId1, UUID.randomUUID())
 
@@ -146,7 +146,7 @@ class TaskStateDataSourceImplTest {
     }
 
     @Test
-    fun `deleteTask should remove task from repository`() = runBlocking {
+    fun `deleteTask should remove task from repository`() = runTest {
         // Given
         repository.addTask(testTask1)
         repository.addTask(testTask2)
@@ -162,7 +162,7 @@ class TaskStateDataSourceImplTest {
     }
 
     @Test
-    fun `deleteTask should throw TaskIsNotFoundException when task does not exist`() = runBlocking {
+    fun `deleteTask should throw TaskIsNotFoundException when task does not exist`() = runTest {
         // Given
         val nonExistingId = UUID.randomUUID()
 
@@ -174,7 +174,7 @@ class TaskStateDataSourceImplTest {
     }
 
     @Test
-    fun `getTaskById should return task when it exists`() = runBlocking {
+    fun `getTaskById should return task when it exists`() = runTest {
         // Given
         repository.addTask(testTask1)
         repository.addTask(testTask2)
@@ -187,7 +187,7 @@ class TaskStateDataSourceImplTest {
     }
 
     @Test
-    fun `getTaskById should throw TaskIsNotFoundException when task does not exist`(): Unit = runBlocking {
+    fun `getTaskById should throw TaskIsNotFoundException when task does not exist`(): Unit = runTest {
         // Given
         val nonExistingId = UUID.randomUUID()
 
@@ -198,7 +198,7 @@ class TaskStateDataSourceImplTest {
     }
 
     @Test
-    fun `getTaskByProjectId should return tasks with matching project ID`(): Unit = runBlocking {
+    fun `getTaskByProjectId should return tasks with matching project ID`(): Unit = runTest {
         // Given
         repository.addTask(testTask1)
         repository.addTask(testTask2)
@@ -212,7 +212,7 @@ class TaskStateDataSourceImplTest {
     }
 
     @Test
-    fun `getTaskByProjectId should return empty list when no tasks match project ID`() = runBlocking {
+    fun `getTaskByProjectId should return empty list when no tasks match project ID`() = runTest {
         // Given
         repository.addTask(testTask1)
         repository.addTask(testTask2)
@@ -226,7 +226,7 @@ class TaskStateDataSourceImplTest {
     }
 
     @Test
-    fun `getTaskById should find task after multiple additions and updates`() = runBlocking {
+    fun `getTaskById should find task after multiple additions and updates`() = runTest {
         // Given
         repository.addTask(testTask1)
         repository.addTask(testTask2)
@@ -244,7 +244,7 @@ class TaskStateDataSourceImplTest {
     }
 
     @Test
-    fun `getTaskById should find correct task when multiple tasks have same project ID`() = runBlocking {
+    fun `getTaskById should find correct task when multiple tasks have same project ID`() = runTest {
         // Given
         repository.addTask(testTask1)
         repository.addTask(testTask2)
@@ -257,7 +257,7 @@ class TaskStateDataSourceImplTest {
     }
 
     @Test
-    fun `getTaskById should throw exception after adding and removing a task`(): Unit = runBlocking {
+    fun `getTaskById should throw exception after adding and removing a task`(): Unit = runTest {
         // Given
         repository.addTask(testTask1)
         repository.deleteTask(testTask1.id)
@@ -269,7 +269,7 @@ class TaskStateDataSourceImplTest {
     }
 
     @Test
-    fun `editing task should not affect other tasks`() = runBlocking {
+    fun `editing task should not affect other tasks`() = runTest {
         // Given
         repository.addTask(testTask1)
         repository.addTask(testTask2)
@@ -285,7 +285,7 @@ class TaskStateDataSourceImplTest {
     }
 
     @Test
-    fun `tasks with same project but different states should be returned by getTaskByProjectId`(): Unit = runBlocking {
+    fun `tasks with same project but different states should be returned by getTaskByProjectId`(): Unit = runTest {
         // Given
         repository.addTask(testTask1) // projectId1, stateId1
         repository.addTask(testTask2) // projectId1, stateId2

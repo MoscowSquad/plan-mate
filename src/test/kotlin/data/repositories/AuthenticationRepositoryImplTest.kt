@@ -10,7 +10,7 @@ import domain.models.User.UserRole
 import domain.util.UserNotFoundException
 import domain.util.toMD5Hash
 import io.mockk.*
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.*
@@ -52,7 +52,7 @@ class AuthenticationRepositoryImplTest {
     }
 
     @Test
-    fun `register should add user and update data source`() = runBlocking {
+    fun `register should add user and update data source`() = runTest {
         // Given
         val hashedPassword = "password456".toMD5Hash()
         val newUser = User(
@@ -75,7 +75,7 @@ class AuthenticationRepositoryImplTest {
     }
 
     @Test
-    fun `register should throw exception for duplicate username`() = runBlocking {
+    fun `register should throw exception for duplicate username`() = runTest {
         // Given
         val duplicateUser = testUser.copy(id = UUID.randomUUID())
 
@@ -88,7 +88,7 @@ class AuthenticationRepositoryImplTest {
     }
 
     @Test
-    fun `login should update session and return user for valid credentials`() = runBlocking {
+    fun `login should update session and return user for valid credentials`() = runTest {
         // When
         val result = repository.login("testUser", "password123")
 
@@ -98,7 +98,7 @@ class AuthenticationRepositoryImplTest {
     }
 
     @Test
-    fun `login should throw UserNotFoundException for invalid credentials`() = runBlocking {
+    fun `login should throw UserNotFoundException for invalid credentials`() = runTest {
         // When & Then
         assertFailsWith<UserNotFoundException> {
             repository.login("testUser", "wrongPassword")
@@ -108,7 +108,7 @@ class AuthenticationRepositoryImplTest {
     }
 
     @Test
-    fun `login should throw UserNotFoundException for non-existent user`() = runBlocking {
+    fun `login should throw UserNotFoundException for non-existent user`() = runTest {
         // When & Then
         assertFailsWith<UserNotFoundException> {
             repository.login("nonExistentUser", "anyPassword")
