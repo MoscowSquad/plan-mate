@@ -5,9 +5,10 @@ import domain.repositories.ProjectsRepository
 import domain.util.InvalidProjectNameException
 import domain.util.NoExistProjectException
 import domain.util.NotAdminException
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -24,22 +25,22 @@ class UpdateProjectUseCaseTest {
 
     @BeforeEach
     fun setUp() {
-        projectsRepository = mockk(relaxed = true)
+        projectsRepository = mockk()
         updateProjectUseCase = UpdateProjectUseCase(projectsRepository)
     }
 
     @Test
-    fun `should update project when valid data and user is admin`() {
+    fun `should update project when valid data and user is admin`() = runBlocking {
         // Given
         val projectName = "Updated Project"
-        every { projectsRepository.updateProject(any()) } returns true
+        coEvery { projectsRepository.updateProject(any()) } returns true
 
         // When
-        val result = updateProjectUseCase.invoke(projectId, projectName, isAdmin = true)
+        val result = updateProjectUseCase(projectId, projectName, isAdmin = true)
 
         // Then
         assertTrue(result)
-        verify {
+        coVerify {
             projectsRepository.updateProject(match {
                 it.id == projectId && it.name == projectName
             })
@@ -47,52 +48,52 @@ class UpdateProjectUseCaseTest {
     }
 
     @Test
-    fun `should throw NotAdminException when user is not admin`() {
+    fun `should throw NotAdminException when user is not admin`() = runBlocking {
         // Given
         val projectName = "Updated Project"
 
         // When & Then
         assertThrows<NotAdminException> {
-            updateProjectUseCase.invoke(projectId, projectName, isAdmin = false)
+            updateProjectUseCase(projectId, projectName, isAdmin = false)
         }
-        verify(exactly = 0) { projectsRepository.updateProject(any()) }
+        coVerify(exactly = 0) { projectsRepository.updateProject(any()) }
     }
 
     @ParameterizedTest
     @EmptySource
     @ValueSource(strings = ["  ", "\t", "\n"])
-    fun `should throw InvalidProjectNameException when project name is blank`(name: String) {
+    fun `should throw InvalidProjectNameException when project name is blank`(name: String) = runBlocking {
         // When & Then
         assertThrows<InvalidProjectNameException> {
-            updateProjectUseCase.invoke(projectId, name, isAdmin = true)
+            updateProjectUseCase(projectId, name, isAdmin = true)
         }
-        verify(exactly = 0) { projectsRepository.updateProject(any()) }
+        coVerify(exactly = 0) { projectsRepository.updateProject(any()) }
     }
 
     @Test
-    fun `should throw NoExistProjectException when project does not exist`() {
+    fun `should throw NoExistProjectException when project does not exist`(): Unit = runBlocking {
         // Given
         val projectName = "Non-existent Project"
-        every { projectsRepository.updateProject(any()) } returns false
+        coEvery { projectsRepository.updateProject(any()) } returns false
 
         // When & Then
         assertThrows<NoExistProjectException> {
-            updateProjectUseCase.invoke(projectId, projectName, isAdmin = true)
+            updateProjectUseCase(projectId, projectName, isAdmin = true)
         }
     }
 
     @Test
-    fun `should update project with empty user list when valid data and admin`() {
+    fun `should update project with empty user list when valid data and admin`() = runBlocking {
         // Given
         val projectName = "Updated Project"
-        every { projectsRepository.updateProject(any()) } returns true
+        coEvery { projectsRepository.updateProject(any()) } returns true
 
         // When
-        val result = updateProjectUseCase.invoke(projectId, projectName, isAdmin = true)
+        val result = updateProjectUseCase(projectId, projectName, isAdmin = true)
 
         // Then
         assertTrue(result)
-        verify {
+        coVerify {
             projectsRepository.updateProject(match {
                 it.id == projectId && it.name == projectName
             })
@@ -100,16 +101,16 @@ class UpdateProjectUseCaseTest {
     }
 
     @Test
-    fun `should pass correct Project object to repository`() {
+    fun `should pass correct Project object to repository`() = runBlocking {
         // Given
         val projectName = "Test Project"
-        every { projectsRepository.updateProject(any()) } returns true
+        coEvery { projectsRepository.updateProject(any()) } returns true
 
         // When
-        updateProjectUseCase.invoke(projectId, projectName, isAdmin = true)
+        updateProjectUseCase(projectId, projectName, isAdmin = true)
 
         // Then
-        verify {
+        coVerify {
             projectsRepository.updateProject(
                 Project(
                     id = projectId,
