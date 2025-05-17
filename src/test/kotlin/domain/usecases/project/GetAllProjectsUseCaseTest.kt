@@ -1,50 +1,87 @@
 package domain.usecases.project
 
+import com.google.common.truth.Truth.assertThat
+import data.session_manager.SessionManager
+import data.session_manager.LoggedInUser
 import domain.models.Project
 import domain.repositories.ProjectsRepository
+import domain.util.NoUserLoginException
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.jupiter.api.Assertions.assertEquals
+import io.mockk.mockkObject
+import io.mockk.unmockkObject
+import kotlinx.coroutines.runBlocking
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.util.*
 
 class GetAllProjectsUseCaseTest {
     private lateinit var projectsRepository: ProjectsRepository
     private lateinit var getAllProjectsUseCase: GetAllProjectsUseCase
+    private val userId = UUID.randomUUID()
+    private val mockUser = mockk<LoggedInUser> {
+        every { id } returns userId
+    }
 
     @BeforeEach
     fun setUp() {
         projectsRepository = mockk()
         getAllProjectsUseCase = GetAllProjectsUseCase(projectsRepository)
+        mockkObject(SessionManager)
+    }
+
+    @AfterEach
+    fun tearDown() {
+        unmockkObject(SessionManager)
     }
 
     @Test
-    fun `should return all projects from repository`() {
+    fun `should return all projects from repository when user is logged in`() = runBlocking {
         // Given
         val projects = listOf(
             Project(UUID.randomUUID(), "Project 1"),
             Project(UUID.randomUUID(), "Project 2"),
             Project(UUID.randomUUID(), "Project 3")
         )
-        every { projectsRepository.getAllProjectsByUser(any()) } returns projects
+        every { SessionManager.currentUser } returns mockUser
+        coEvery { projectsRepository.getAllProjectsByUser(userId) } returns projects
 
         // When
-        val result = getAllProjectsUseCase.invoke()
+        val result = getAllProjectsUseCase()
 
         // Then
-        assertEquals(projects, result)
+        assertThat(result).isEqualTo(projects)
+        coVerify(exactly = 1) { projectsRepository.getAllProjectsByUser(userId) }
     }
 
     @Test
-    fun `should return empty list when repository has no projects`() {
+    fun `should return empty list when repository has no projects`() = runBlocking {
         // Given
-        every { projectsRepository.getAllProjectsByUser(any()) } returns emptyList()
+        every { SessionManager.currentUser } returns mockUser
+        coEvery { projectsRepository.getAllProjectsByUser(userId) } returns emptyList()
 
         // When
-        val result = getAllProjectsUseCase.invoke()
+        val result = getAllProjectsUseCase()
 
         // Then
-        assertEquals(emptyList<Project>(), result)
+        assertThat(result).isEmpty()
+        coVerify(exactly = 1) { projectsRepository.getAllProjectsByUser(userId) }
+    }
+
+    @Test
+    fun `should throw NoUserLoginException when no user is logged in`() = runBlocking {
+        // Given
+        every { SessionManager.currentUser } returns null
+
+        // When & Then
+        assertThrows<NoUserLoginException> {
+            getAllProjectsUseCase()
+        }
+
+        coVerify(exactly = 0) { projectsRepository.getAllProjectsByUser(any()) }
     }
 }
