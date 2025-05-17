@@ -34,7 +34,7 @@ class DeleteUserUseCaseTest {
 
         // When & Then
         assertThrows<UnauthorizedAccessException> {
-            runTest { deleteUserUseCase(mateRole, userId) }
+             deleteUserUseCase(mateRole, userId)
         }
 
         coVerify(exactly = 0) { userRepository.deleteUser(any()) }
@@ -47,7 +47,7 @@ class DeleteUserUseCaseTest {
 
         // When & Then
         assertThrows<NoSuchElementException> {
-            runTest { deleteUserUseCase(adminRole, userId) }
+             deleteUserUseCase(adminRole, userId)
         }
 
         coVerify(exactly = 1) { userRepository.deleteUser(userId) }

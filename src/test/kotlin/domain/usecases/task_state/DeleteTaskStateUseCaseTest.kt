@@ -56,7 +56,7 @@ class DeleteTaskStateUseCaseTest {
 
         // When & Then
         assertThrows<NotAdminException> {
-            runTest { deleteStateUseCase(stateId, projectId, false) }
+             deleteStateUseCase(stateId, projectId, false)
         }
 
         coVerify(exactly = 0) { stateRepository.getTaskStateByProjectId(any()) }

@@ -39,7 +39,7 @@ class AssignProjectToUserUseCaseTest {
 
         // When & Then
         assertThrows<UnauthorizedAccessException> {
-            runTest { assignProjectToUserUseCase(mateRole, projectId, user.id) }
+             assignProjectToUserUseCase(mateRole, projectId, user.id)
         }
     }
 

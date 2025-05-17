@@ -39,7 +39,7 @@ class GetAllUsersUseCaseTest {
 
         // When & Then
         assertThrows<UnauthorizedAccessException> {
-            runTest { getAllUsersUseCase(mateRole) }
+             getAllUsersUseCase(mateRole)
         }
 
         coVerify(exactly = 0) { userRepository.getAllUsers() }

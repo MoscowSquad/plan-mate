@@ -54,7 +54,7 @@ class AddTaskStateUseCaseTest {
 
         // When & Then
         assertThrows<IllegalStateTitle> {
-            runTest { addStateUseCase(invalidState, true) }
+             addStateUseCase(invalidState, true)
         }
         coVerify(exactly = 0) { stateRepository.addTaskState(any(), any()) }
     }
@@ -71,7 +71,7 @@ class AddTaskStateUseCaseTest {
 
         // When & Then
         assertThrows<IllegalStateTitle> {
-            runTest { addStateUseCase(invalidState, true) }
+             addStateUseCase(invalidState, true)
         }
         coVerify(exactly = 0) { stateRepository.addTaskState(any(), any()) }
     }
@@ -87,7 +87,7 @@ class AddTaskStateUseCaseTest {
 
         // When & Then
         assertThrows<NotAdminException> {
-            runTest { addStateUseCase(validState, false) }
+             addStateUseCase(validState, false)
         }
         coVerify(exactly = 0) { stateRepository.addTaskState(any(), any()) }
     }
@@ -105,7 +105,7 @@ class AddTaskStateUseCaseTest {
 
         // When & Then
         assertThrows<IllegalStateException> {
-            runTest { addStateUseCase(validState, true) }
+             addStateUseCase(validState, true)
         }
 
         coVerify(exactly = 1) { stateRepository.addTaskState(validState.projectId, validState) }

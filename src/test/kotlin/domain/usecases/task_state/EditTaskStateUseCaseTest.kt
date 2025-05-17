@@ -55,7 +55,7 @@ class EditTaskStateUseCaseTest {
 
         // When & Then
         assertThrows<IllegalStateTitle> {
-            runTest { editStateUseCase(invalidState, true) }
+             editStateUseCase(invalidState, true)
         }
         coVerify(exactly = 0) { stateRepository.updateTaskState(any()) }
     }
@@ -73,7 +73,7 @@ class EditTaskStateUseCaseTest {
 
         // When & Then
         assertThrows<NoStateExistException> {
-            runTest { editStateUseCase(state, true) }
+             editStateUseCase(state, true)
         }
     }
 
@@ -88,7 +88,7 @@ class EditTaskStateUseCaseTest {
 
         // When & Then
         assertThrows<NotAdminException> {
-            runTest { editStateUseCase(state, false) }
+             editStateUseCase(state, false)
         }
         coVerify(exactly = 0) { stateRepository.updateTaskState(any()) }
     }

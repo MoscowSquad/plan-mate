@@ -40,7 +40,7 @@ class CreateUserUseCaseTest {
 
         // When & Then
         assertThrows<UnauthorizedAccessException> {
-            runTest { createUserUseCase(mateRole, newUser, "password") }
+             createUserUseCase(mateRole, newUser, "password")
         }
 
         coVerify(exactly = 0) { userRepository.addUser(any(), any()) }

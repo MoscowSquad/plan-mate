@@ -49,7 +49,7 @@ class AssignTaskToUserUseCaseTest {
 
         // When & Then
         assertThrows<UnauthorizedAccessException> {
-            runTest { assignTaskToUserUseCase(mateRole, taskId, userId) }
+             assignTaskToUserUseCase(mateRole, taskId, userId)
         }
 
         coVerify(exactly = 0) { userRepository.assignUserToTask(any(), any()) }

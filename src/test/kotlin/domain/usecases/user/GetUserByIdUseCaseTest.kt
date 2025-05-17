@@ -50,7 +50,7 @@ class GetUserByIdUseCaseTest {
 
         // When & Then
         assertThrows<NoSuchElementException> {
-            runTest { getUserByIdUseCase(nonExistentUserId) }
+             getUserByIdUseCase(nonExistentUserId)
         }
 
         coVerify(exactly = 1) { userRepository.getUserById(nonExistentUserId) }

@@ -46,14 +46,14 @@ class UserRepositoryImplTest {
     }
 
     @Test
-    fun `addUser throws exception when adding user with duplicate ID`(): Unit = runTest {
+    fun `addUser throws exception when adding user with duplicate ID`() = runTest {
         // Given
         repository.addUser(user, hashedPassword)
         val duplicateUser = user.copy(name = "Duplicate")
 
         // When & Then
-        assertThrows<IllegalArgumentException> {
-            runTest { repository.addUser(duplicateUser, hashedPassword) }
+        val exception = assertThrows<IllegalArgumentException> {
+            repository.addUser(duplicateUser, hashedPassword)
         }
     }
 
@@ -68,7 +68,7 @@ class UserRepositoryImplTest {
         // Then
         assertTrue(result)
         assertThrows<NoSuchElementException> {
-            runTest { repository.getUserById(user.id) }
+            repository.getUserById(user.id)
         }
     }
 
@@ -79,7 +79,7 @@ class UserRepositoryImplTest {
 
         // When & Then
         assertThrows<NoSuchElementException> {
-            runTest { repository.deleteUser(nonExistingId) }
+            repository.deleteUser(nonExistingId)
         }
     }
 
@@ -119,7 +119,7 @@ class UserRepositoryImplTest {
 
         // When & Then
         assertThrows<NoSuchElementException> {
-            runTest { repository.assignUserToProject(projectId, nonExistingId) }
+            repository.assignUserToProject(projectId, nonExistingId)
         }
     }
 
@@ -159,7 +159,7 @@ class UserRepositoryImplTest {
 
         // When & Then
         assertThrows<NoSuchElementException> {
-            runTest { repository.unassignUserFromProject(projectId, nonExistingId) }
+            repository.unassignUserFromProject(projectId, nonExistingId)
         }
     }
 
@@ -201,7 +201,7 @@ class UserRepositoryImplTest {
 
         // When & Then
         assertThrows<NoSuchElementException> {
-            runTest { repository.getUserById(nonExistingId) }
+            repository.getUserById(nonExistingId)
         }
     }
 
@@ -301,7 +301,7 @@ class UserRepositoryImplTest {
 
         // When & Then
         assertThrows<NoSuchElementException> {
-            runTest { repository.assignUserToTask(taskId, nonExistingId) }
+            repository.assignUserToTask(taskId, nonExistingId)
         }
     }
 }

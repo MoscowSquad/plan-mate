@@ -31,7 +31,7 @@ class GetTaskStateByIdUseCaseTest {
 
         // When/Then
         assertThrows<NoStateExistException> {
-            runTest { useCase(stateId) }
+             useCase(stateId)
         }
 
         coVerify(exactly = 1) { stateRepository.getTaskStateById(stateId) }
