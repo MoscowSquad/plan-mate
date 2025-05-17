@@ -56,6 +56,7 @@ fun TaskDto.toTask(): Task {
         description = description,
         projectId = projectId.toUUID(),
         stateId = stateId.toUUID(),
+        subTasks=subTasks.map {it.toSubTask()}
     )
 }
 
