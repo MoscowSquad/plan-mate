@@ -7,9 +7,9 @@ import domain.util.UnauthorizedAccessException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Assertions.assertTrue
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -30,7 +30,7 @@ class CreateUserUseCaseTest {
     }
 
     @Test
-    fun `should throw UnauthorizedAccessException when mate tries to create user`() = runBlocking {
+    fun `should throw UnauthorizedAccessException when mate tries to create user`() = runTest {
         // Given
         val newUser = User(
             UUID.randomUUID(), "User2", UserRole.MATE, listOf(),
@@ -40,14 +40,14 @@ class CreateUserUseCaseTest {
 
         // When & Then
         assertThrows<UnauthorizedAccessException> {
-            runBlocking { createUserUseCase(mateRole, newUser, "password") }
+            runTest { createUserUseCase(mateRole, newUser, "password") }
         }
 
         coVerify(exactly = 0) { userRepository.addUser(any(), any()) }
     }
 
     @Test
-    fun `should create user when admin tries to create`() = runBlocking {
+    fun `should create user when admin tries to create`() = runTest {
         // Given
         val newUser = User(
             UUID.randomUUID(), "User2", UserRole.MATE, listOf(),
@@ -64,7 +64,7 @@ class CreateUserUseCaseTest {
     }
 
     @Test
-    fun `should propagate repository result for admin role`() = runBlocking {
+    fun `should propagate repository result for admin role`() = runTest {
         // Given
         val newUser = User(
             UUID.randomUUID(), "User2", UserRole.MATE, listOf(),

@@ -6,7 +6,7 @@ import domain.util.UnauthorizedAccessException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
@@ -31,7 +31,7 @@ class AssignTaskToUserUseCaseTest {
     }
 
     @Test
-    fun `should assign task to user when admin tries to assign`() = runBlocking {
+    fun `should assign task to user when admin tries to assign`() = runTest {
         // Given
         coEvery { userRepository.assignUserToTask(taskId, userId) } returns true
 
@@ -44,19 +44,19 @@ class AssignTaskToUserUseCaseTest {
     }
 
     @Test
-    fun `should throw UnauthorizedAccessException when mate tries to assign task`(): Unit = runBlocking {
+    fun `should throw UnauthorizedAccessException when mate tries to assign task`(): Unit = runTest {
         // Given
 
         // When & Then
         assertThrows<UnauthorizedAccessException> {
-            runBlocking { assignTaskToUserUseCase(mateRole, taskId, userId) }
+            runTest { assignTaskToUserUseCase(mateRole, taskId, userId) }
         }
 
         coVerify(exactly = 0) { userRepository.assignUserToTask(any(), any()) }
     }
 
     @Test
-    fun `should propagate repository result for admin role`() = runBlocking {
+    fun `should propagate repository result for admin role`() = runTest {
         // Given
         coEvery { userRepository.assignUserToTask(taskId, userId) } returns false
 

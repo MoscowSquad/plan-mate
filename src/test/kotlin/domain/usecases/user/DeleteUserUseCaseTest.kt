@@ -6,7 +6,7 @@ import domain.util.UnauthorizedAccessException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -28,33 +28,33 @@ class DeleteUserUseCaseTest {
     }
 
     @Test
-    fun `should throw UnauthorizedAccessException when mate tries to delete user`() = runBlocking {
+    fun `should throw UnauthorizedAccessException when mate tries to delete user`() = runTest {
         // Given
         coEvery { userRepository.deleteUser(any()) } returns true
 
         // When & Then
         assertThrows<UnauthorizedAccessException> {
-            runBlocking { deleteUserUseCase(mateRole, userId) }
+            runTest { deleteUserUseCase(mateRole, userId) }
         }
 
         coVerify(exactly = 0) { userRepository.deleteUser(any()) }
     }
 
     @Test
-    fun `should throw NoSuchElementException when user does not exist`() = runBlocking {
+    fun `should throw NoSuchElementException when user does not exist`() = runTest {
         // Given
         coEvery { userRepository.deleteUser(userId) } returns false
 
         // When & Then
         assertThrows<NoSuchElementException> {
-            runBlocking { deleteUserUseCase(adminRole, userId) }
+            runTest { deleteUserUseCase(adminRole, userId) }
         }
 
         coVerify(exactly = 1) { userRepository.deleteUser(userId) }
     }
 
     @Test
-    fun `should delete user when admin tries to delete`() = runBlocking {
+    fun `should delete user when admin tries to delete`() = runTest {
         // Given
         coEvery { userRepository.deleteUser(userId) } returns true
 

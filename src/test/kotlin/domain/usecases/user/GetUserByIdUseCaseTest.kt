@@ -6,7 +6,7 @@ import domain.repositories.UserRepository
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -30,7 +30,7 @@ class GetUserByIdUseCaseTest {
     }
 
     @Test
-    fun `should return user by id when user exists`() = runBlocking {
+    fun `should return user by id when user exists`() = runTest {
         // Given
         coEvery { userRepository.getUserById(user.id) } returns user
 
@@ -43,14 +43,14 @@ class GetUserByIdUseCaseTest {
     }
 
     @Test
-    fun `should throw NoSuchElementException when user not found`() = runBlocking {
+    fun `should throw NoSuchElementException when user not found`() = runTest {
         // Given
         val nonExistentUserId = UUID.randomUUID()
         coEvery { userRepository.getUserById(nonExistentUserId) } throws NoSuchElementException("User with id $nonExistentUserId not found")
 
         // When & Then
         assertThrows<NoSuchElementException> {
-            runBlocking { getUserByIdUseCase(nonExistentUserId) }
+            runTest { getUserByIdUseCase(nonExistentUserId) }
         }
 
         coVerify(exactly = 1) { userRepository.getUserById(nonExistentUserId) }

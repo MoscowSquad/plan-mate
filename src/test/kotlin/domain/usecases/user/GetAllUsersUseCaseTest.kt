@@ -7,7 +7,7 @@ import domain.util.UnauthorizedAccessException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -33,20 +33,20 @@ class GetAllUsersUseCaseTest {
     }
 
     @Test
-    fun `should throw UnauthorizedAccessException when mate tries to get all users`() = runBlocking {
+    fun `should throw UnauthorizedAccessException when mate tries to get all users`() = runTest {
         // Given
         coEvery { userRepository.getAllUsers() } returns listOf(user)
 
         // When & Then
         assertThrows<UnauthorizedAccessException> {
-            runBlocking { getAllUsersUseCase(mateRole) }
+            runTest { getAllUsersUseCase(mateRole) }
         }
 
         coVerify(exactly = 0) { userRepository.getAllUsers() }
     }
 
     @Test
-    fun `should return all users when admin requests them`() = runBlocking {
+    fun `should return all users when admin requests them`() = runTest {
         // Given
         val expectedUsers = listOf(user)
         coEvery { userRepository.getAllUsers() } returns expectedUsers

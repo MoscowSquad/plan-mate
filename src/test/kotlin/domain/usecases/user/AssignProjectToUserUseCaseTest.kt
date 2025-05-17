@@ -7,7 +7,7 @@ import domain.util.UnauthorizedAccessException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -34,18 +34,18 @@ class AssignProjectToUserUseCaseTest {
     }
 
     @Test
-    fun `should throw UnauthorizedAccessException for mates try to assign project`(): Unit = runBlocking {
+    fun `should throw UnauthorizedAccessException for mates try to assign project`(): Unit = runTest {
         // Given
 
         // When & Then
         assertThrows<UnauthorizedAccessException> {
-            runBlocking { assignProjectToUserUseCase(mateRole, projectId, user.id) }
+            runTest { assignProjectToUserUseCase(mateRole, projectId, user.id) }
         }
     }
 
 
     @Test
-    fun `should assign project for users when admins try to assign`() = runBlocking {
+    fun `should assign project for users when admins try to assign`() = runTest {
         // Given
         coEvery { userRepository.assignUserToProject(projectId, user.id) } returns true
 
