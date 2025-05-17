@@ -2,9 +2,10 @@ package domain.usecases.task
 
 import domain.models.Task
 import domain.repositories.TasksRepository
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.*
@@ -23,8 +24,7 @@ class EditTaskUseCaseTest {
     }
 
     @Test
-    fun `should return true when task edited successfully`() {
-
+    fun `should return true when task edited successfully`() = runBlocking {
         // Given
         val task = Task(
             id = UUID.randomUUID(),
@@ -34,20 +34,18 @@ class EditTaskUseCaseTest {
             stateId = UUID.randomUUID()
         )
 
-        every { tasksRepository.editTask(task) } returns true
-
+        coEvery { tasksRepository.editTask(task) } returns true
 
         // When
         val result = editTaskUseCase(task)
 
         // Then
         assertTrue(result)
-        verify(exactly = 1) { editTaskUseCase(task) }
+        coVerify(exactly = 1) { tasksRepository.editTask(task) }
     }
 
     @Test
-    fun `should false true when task is not edited successfully`() {
-
+    fun `should return false when task is not edited successfully`() = runBlocking {
         // Given
         val task = Task(
             id = UUID.randomUUID(),
@@ -57,14 +55,13 @@ class EditTaskUseCaseTest {
             stateId = UUID.randomUUID()
         )
 
-        every { tasksRepository.editTask(task) } returns false
-
+        coEvery { tasksRepository.editTask(task) } returns false
 
         // When
         val result = editTaskUseCase(task)
 
         // Then
         assertFalse(result)
-        verify(exactly = 1) { editTaskUseCase(task) }
+        coVerify(exactly = 1) { tasksRepository.editTask(task) }
     }
 }
