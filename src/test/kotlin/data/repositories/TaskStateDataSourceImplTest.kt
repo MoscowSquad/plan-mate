@@ -1,29 +1,33 @@
 package data.repositories
 
 import com.google.common.truth.Truth.assertThat
-import data.csv_data.datasource.TaskStateDataSource
+import data.csv_data.datasource.TaskDataSource
 import data.csv_data.mappers.toDto
-import data.csv_data.mappers.toTaskState
-import data.csv_data.repositories.TaskStateRepositoryImpl
-import domain.models.TaskState
-import domain.util.NoStateExistException
+import data.csv_data.mappers.toTask
+import data.csv_data.repositories.TasksRepositoryImpl
+import domain.models.Task
+import domain.util.TaskIsExist
+import domain.util.TaskIsNotFoundException
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.util.*
 
-class TaskStateRepositoryImplTest {
+class TaskStateDataSourceImplTest {
 
-    private lateinit var dataSource: TaskStateDataSource
-    private lateinit var repository: TaskStateRepositoryImpl
-    private lateinit var testState1: TaskState
-    private lateinit var testState2: TaskState
-    private lateinit var testState3: TaskState
+    private lateinit var dataSource: TaskDataSource
+    private lateinit var repository: TasksRepositoryImpl
+    private lateinit var testTask1: Task
+    private lateinit var testTask2: Task
+    private lateinit var testTask3: Task
     private lateinit var projectId1: UUID
     private lateinit var projectId2: UUID
+    private lateinit var stateId1: UUID
+    private lateinit var stateId2: UUID
 
     @BeforeEach
     fun setUp() {
@@ -32,261 +36,264 @@ class TaskStateRepositoryImplTest {
 
         projectId1 = UUID.fromString("11111111-1111-1111-1111-111111111111")
         projectId2 = UUID.fromString("22222222-2222-2222-2222-222222222222")
+        stateId1 = UUID.fromString("33333333-3333-3333-3333-333333333333")
+        stateId2 = UUID.fromString("44444444-4444-4444-4444-444444444444")
 
-        testState1 = TaskState(
+        testTask1 = Task(
             id = UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
-            name = "To Do",
-            projectId = projectId1
+            title = "Task 1",
+            description = "Description 1",
+            projectId = projectId1,
+            stateId = stateId1
         )
-        testState2 = TaskState(
+        testTask2 = Task(
             id = UUID.fromString("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
-            name = "In Progress",
-            projectId = projectId1
+            title = "Task 2",
+            description = "Description 2",
+            projectId = projectId1,
+            stateId = stateId2
         )
-        testState3 = TaskState(
+        testTask3 = Task(
             id = UUID.fromString("cccccccc-cccc-cccc-cccc-cccccccccccc"),
-            name = "Done",
-            projectId = projectId2
+            title = "Task 3",
+            description = "Description 3",
+            projectId = projectId2,
+            stateId = stateId1
         )
 
-        repository = TaskStateRepositoryImpl(dataSource)
+        repository = TasksRepositoryImpl(dataSource)
     }
 
     @Test
-    fun `init should fetch states from data source`() {
+    fun `init should fetch tasks from data source`() = runBlocking {
         // Given
-        val stateDtos = listOf(testState1.toDto(), testState2.toDto())
-        every { dataSource.fetch() } returns stateDtos
+        val taskDtos = listOf(testTask1.toDto(), testTask2.toDto())
+        every { dataSource.fetch() } returns taskDtos
 
         // When
-        val repository = TaskStateRepositoryImpl(dataSource)
+        val repository = TasksRepositoryImpl(dataSource)
 
         // Then
         verify { dataSource.fetch() }
-        assertThat(repository.states.size).isEqualTo(2)
-        assertThat(repository.states).contains(testState1.toDto().toTaskState())
-        assertThat(repository.states).contains(testState2.toDto().toTaskState())
+        assertThat(repository.tasks.size).isEqualTo(2)
+        assertThat(repository.tasks).contains(testTask1.toDto().toTask())
+        assertThat(repository.tasks).contains(testTask2.toDto().toTask())
     }
 
     @Test
-    fun `getTaskStateById should return state when it exists`() {
+    fun `getAllTasks should return all tasks`(): Unit = runBlocking {
         // Given
-        repository.addTaskState(projectId1, testState1)
+        repository.addTask(testTask1)
+        repository.addTask(testTask2)
 
         // When
-        val result = repository.getTaskStateById(testState1.id)
+        val result = repository.getAllTasks()
 
         // Then
-        assertThat(result).isEqualTo(testState1)
+        assertThat(result).containsExactly(testTask1, testTask2)
     }
 
     @Test
-    fun `getTaskStateById should throw NoStateExistException when state does not exist`() {
-        // Given
-        val nonExistingId = UUID.randomUUID()
-
-        // When & Then
-        assertThrows<NoStateExistException> {
-            repository.getTaskStateById(nonExistingId)
-        }
-    }
-
-    @Test
-    fun `getTaskStateByProjectId should return states for given project`() {
-        // Given
-        repository.addTaskState(projectId1, testState1)
-        repository.addTaskState(projectId1, testState2)
-        repository.addTaskState(projectId2, testState3)
-
+    fun `addTask should store task in repository`() = runBlocking {
         // When
-        val result = repository.getTaskStateByProjectId(projectId1)
-
-        // Then
-        assertThat(result).containsExactlyElementsIn(listOf(testState1, testState2))
-    }
-
-    @Test
-    fun `getTaskStateByProjectId should throw NoStateExistException when no states exist for project`() {
-        // Given
-        val nonExistingProjectId = UUID.randomUUID()
-
-        // When & Then
-        assertThrows<NoStateExistException> {
-            repository.getTaskStateByProjectId(nonExistingProjectId)
-        }
-    }
-
-    @Test
-    fun `updateTaskState should modify existing state`() {
-        // Given
-        repository.addTaskState(projectId1, testState1)
-        val updatedState = TaskState(testState1.id, "Updated State", projectId1)
-
-        // When
-        val result = repository.updateTaskState(updatedState)
+        val result = repository.addTask(testTask1)
 
         // Then
         assertThat(result).isTrue()
-        assertThat(repository.getTaskStateById(testState1.id)).isEqualTo(updatedState)
-        verify(exactly = 2) { dataSource.save(any()) }
-    }
-
-    @Test
-    fun `updateTaskState should return false when state does not exist`() {
-        // Given
-        val nonExistingState = TaskState(UUID.randomUUID(), "Non-existing", projectId1)
-
-        // When
-        val result = repository.updateTaskState(nonExistingState)
-
-        // Then
-        assertThat(result).isFalse()
-        verify(exactly = 0) { dataSource.save(any()) }
-    }
-
-    @Test
-    fun `addTaskState should store state in repository`() {
-        // When
-        val result = repository.addTaskState(projectId1, testState1)
-
-        // Then
-        assertThat(result).isTrue()
-        assertThat(repository.getTaskStateById(testState1.id)).isEqualTo(testState1)
+        assertThat(repository.tasks).contains(testTask1)
         verify { dataSource.save(any()) }
     }
 
     @Test
-    fun `addTaskState should handle multiple states`() {
+    fun `addTask should throw TaskIsExist when task with same ID already exists`() = runBlocking {
+        // Given
+        repository.addTask(testTask1)
+        val duplicateTask = Task(testTask1.id, "Duplicate Task", "Duplicate Description", projectId1, UUID.randomUUID())
+
+        // When & Then
+        assertThrows<TaskIsExist> {
+            repository.addTask(duplicateTask)
+        }
+        verify(exactly = 1) { dataSource.save(any()) }
+    }
+
+    @Test
+    fun `editTask should modify existing task`() = runBlocking {
+        // Given
+        repository.addTask(testTask1)
+        val updatedTask =
+            Task(testTask1.id, "Updated Task", "Updated Description", testTask1.projectId, testTask1.stateId)
+
         // When
-        repository.addTaskState(projectId1, testState1)
-        repository.addTaskState(projectId1, testState2)
+        val result = repository.editTask(updatedTask)
 
         // Then
-        val states = repository.getTaskStateByProjectId(projectId1)
-        assertThat(states).containsExactlyElementsIn(listOf(testState1, testState2))
+        assertThat(result).isTrue()
+        assertThat(repository.getTaskById(testTask1.id)).isEqualTo(updatedTask)
         verify(exactly = 2) { dataSource.save(any()) }
     }
 
     @Test
-    fun `deleteTaskState should remove state from repository`() {
+    fun `editTask should throw TaskIsNotFoundException when task does not exist`() = runBlocking {
         // Given
-        repository.addTaskState(projectId1, testState1)
-        repository.addTaskState(projectId1, testState2)
+        val nonExistingTask = Task(UUID.randomUUID(), "Non-existing", "Description", projectId1, UUID.randomUUID())
 
-        // When
-        val result = repository.deleteTaskState(projectId1, testState1.id)
-
-        // Then
-        assertThat(result).isTrue()
-        assertThat(repository.getTaskStateByProjectId(projectId1)).containsExactlyElementsIn(listOf(testState2))
-        verify(exactly = 3) { dataSource.save(any()) }
-    }
-
-    @Test
-    fun `deleteTaskState should return false when state does not exist`() {
-        // Given
-        val nonExistingId = UUID.randomUUID()
-
-        // When
-        val result = repository.deleteTaskState(projectId1, nonExistingId)
-
-        // Then
-        assertThat(result).isFalse()
+        // When & Then
+        assertThrows<TaskIsNotFoundException> {
+            repository.editTask(nonExistingTask)
+        }
         verify(exactly = 0) { dataSource.save(any()) }
     }
 
     @Test
-    fun `deleteTaskState should return false when project id does not match`() {
+    fun `deleteTask should remove task from repository`() = runBlocking {
         // Given
-        repository.addTaskState(projectId1, testState1)
+        repository.addTask(testTask1)
+        repository.addTask(testTask2)
 
         // When
-        val result = repository.deleteTaskState(projectId2, testState1.id)
-
-        // Then
-        assertThat(result).isFalse()
-        verify(exactly = 1) { dataSource.save(any()) } // Only from the initial addTaskState
-    }
-
-    @Test
-    fun `deleteTaskState should only delete when both project and state ids match`() {
-        // Given
-        repository.addTaskState(projectId1, testState1)
-        repository.addTaskState(projectId2, testState3)
-
-        // When
-        val result = repository.deleteTaskState(projectId2, testState3.id)
+        val result = repository.deleteTask(testTask1.id)
 
         // Then
         assertThat(result).isTrue()
-        assertThrows<NoStateExistException> {
-            repository.getTaskStateByProjectId(projectId2)
-        }
-        assertThat(repository.getTaskStateById(testState1.id)).isEqualTo(testState1)
-        verify(exactly = 3) { dataSource.save(any()) } // Two adds + one delete
+        assertThat(repository.tasks).doesNotContain(testTask1)
+        assertThat(repository.tasks).contains(testTask2)
+        verify(exactly = 3) { dataSource.save(any()) }
     }
 
     @Test
-    fun `getTaskStateById should find state after multiple additions and updates`() {
+    fun `deleteTask should throw TaskIsNotFoundException when task does not exist`() = runBlocking {
         // Given
-        repository.addTaskState(projectId1, testState1)
-        repository.addTaskState(projectId1, testState2)
-        repository.updateTaskState(TaskState(testState1.id, "Updated Name", projectId1))
-
-        // When
-        val result = repository.getTaskStateById(testState1.id)
-
-        // Then
-        assertThat(result.name).isEqualTo("Updated Name")
-        assertThat(result.id).isEqualTo(testState1.id)
-    }
-
-    @Test
-    fun `getTaskStateById should find correct state when multiple states have same project ID`() {
-        // Given
-        repository.addTaskState(projectId1, testState1)
-        repository.addTaskState(projectId1, testState2)
-
-        // When
-        val result = repository.getTaskStateById(testState2.id)
-
-        // Then
-        assertThat(result).isEqualTo(testState2)
-    }
-
-    @Test
-    fun `getTaskStateById should still throw exception after adding and removing a state`() {
-        // Given
-        repository.addTaskState(projectId1, testState1)
-        repository.deleteTaskState(projectId1, testState1.id)
+        val nonExistingId = UUID.randomUUID()
 
         // When & Then
-        assertThrows<NoStateExistException> {
-            repository.getTaskStateById(testState1.id)
+        assertThrows<TaskIsNotFoundException> {
+            repository.deleteTask(nonExistingId)
+        }
+        verify(exactly = 0) { dataSource.save(any()) }
+    }
+
+    @Test
+    fun `getTaskById should return task when it exists`() = runBlocking {
+        // Given
+        repository.addTask(testTask1)
+        repository.addTask(testTask2)
+
+        // When
+        val result = repository.getTaskById(testTask2.id)
+
+        // Then
+        assertThat(result).isEqualTo(testTask2)
+    }
+
+    @Test
+    fun `getTaskById should throw TaskIsNotFoundException when task does not exist`(): Unit = runBlocking {
+        // Given
+        val nonExistingId = UUID.randomUUID()
+
+        // When & Then
+        assertThrows<TaskIsNotFoundException> {
+            repository.getTaskById(nonExistingId)
         }
     }
 
     @Test
-    fun `addTaskState should check for existing state ID before adding`() {
+    fun `getTaskByProjectId should return tasks with matching project ID`(): Unit = runBlocking {
         // Given
-        repository.addTaskState(projectId1, testState1)
-        val stateWithDuplicateId = testState1.copy()
-
-        val mockStates = mockk<MutableList<TaskState>>(relaxed = true)
-        every { mockStates.add(any()) } returns false
-        every { dataSource.save(any()) } returns Unit
-
-
-        val field = repository.javaClass.getDeclaredField("states")
-        field.isAccessible = true
-        field.set(repository, mockStates)
+        repository.addTask(testTask1)
+        repository.addTask(testTask2)
+        repository.addTask(testTask3)
 
         // When
-        val result = repository.addTaskState(projectId2, stateWithDuplicateId)
+        val result = repository.getTaskByProjectId(projectId1)
 
         // Then
-        assertThat(result).isFalse()
-        verify(exactly = 1) { dataSource.save(any()) }
-        verify(exactly = 1) { mockStates.add(any()) }
+        assertThat(result).containsExactly(testTask1, testTask2)
+    }
+
+    @Test
+    fun `getTaskByProjectId should return empty list when no tasks match project ID`() = runBlocking {
+        // Given
+        repository.addTask(testTask1)
+        repository.addTask(testTask2)
+        val nonExistingProjectId = UUID.randomUUID()
+
+        // When
+        val result = repository.getTaskByProjectId(nonExistingProjectId)
+
+        // Then
+        assertThat(result).isEmpty()
+    }
+
+    @Test
+    fun `getTaskById should find task after multiple additions and updates`() = runBlocking {
+        // Given
+        repository.addTask(testTask1)
+        repository.addTask(testTask2)
+        val updatedTask =
+            Task(testTask1.id, "Updated Task", "Updated Description", testTask1.projectId, testTask1.stateId)
+        repository.editTask(updatedTask)
+
+        // When
+        val result = repository.getTaskById(testTask1.id)
+
+        // Then
+        assertThat(result.title).isEqualTo("Updated Task")
+        assertThat(result.description).isEqualTo("Updated Description")
+        assertThat(result.id).isEqualTo(testTask1.id)
+    }
+
+    @Test
+    fun `getTaskById should find correct task when multiple tasks have same project ID`() = runBlocking {
+        // Given
+        repository.addTask(testTask1)
+        repository.addTask(testTask2)
+
+        // When
+        val result = repository.getTaskById(testTask2.id)
+
+        // Then
+        assertThat(result).isEqualTo(testTask2)
+    }
+
+    @Test
+    fun `getTaskById should throw exception after adding and removing a task`(): Unit = runBlocking {
+        // Given
+        repository.addTask(testTask1)
+        repository.deleteTask(testTask1.id)
+
+        // When & Then
+        assertThrows<TaskIsNotFoundException> {
+            repository.getTaskById(testTask1.id)
+        }
+    }
+
+    @Test
+    fun `editing task should not affect other tasks`() = runBlocking {
+        // Given
+        repository.addTask(testTask1)
+        repository.addTask(testTask2)
+        val updatedTask =
+            Task(testTask1.id, "Updated Task", "Updated Description", testTask1.projectId, testTask1.stateId)
+
+        // When
+        repository.editTask(updatedTask)
+
+        // Then
+        assertThat(repository.getTaskById(testTask1.id)).isEqualTo(updatedTask)
+        assertThat(repository.getTaskById(testTask2.id)).isEqualTo(testTask2)
+    }
+
+    @Test
+    fun `tasks with same project but different states should be returned by getTaskByProjectId`(): Unit = runBlocking {
+        // Given
+        repository.addTask(testTask1) // projectId1, stateId1
+        repository.addTask(testTask2) // projectId1, stateId2
+
+        // When
+        val result = repository.getTaskByProjectId(projectId1)
+
+        // Then
+        assertThat(result).containsExactly(testTask1, testTask2)
     }
 }
