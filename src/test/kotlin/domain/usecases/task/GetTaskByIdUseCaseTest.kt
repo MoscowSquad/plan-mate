@@ -2,9 +2,10 @@ package domain.usecases.task
 
 import domain.models.Task
 import domain.repositories.TasksRepository
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -21,8 +22,7 @@ class GetTaskByIdUseCaseTest {
     }
 
     @Test
-    fun `should return task model when found task successfully `() {
-
+    fun `should return task model when found task successfully`() = runBlocking {
         // Given
         val id = UUID.fromString("00000000-0000-0000-0000-000000000001")
 
@@ -34,14 +34,13 @@ class GetTaskByIdUseCaseTest {
             stateId = UUID.randomUUID()
         )
 
-        every { tasksRepository.getTaskById(id) } returns task
-
+        coEvery { tasksRepository.getTaskById(id) } returns task
 
         // When
         val result = getTaskByIdUseCase(id)
 
         // Then
-        assertEquals(result,task)
-        verify(exactly = 1) { getTaskByIdUseCase(id) }
+        assertEquals(task, result)
+        coVerify(exactly = 1) { tasksRepository.getTaskById(id) }
     }
 }
