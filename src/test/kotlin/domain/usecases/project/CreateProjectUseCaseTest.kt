@@ -1,13 +1,15 @@
 package domain.usecases.project
 
+import com.google.common.truth.Truth
 import com.google.common.truth.Truth.assertThat
 import domain.repositories.ProjectsRepository
 import domain.util.InvalidProjectNameException
 import domain.util.NotAdminException
 import domain.util.ProjectCreationFailedException
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -24,18 +26,18 @@ class CreateProjectUseCaseTest {
     }
 
     @Test
-    fun `should create project with when user is admin`() {
+    fun `should create project when user is admin`() = runBlocking {
         // Given
         val projectName = "Test Project"
         val isAdmin = true
-        every { projectsRepository.addProject(any()) } returns true
+        coEvery { projectsRepository.addProject(any()) } returns true
 
         // When
-        val result = createProjectUseCase.invoke(projectName, isAdmin)
+        val result = createProjectUseCase(projectName, isAdmin)
 
         // Then
         assertThat(result).isNotNull()
-        verify {
+        coVerify {
             projectsRepository.addProject(match { project ->
                 project.name == projectName
             })
@@ -43,67 +45,84 @@ class CreateProjectUseCaseTest {
     }
 
     @Test
-    fun `should throw NotAdminException when user is not admin`() {
+    fun `should throw NotAdminException when user is not admin`(): Unit = runBlocking {
         // Given
         val projectName = "Test Project"
         val isAdmin = false
 
         // When & Then
         assertThrows<NotAdminException> {
-            createProjectUseCase.invoke(projectName, isAdmin)
+            createProjectUseCase(projectName, isAdmin)
         }
     }
 
     @Test
-    fun `should throw InvalidProjectNameException when project name is blank`() {
+    fun `should throw InvalidProjectNameException when project name is blank`(): Unit = runBlocking {
         // Given
         val projectName = "  "
         val isAdmin = true
 
         // When & Then
         assertThrows<InvalidProjectNameException> {
-            createProjectUseCase.invoke(projectName, isAdmin)
+            createProjectUseCase(projectName, isAdmin)
         }
     }
 
     @Test
-    fun `should throw InvalidProjectNameException when project name is empty`() {
+    fun `should throw InvalidProjectNameException when project name is empty`(): Unit = runBlocking {
         // Given
         val projectName = ""
         val isAdmin = true
 
         // When & Then
         assertThrows<InvalidProjectNameException> {
-            createProjectUseCase.invoke(projectName, isAdmin)
+            createProjectUseCase(projectName, isAdmin)
         }
     }
 
     @Test
-    fun `should throw ProjectCreationFailedException when repository fails to add project`() {
+    fun `should throw ProjectCreationFailedException when repository fails to add project`(): Unit = runBlocking {
         // Given
         val projectName = "Test Project"
         val isAdmin = true
-        every { projectsRepository.addProject(any()) } returns false
+        coEvery { projectsRepository.addProject(any()) } returns false
 
         // When & Then
         assertThrows<ProjectCreationFailedException> {
-            createProjectUseCase.invoke(projectName, isAdmin)
+            createProjectUseCase(projectName, isAdmin)
         }
     }
 
     @Test
-    fun `should create project with empty user list`() {
+    fun `should create project with valid UUID`() = runBlocking {
         // Given
         val projectName = "Test Project"
         val isAdmin = true
-        every { projectsRepository.addProject(any()) } returns true
+        coEvery { projectsRepository.addProject(any()) } returns true
 
         // When
-        val result = createProjectUseCase.invoke(projectName, isAdmin)
+        val result = createProjectUseCase(projectName, isAdmin)
 
         // Then
-        assertThat(result).isNotNull()
-        verify {
+        try {
+            UUID.fromString(result.toString())
+            assertThat(true).isTrue()
+        } catch (e: IllegalArgumentException) {
+            Truth.assertWithMessage("Generated ID is not a valid UUID").that(false).isTrue()        }
+    }
+
+    @Test
+    fun `should pass project with correct name to repository`() = runBlocking {
+        // Given
+        val projectName = "Specific Project Name"
+        val isAdmin = true
+        coEvery { projectsRepository.addProject(any()) } returns true
+
+        // When
+        createProjectUseCase(projectName, isAdmin)
+
+        // Then
+        coVerify {
             projectsRepository.addProject(match { project ->
                 project.name == projectName
             })
@@ -111,14 +130,14 @@ class CreateProjectUseCaseTest {
     }
 
     @Test
-    fun `should return generated UUID when project is created successfully`() {
+    fun `should return generated UUID when project is created successfully`() = runBlocking {
         // Given
         val projectName = "Test Project"
         val isAdmin = true
-        every { projectsRepository.addProject(any()) } returns true
+        coEvery { projectsRepository.addProject(any()) } returns true
 
         // When
-        val result = createProjectUseCase.invoke(projectName, isAdmin)
+        val result = createProjectUseCase(projectName, isAdmin)
 
         // Then
         assertThat(result).isInstanceOf(UUID::class.java)
