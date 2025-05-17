@@ -5,14 +5,15 @@ import domain.models.TaskState
 import domain.repositories.TaskStateRepository
 import domain.util.IllegalStateTitle
 import domain.util.NoStateExistException
-import io.mockk.every
+import domain.util.NotAdminException
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.util.*
-
 
 class EditTaskStateUseCaseTest {
     private lateinit var editStateUseCase: EditTaskStateUseCase
@@ -25,7 +26,7 @@ class EditTaskStateUseCaseTest {
     }
 
     @Test
-    fun `when valid title should return updated TaskState`() {
+    fun `when valid title should return updated TaskState`() = runBlocking {
         // Given
         val updatedState = TaskState(
             id = UUID.fromString("00000000-0000-0000-0000-000000000002"),
@@ -33,18 +34,18 @@ class EditTaskStateUseCaseTest {
             projectId = UUID.fromString("00000000-0000-0000-0000-000000000001")
         )
 
-        every { stateRepository.updateTaskState(updatedState) } returns true
+        coEvery { stateRepository.updateTaskState(updatedState) } returns true
 
         // When
         val result = editStateUseCase(updatedState, true)
 
         // Then
         assertThat(result).isEqualTo(updatedState)
-        verify(exactly = 1) { stateRepository.updateTaskState(updatedState) }
+        coVerify(exactly = 1) { stateRepository.updateTaskState(updatedState) }
     }
 
     @Test
-    fun `when title is blank should throw IllegalStateTitle`() {
+    fun `when title is blank should throw IllegalStateTitle`() = runBlocking {
         // Given
         val invalidState = TaskState(
             id = UUID.randomUUID(),
@@ -54,13 +55,13 @@ class EditTaskStateUseCaseTest {
 
         // When & Then
         assertThrows<IllegalStateTitle> {
-            editStateUseCase(invalidState, true)
+            runBlocking { editStateUseCase(invalidState, true) }
         }
-        verify(exactly = 0) { stateRepository.updateTaskState(any()) }
+        coVerify(exactly = 0) { stateRepository.updateTaskState(any()) }
     }
 
     @Test
-    fun `when state not found should throw NoStateExistException`() {
+    fun `when state not found should throw NoStateExistException`(): Unit = runBlocking {
         // Given
         val state = TaskState(
             id = UUID.randomUUID(),
@@ -68,13 +69,27 @@ class EditTaskStateUseCaseTest {
             projectId = UUID.randomUUID()
         )
 
-        every { stateRepository.updateTaskState(state) } returns false
+        coEvery { stateRepository.updateTaskState(state) } returns false
 
         // When & Then
         assertThrows<NoStateExistException> {
-            editStateUseCase(state, true)
+            runBlocking { editStateUseCase(state, true) }
         }
     }
 
-}
+    @Test
+    fun `when user is not admin should throw NotAdminException`() = runBlocking {
+        // Given
+        val state = TaskState(
+            id = UUID.randomUUID(),
+            name = "Valid",
+            projectId = UUID.randomUUID()
+        )
 
+        // When & Then
+        assertThrows<NotAdminException> {
+            runBlocking { editStateUseCase(state, false) }
+        }
+        coVerify(exactly = 0) { stateRepository.updateTaskState(any()) }
+    }
+}
