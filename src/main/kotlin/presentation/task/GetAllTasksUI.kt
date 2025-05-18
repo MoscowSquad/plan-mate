@@ -17,14 +17,19 @@ class GetAllTasksUI(
                     tasks.forEach { task ->
                         write(
                             """
-                            -------------------------------------------------------
-                            | Task Name: ${task.title}
-                            | Description: ${task.description}
-                            | Task ID: ${task.id}
-                            | Task State ID: ${task.stateId}
-                            | Project ID: ${task.projectId}
-                            -------------------------------------------------------
-                            """.trimIndent()
+╔════════════════════════════════════════════════════╗
+║                   📝 Task Details                  ║
+╠════════════════════════════════════════════════════╣
+║ 🔹 Title       : ${task.title}
+║ 🧾 Description : ${task.description}
+║ 🆔 Task ID     : ${task.id}
+║ 📌 State ID    : ${task.stateId}
+║ 📁 Project ID  : ${task.projectId}
+║ 📋 Sub-Tasks   :
+${task.subTasks.joinToString(separator = "\n") { "║   • ${it.title} (ID: ${it.id})" }}
+╚════════════════════════════════════════════════════╝
+""".trimIndent()
+
                         )
                     }
                 }
