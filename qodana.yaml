@@ -1,0 +1,20 @@
+#-------------------------------------------------------------------------------#
+#               Qodana analysis is configured by qodana.yaml file               #
+#             https://www.jetbrains.com/help/qodana/qodana-yaml.html            #
+#-------------------------------------------------------------------------------#
+version: "1.0"
+
+# Use the starter inspection profile
+profile:
+  name: qodana.starter
+
+# Use JDK 19 for analysis (matches your GitHub Actions setup)
+projectJDK: "19"
+
+# Bootstrap commands to prepare the project (equivalent to your build steps)
+bootstrap: |
+  chmod +x gradlew
+  ./gradlew build -x test
+
+# Use the JVM Community linter for Java/Kotlin projects
+linter: jetbrains/qodana-jvm-community:2024.3
