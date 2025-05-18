@@ -2,12 +2,14 @@ package presentation.task
 
 import data.mongodb_data.mappers.toUUID
 import domain.usecases.project.GetProjectByIdUseCase
+import domain.usecases.task_state.GetTaskStatesByProjectIdUseCase
 import presentation.io.ConsoleIO
 import presentation.project.GetAllProjectsUI
 import presentation.sub_task.CalculateSubTaskPercentageUI
 
 class TasksUI(
     private val getProjectByIdUseCase: GetProjectByIdUseCase,
+    private val getTaskStatesByProjectIdUseCase: GetTaskStatesByProjectIdUseCase,
     private val deleteTaskUI: DeleteTaskUI,
     private val createTaskUI: CreateTaskUI,
     private val getAllTasksUI: GetAllTasksUI,
@@ -25,7 +27,17 @@ class TasksUI(
         }
 
         if (runCatching { getProjectByIdUseCase(projectId) }.isFailure) {
-            write("❌ No project exists. Add a new project to manage tasks. Please try again")
+            write("❌ No project exists. Add a new project to manage tasks. Please try again.")
+            return
+        }
+
+        val statesExist = runCatching { getTaskStatesByProjectIdUseCase(projectId).isNotEmpty() }.getOrElse {
+            write("❌ Error checking states: ${it.message}")
+            false
+        }
+
+        if (!statesExist) {
+            write("❌ No states exist for this project. Please add at least one state before managing tasks.")
             return
         }
 
