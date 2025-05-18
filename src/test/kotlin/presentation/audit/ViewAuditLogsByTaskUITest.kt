@@ -5,6 +5,7 @@ import domain.models.AuditLog
 import domain.models.AuditLog.AuditType
 import domain.usecases.audit.ViewAuditLogsByTaskUseCase
 import io.mockk.*
+import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.toLocalDateTime
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -36,35 +37,35 @@ class ViewAuditLogsByTaskUITest {
     }
 
     @Test
-    fun `should exit when exit command is entered`() {
+    fun `should exit when exit command is entered`() = runTest {
         // Given
-        every { consoleIO.read() } returns "exit"
+        coEvery { consoleIO.read() } returns "exit"
 
         // When
         viewAuditLogsByTaskUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             consoleIO.write("Enter task ID (or type 'exit' to quit): ")
             consoleIO.read()
         }
-        verify(exactly = 0) {
+        coVerify(exactly = 0) {
             viewAuditLogsByTaskUseCase(any())
         }
     }
 
     @Test
-    fun `should view specific task logs successfully`() {
+    fun `should view specific task logs successfully`() = runTest {
         // Given
         val logs = listOf(sampleLog)
-        every { consoleIO.read() } returnsMany listOf(taskIdString, "exit")
-        every { viewAuditLogsByTaskUseCase(taskId) } returns logs
+        coEvery { consoleIO.read() } returnsMany listOf(taskIdString, "exit")
+        coEvery { viewAuditLogsByTaskUseCase(taskId) } returns logs
 
         // When
         viewAuditLogsByTaskUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             consoleIO.write("Enter task ID (or type 'exit' to quit): ")
             consoleIO.read()
             viewAuditLogsByTaskUseCase(taskId)
@@ -78,39 +79,39 @@ class ViewAuditLogsByTaskUITest {
     }
 
     @Test
-    fun `should handle invalid UUID format`() {
+    fun `should handle invalid UUID format`() = runTest {
         // Given
         val invalidUUID = "invalid-uuid"
-        every { consoleIO.read() } returnsMany listOf(invalidUUID, "exit")
-        every { invalidUUID.toUUID() } throws IllegalArgumentException("Invalid UUID format")
+        coEvery { consoleIO.read() } returnsMany listOf(invalidUUID, "exit")
+        coEvery { invalidUUID.toUUID() } throws IllegalArgumentException("Invalid UUID format")
 
         // When
         viewAuditLogsByTaskUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             consoleIO.write("Enter task ID (or type 'exit' to quit): ")
             consoleIO.read()
             consoleIO.write("❌ Invalid UUID format. Please try again.")
             consoleIO.write("Enter task ID (or type 'exit' to quit): ")
             consoleIO.read()
         }
-        verify(exactly = 0) {
+        coVerify(exactly = 0) {
             viewAuditLogsByTaskUseCase(any())
         }
     }
 
     @Test
-    fun `should handle empty logs`() {
+    fun `should handle empty logs`() = runTest {
         // Given
-        every { consoleIO.read() } returnsMany listOf(taskIdString, "exit")
-        every { viewAuditLogsByTaskUseCase(taskId) } returns emptyList()
+        coEvery { consoleIO.read() } returnsMany listOf(taskIdString, "exit")
+        coEvery { viewAuditLogsByTaskUseCase(taskId) } returns emptyList()
 
         // When
         viewAuditLogsByTaskUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             consoleIO.write("Enter task ID (or type 'exit' to quit): ")
             consoleIO.read()
             viewAuditLogsByTaskUseCase(taskId)
@@ -121,17 +122,17 @@ class ViewAuditLogsByTaskUITest {
     }
 
     @Test
-    fun `should handle exception when retrieving logs`() {
+    fun `should handle exception when retrieving logs`() = runTest {
         // Given
         val errorMsg = "Database connection error"
-        every { consoleIO.read() } returnsMany listOf(taskIdString, "exit")
-        every { viewAuditLogsByTaskUseCase(taskId) } throws RuntimeException(errorMsg)
+        coEvery { consoleIO.read() } returnsMany listOf(taskIdString, "exit")
+        coEvery { viewAuditLogsByTaskUseCase(taskId) } throws RuntimeException(errorMsg)
 
         // When
         viewAuditLogsByTaskUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             consoleIO.write("Enter task ID (or type 'exit' to quit): ")
             consoleIO.read()
             viewAuditLogsByTaskUseCase(taskId)
@@ -142,27 +143,27 @@ class ViewAuditLogsByTaskUITest {
     }
 
     @Test
-    fun `should handle multiple valid queries before exiting`() {
+    fun `should handle multiple valid queries before exiting`() = runTest {
         // Given
         val secondTaskId = UUID.randomUUID()
         val secondTaskIdString = secondTaskId.toString()
-        every { secondTaskIdString.toUUID() } returns secondTaskId
+        coEvery { secondTaskIdString.toUUID() } returns secondTaskId
 
-        every { consoleIO.read() } returnsMany listOf(
+        coEvery { consoleIO.read() } returnsMany listOf(
             taskIdString,
             secondTaskIdString,
             "exit"
         )
-        every { viewAuditLogsByTaskUseCase(taskId) } returns listOf(sampleLog, sampleLog)
-        every { viewAuditLogsByTaskUseCase(secondTaskId) } returns listOf(sampleLog)
+        coEvery { viewAuditLogsByTaskUseCase(taskId) } returns listOf(sampleLog, sampleLog)
+        coEvery { viewAuditLogsByTaskUseCase(secondTaskId) } returns listOf(sampleLog)
 
         // When
         viewAuditLogsByTaskUI.invoke()
 
         // Then
-        verify(exactly = 3) { consoleIO.write("Enter task ID (or type 'exit' to quit): ") }
-        verify(exactly = 3) { consoleIO.read() }
-        verify(exactly = 1) { viewAuditLogsByTaskUseCase(taskId) }
-        verify(exactly = 1) { viewAuditLogsByTaskUseCase(secondTaskId) }
+        coVerify(exactly = 3) { consoleIO.write("Enter task ID (or type 'exit' to quit): ") }
+        coVerify(exactly = 3) { consoleIO.read() }
+        coVerify(exactly = 1) { viewAuditLogsByTaskUseCase(taskId) }
+        coVerify(exactly = 1) { viewAuditLogsByTaskUseCase(secondTaskId) }
     }
 }

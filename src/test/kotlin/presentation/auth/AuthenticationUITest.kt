@@ -1,9 +1,10 @@
 package presentation.auth
 
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.coVerifySequence
 import io.mockk.mockk
-import io.mockk.verify
-import io.mockk.verifySequence
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.io.ConsoleIO
@@ -23,15 +24,15 @@ class AuthenticationUITest {
     }
 
     @Test
-    fun `should call registerAdminUI when option 1 is selected`() {
+    fun `should call registerAdminUI when option 1 is selected`() = runTest {
         // Given
-        every { consoleIO.read() } returns "1"
+        coEvery { consoleIO.read() } returns "1"
 
         // When
         authenticationUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             consoleIO.write(any())
             consoleIO.read()
             registerAdminUI()
@@ -39,15 +40,15 @@ class AuthenticationUITest {
     }
 
     @Test
-    fun `should call loginUserUI when option 2 is selected`() {
+    fun `should call loginUserUI when option 2 is selected`() = runTest {
         // Given
-        every { consoleIO.read() } returns "2"
+        coEvery { consoleIO.read() } returns "2"
 
         // When
         authenticationUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             consoleIO.write(any())
             consoleIO.read()
             loginUserUI()
@@ -55,9 +56,9 @@ class AuthenticationUITest {
     }
 
     @Test
-    fun `should display error message when the user enter input out of range`() {
+    fun `should display error message when the user enter input out of range`() = runTest {
         // Given
-        every { consoleIO.read() } returns "4"
+        coEvery { consoleIO.read() } returns "4"
 
         // When - Execute with try/catch to handle the recursion
         try {
@@ -67,7 +68,7 @@ class AuthenticationUITest {
         }
 
         // Then
-        verify {
+        coVerify {
             consoleIO.write(any()) // Initial prompt
             consoleIO.read() // Read "4"
             consoleIO.write("\nInvalid input. Please enter a number between 1 and 3.") // Error message

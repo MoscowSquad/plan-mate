@@ -5,6 +5,7 @@ import data.session_manager.SessionManager
 import domain.models.User.UserRole
 import domain.usecases.user.AssignProjectToUserUseCase
 import io.mockk.*
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.io.ConsoleIO
@@ -42,18 +43,18 @@ class AssignProjectToUserUITest {
     }
 
     @Test
-    fun `should assign project to user successfully with valid UUIDs`() {
+    fun `should assign project to user successfully with valid UUIDs`() = runTest {
         // Given
-        every { consoleIO.read() } returnsMany listOf(validProjectIdString, validUserIdString)
-        every { validProjectIdString.toUUID() } returns validProjectId
-        every { validUserIdString.toUUID() } returns validUserId
-        every { assignProjectToUserUseCase(UserRole.ADMIN, validProjectId, validUserId) } returns true
+        coEvery { consoleIO.read() } returnsMany listOf(validProjectIdString, validUserIdString)
+        coEvery { validProjectIdString.toUUID() } returns validProjectId
+        coEvery { validUserIdString.toUUID() } returns validUserId
+        coEvery { assignProjectToUserUseCase(UserRole.ADMIN, validProjectId, validUserId) } returns true
 
         // When
         assignProjectToUserUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             getAllProjectsUI.invoke()
             consoleIO.write("\n=== Assign Project to User ===")
             consoleIO.write("Enter Project ID:")
@@ -67,20 +68,20 @@ class AssignProjectToUserUITest {
     }
 
     @Test
-    fun `should handle failed assignment`() {
+    fun `should handle failed assignment`() = runTest {
         // Given
         val errorMessage = "Permission denied"
-        every { consoleIO.read() } returnsMany listOf(validProjectIdString, validUserIdString)
-        every { validProjectIdString.toUUID() } returns validProjectId
-        every { validUserIdString.toUUID() } returns validUserId
-        every { assignProjectToUserUseCase(UserRole.ADMIN, validProjectId, validUserId) } throws
+        coEvery { consoleIO.read() } returnsMany listOf(validProjectIdString, validUserIdString)
+        coEvery { validProjectIdString.toUUID() } returns validProjectId
+        coEvery { validUserIdString.toUUID() } returns validUserId
+        coEvery { assignProjectToUserUseCase(UserRole.ADMIN, validProjectId, validUserId) } throws
                 IllegalStateException(errorMessage)
 
         // When
         assignProjectToUserUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             getAllProjectsUI.invoke()
             consoleIO.write("\n=== Assign Project to User ===")
             consoleIO.write("Enter Project ID:")
@@ -94,17 +95,17 @@ class AssignProjectToUserUITest {
     }
 
     @Test
-    fun `should handle invalid project ID format`() {
+    fun `should handle invalid project ID format`() = runTest {
         // Given
         val invalidProjectId = "not-a-uuid"
-        every { consoleIO.read() } returns invalidProjectId
-        every { invalidProjectId.toUUID() } throws IllegalArgumentException("Invalid UUID format")
+        coEvery { consoleIO.read() } returns invalidProjectId
+        coEvery { invalidProjectId.toUUID() } throws IllegalArgumentException("Invalid UUID format")
 
         // When
         assignProjectToUserUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             getAllProjectsUI.invoke()
             consoleIO.write("\n=== Assign Project to User ===")
             consoleIO.write("Enter Project ID:")
@@ -112,24 +113,24 @@ class AssignProjectToUserUITest {
             consoleIO.write("Invalid Project ID format. Please enter a valid UUID.")
         }
 
-        verify(exactly = 0) {
+        coVerify(exactly = 0) {
             assignProjectToUserUseCase(any(), any(), any())
         }
     }
 
     @Test
-    fun `should handle invalid user ID format`() {
+    fun `should handle invalid user ID format`() = runTest {
         // Given
         val invalidUserId = "not-a-uuid"
-        every { consoleIO.read() } returnsMany listOf(validProjectIdString, invalidUserId)
-        every { validProjectIdString.toUUID() } returns validProjectId
-        every { invalidUserId.toUUID() } throws IllegalArgumentException("Invalid UUID format")
+        coEvery { consoleIO.read() } returnsMany listOf(validProjectIdString, invalidUserId)
+        coEvery { validProjectIdString.toUUID() } returns validProjectId
+        coEvery { invalidUserId.toUUID() } throws IllegalArgumentException("Invalid UUID format")
 
         // When
         assignProjectToUserUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             getAllProjectsUI.invoke()
             consoleIO.write("\n=== Assign Project to User ===")
             consoleIO.write("Enter Project ID:")
@@ -141,18 +142,18 @@ class AssignProjectToUserUITest {
     }
 
     @Test
-    fun `should deny access when user is not admin`() {
+    fun `should deny access when user is not admin`() = runTest {
         // Given
-        every { consoleIO.read() } returnsMany listOf(validProjectIdString, validUserIdString)
-        every { validProjectIdString.toUUID() } returns validProjectId
-        every { validUserIdString.toUUID() } returns validUserId
-        every { sessionManager.getCurrentUserRole() } returns UserRole.MATE
+        coEvery { consoleIO.read() } returnsMany listOf(validProjectIdString, validUserIdString)
+        coEvery { validProjectIdString.toUUID() } returns validProjectId
+        coEvery { validUserIdString.toUUID() } returns validUserId
+        coEvery { sessionManager.getCurrentUserRole() } returns UserRole.MATE
 
         // When
         assignProjectToUserUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             getAllProjectsUI.invoke()
             consoleIO.write("\n=== Assign Project to User ===")
             consoleIO.write("Enter Project ID:")
@@ -163,7 +164,7 @@ class AssignProjectToUserUITest {
             consoleIO.write("Failed to assign user. Only admins can assign users to projects.")
         }
 
-        verify(exactly = 0) {
+        coVerify(exactly = 0) {
             assignProjectToUserUseCase(any(), any(), any())
         }
     }

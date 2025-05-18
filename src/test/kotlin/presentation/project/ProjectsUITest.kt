@@ -1,9 +1,11 @@
 package presentation.project
 
-import io.mockk.every
+import domain.usecases.project.GetAllProjectsUseCase
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.coVerifySequence
 import io.mockk.mockk
-import io.mockk.verify
-import io.mockk.verifySequence
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.io.ConsoleIO
@@ -13,6 +15,7 @@ class ProjectsUITest {
     private lateinit var createProjectUI: CreateProjectUI
     private lateinit var updateProjectNameUI: UpdateProjectNameUI
     private lateinit var deleteProjectUI: DeleteProjectUI
+    private lateinit var getAllProjectsUseCase: GetAllProjectsUseCase
     private lateinit var consoleIO: ConsoleIO
     private lateinit var projectsUI: ProjectsUI
 
@@ -22,26 +25,28 @@ class ProjectsUITest {
         createProjectUI = mockk(relaxed = true)
         updateProjectNameUI = mockk(relaxed = true)
         deleteProjectUI = mockk(relaxed = true)
+        getAllProjectsUseCase = mockk(relaxed = true)
         consoleIO = mockk(relaxed = true)
         projectsUI = ProjectsUI(
             getAllProjectsUI,
             createProjectUI,
             updateProjectNameUI,
             deleteProjectUI,
-            consoleIO
+            getAllProjectsUseCase,
+            consoleIO,
         )
     }
 
     @Test
-    fun `should display menu and call getAllProjectsUI`() {
+    fun `should display menu and call getAllProjectsUI`() = runTest {
         // Given
-        every { consoleIO.read() } returns "4"
+        coEvery { consoleIO.read() } returns "4"
 
         // When
         projectsUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             getAllProjectsUI.invoke()
             consoleIO.write(any<String>())
             consoleIO.read()
@@ -50,15 +55,15 @@ class ProjectsUITest {
     }
 
     @Test
-    fun `should call createProjectUI when option 1 is selected`() {
+    fun `should call createProjectUI when option 1 is selected`() = runTest {
         // Given
-        every { consoleIO.read() } returns "1"
+        coEvery { consoleIO.read() } returns "1"
 
         // When
         projectsUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             getAllProjectsUI.invoke()
             consoleIO.write(any<String>())
             consoleIO.read()
@@ -67,15 +72,15 @@ class ProjectsUITest {
     }
 
     @Test
-    fun `should call updateProjectUI when option 2 is selected`() {
+    fun `should call updateProjectUI when option 2 is selected`() = runTest {
         // Given
-        every { consoleIO.read() } returns "2"
+        coEvery { consoleIO.read() } returns "2"
 
         // When
         projectsUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             consoleIO.write(any<String>())
             consoleIO.read()
             updateProjectNameUI.invoke()
@@ -83,15 +88,15 @@ class ProjectsUITest {
     }
 
     @Test
-    fun `should call deleteProjectUI when option 3 is selected`() {
+    fun `should call deleteProjectUI when option 3 is selected`() = runTest {
         // Given
-        every { consoleIO.read() } returns "3"
+        coEvery { consoleIO.read() } returns "3"
 
         // When
         projectsUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             getAllProjectsUI.invoke()
             consoleIO.write(any<String>())
             consoleIO.read()
@@ -100,22 +105,22 @@ class ProjectsUITest {
     }
 
     @Test
-    fun `should return to main menu when option 4 is selected`() {
+    fun `should return to main menu when option 4 is selected`() = runTest {
         // Given
-        every { consoleIO.read() } returns "4"
+        coEvery { consoleIO.read() } returns "4"
 
         // When
         projectsUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             getAllProjectsUI.invoke()
             consoleIO.write(any<String>())
             consoleIO.read()
             consoleIO.write("Going back to the main menu...")
         }
 
-        verify(exactly = 0) {
+        coVerify(exactly = 0) {
             createProjectUI.invoke()
             updateProjectNameUI.invoke()
             deleteProjectUI.invoke()
@@ -123,15 +128,15 @@ class ProjectsUITest {
     }
 
     @Test
-    fun `should display error message when invalid option is entered`() {
+    fun `should display error message when invalid option is entered`() = runTest {
         // Given
-        every { consoleIO.read() } returns "invalid"
+        coEvery { consoleIO.read() } returns "invalid"
 
         // When
         projectsUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             getAllProjectsUI.invoke()
             consoleIO.write(any<String>())
             consoleIO.read()
@@ -140,15 +145,15 @@ class ProjectsUITest {
     }
 
     @Test
-    fun `should display error message when out of range option is entered`() {
+    fun `should display error message when out of range option is entered`() = runTest {
         // Given
-        every { consoleIO.read() } returns "5"
+        coEvery { consoleIO.read() } returns "5"
 
         // When
         projectsUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             getAllProjectsUI.invoke()
             consoleIO.write(any<String>())
             consoleIO.read()

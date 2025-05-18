@@ -18,4 +18,4 @@ fun createTask(
     description: String,
     projectId: String,
     stateId: String,
-): TaskDto = TaskDto(id, title, description, projectId, stateId)
+): TaskDto = TaskDto(id, title, description, projectId, stateId, listOf())

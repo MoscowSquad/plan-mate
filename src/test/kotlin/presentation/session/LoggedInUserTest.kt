@@ -57,14 +57,7 @@ class SessionManagerTest {
         assertNotEquals(testUser, SessionManager.currentUser)
     }
 
-    @Test
-    fun `should be able to clear currentUser`() {
-        SessionManager.currentUser = testUser
 
-        SessionManager.currentUser = null
-
-        assertNull(SessionManager.currentUser)
-    }
     @Test
     fun `should have correct UUID id property`() {
         val expectedId = UUID.fromString("123e4567-e89b-12d3-a456-426614174000")

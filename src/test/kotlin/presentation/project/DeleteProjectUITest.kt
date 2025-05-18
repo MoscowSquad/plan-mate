@@ -6,6 +6,7 @@ import data.session_manager.SessionManager
 import domain.models.User.UserRole
 import domain.usecases.project.DeleteProjectUseCase
 import io.mockk.*
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.io.ConsoleIO
@@ -31,80 +32,80 @@ class DeleteProjectUITest {
     }
 
     @Test
-    fun `should delete project successfully when user is admin`() {
+    fun `should delete project successfully when user is admin`() = runTest {
         // Given
         val adminUser = mockk<LoggedInUser>()
-        every { adminUser.role } returns UserRole.ADMIN
+        coEvery { adminUser.role } returns UserRole.ADMIN
         mockkObject(SessionManager)
-        every { SessionManager.currentUser } returns adminUser
+        coEvery { SessionManager.currentUser } returns adminUser
 
         // When
         deleteProjectUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             consoleIO.write("Enter the project ID to delete:")
             consoleIO.read()
-            deleteProjectUseCase(projectId, true)
+            deleteProjectUseCase(projectId)
             consoleIO.write("Project deleted successfully.")
         }
     }
 
     @Test
-    fun `should delete project successfully when user is not admin`() {
+    fun `should delete project successfully when user is not admin`() = runTest {
         // Given
         val regularUser = mockk<LoggedInUser>()
-        every { regularUser.role } returns UserRole.MATE
+        coEvery { regularUser.role } returns UserRole.MATE
         mockkObject(SessionManager)
-        every { SessionManager.currentUser } returns regularUser
+        coEvery { SessionManager.currentUser } returns regularUser
 
         // When
         deleteProjectUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             consoleIO.write("Enter the project ID to delete:")
             consoleIO.read()
-            deleteProjectUseCase(projectId, false)
+            deleteProjectUseCase(projectId)
             consoleIO.write("Project deleted successfully.")
         }
     }
 
     @Test
-    fun `should handle exception when deleting project`() {
+    fun `should handle exception when deleting project`() = runTest {
         // Given
         val errorMessage = "Project not found"
 
         mockkObject(SessionManager)
-        every { SessionManager.currentUser } returns null
-        every { deleteProjectUseCase(projectId, false) } throws RuntimeException(errorMessage)
+        coEvery { SessionManager.currentUser } returns null
+        coEvery { deleteProjectUseCase(projectId) } throws RuntimeException(errorMessage)
 
         // When
         deleteProjectUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             consoleIO.write("Enter the project ID to delete:")
             consoleIO.read()
-            deleteProjectUseCase(projectId, false)
+            deleteProjectUseCase(projectId)
             consoleIO.write("Error deleting project: $errorMessage")
         }
     }
 
     @Test
-    fun `should handle null user in session`() {
+    fun `should handle null user in session`() = runTest {
         // Given
         mockkObject(SessionManager)
-        every { SessionManager.currentUser } returns null
+        coEvery { SessionManager.currentUser } returns null
 
         // When
         deleteProjectUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             consoleIO.write("Enter the project ID to delete:")
             consoleIO.read()
-            deleteProjectUseCase(projectId, false)
+            deleteProjectUseCase(projectId)
             consoleIO.write("Project deleted successfully.")
         }
     }

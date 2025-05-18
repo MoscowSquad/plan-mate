@@ -2,9 +2,10 @@ package presentation.project
 
 import domain.models.Project
 import domain.usecases.project.GetAllProjectsUseCase
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.io.ConsoleIO
@@ -23,18 +24,18 @@ class GetAllProjectsUITest {
     }
 
     @Test
-    fun `should display projects when projects are available`() {
+    fun `should display projects when projects are available`() = runTest {
         // Given
         val project1 = createProject(id = "00000000-0000-0000-0000-000000000001", name = "Project 1")
         val project2 = createProject(id = "00000000-0000-0000-0000-000000000002", name = "Project 2")
         val projects = listOf(project1, project2)
-        every { getAllProjectsUseCase() } returns projects
+        coEvery { getAllProjectsUseCase() } returns projects
 
         // When
         getAllProjectsUI.invoke()
 
         // Then
-        verify {
+        coVerify {
             getAllProjectsUseCase()
             consoleIO.write("Projects:")
             consoleIO.write(match { it.contains("Project ID: ${project1.id}") && it.contains("Name: ${project1.name}") })
@@ -43,30 +44,30 @@ class GetAllProjectsUITest {
     }
 
     @Test
-    fun `should display message when no projects are found`() {
+    fun `should display message when no projects are found`() = runTest {
         // Given
-        every { getAllProjectsUseCase() } returns emptyList()
+        coEvery { getAllProjectsUseCase() } returns emptyList()
 
         // When
         getAllProjectsUI.invoke()
 
         // Then
-        verify(exactly = 1) {
+        coVerify(exactly = 1) {
             consoleIO.write("No projects found.")
         }
     }
 
     @Test
-    fun `should display error message when exception is thrown`() {
+    fun `should display error message when exception is thrown`() = runTest {
         // Given
         val errorMessage = "Database connection failed"
-        every { getAllProjectsUseCase() } throws RuntimeException(errorMessage)
+        coEvery { getAllProjectsUseCase() } throws RuntimeException(errorMessage)
 
         // When
         getAllProjectsUI.invoke()
 
         // Then
-        verify(exactly = 1) {
+        coVerify(exactly = 1) {
             consoleIO.write("Error retrieving projects: $errorMessage")
         }
     }

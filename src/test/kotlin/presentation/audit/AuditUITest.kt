@@ -1,6 +1,7 @@
 package presentation.audit
 
 import io.mockk.*
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.io.ConsoleIO
@@ -24,96 +25,96 @@ class AuditUITest {
     }
 
     @Test
-    fun `should call viewAuditLogsByProjectUI when user selects option 1`() {
+    fun `should call viewAuditLogsByProjectUI when user selects option 1`() = runTest {
         // Given
-        every { consoleIO.write(any()) } just runs
-        every { consoleIO.read() } returns "1" andThen "3"
-        every { viewAuditLogsByProjectUI.invoke() } just runs
+        coEvery { consoleIO.write(any()) } just runs
+        coEvery { consoleIO.read() } returns "1" andThen "3"
+        coEvery { viewAuditLogsByProjectUI.invoke() } just runs
 
         // When
         auditUI()
 
         // Then
-        verify(exactly = 2) { consoleIO.write(any()) }
-        verify(exactly = 2) { consoleIO.read() }
-        verify(exactly = 1) { viewAuditLogsByProjectUI.invoke() }
+        coVerify(exactly = 2) { consoleIO.write(any()) }
+        coVerify(exactly = 2) { consoleIO.read() }
+        coVerify(exactly = 1) { viewAuditLogsByProjectUI.invoke() }
     }
 
     @Test
-    fun `should call viewAuditLogsByTaskUI when user selects option 2`() {
+    fun `should call viewAuditLogsByTaskUI when user selects option 2`() = runTest {
         // Given
-        every { consoleIO.write(any()) } just runs
-        every { consoleIO.read() } returns "2" andThen "3"
-        every { viewAuditLogsByTaskUI.invoke() } just runs
+        coEvery { consoleIO.write(any()) } just runs
+        coEvery { consoleIO.read() } returns "2" andThen "3"
+        coEvery { viewAuditLogsByTaskUI.invoke() } just runs
 
         // When
         auditUI()
 
         // Then
-        verify(exactly = 2) { consoleIO.write(any()) }
-        verify(exactly = 2) { consoleIO.read() }
-        verify(exactly = 1) { viewAuditLogsByTaskUI.invoke() }
+        coVerify(exactly = 2) { consoleIO.write(any()) }
+        coVerify(exactly = 2) { consoleIO.read() }
+        coVerify(exactly = 1) { viewAuditLogsByTaskUI.invoke() }
     }
 
     @Test
-    fun `should exit when user selects option 3`() {
+    fun `should exit when user selects option 3`() = runTest {
         // Given
-        every { consoleIO.write(any()) } just runs
-        every { consoleIO.read() } returns "3"
+        coEvery { consoleIO.write(any()) } just runs
+        coEvery { consoleIO.read() } returns "3"
 
         // When
         auditUI()
 
         // Then
-        verify(exactly = 1) { consoleIO.write(any()) }
-        verify(exactly = 1) { consoleIO.read() }
+        coVerify(exactly = 1) { consoleIO.write(any()) }
+        coVerify(exactly = 1) { consoleIO.read() }
     }
 
     @Test
-    fun `should show error message and continue when user enters invalid option`() {
+    fun `should show error message and continue when user enters invalid option`() = runTest {
         // Given
-        every { consoleIO.write(any()) } just runs
-        every { consoleIO.read() } returns "invalid" andThen "3"
+        coEvery { consoleIO.write(any()) } just runs
+        coEvery { consoleIO.read() } returns "invalid" andThen "3"
 
         // When
         auditUI()
 
         // Then
-        verify(exactly = 3) { consoleIO.write(any()) } // Menu + Error message + Menu again
-        verify(exactly = 2) { consoleIO.read() }
+        coVerify(exactly = 3) { consoleIO.write(any()) } // Menu + Error message + Menu again
+        coVerify(exactly = 2) { consoleIO.read() }
     }
 
     @Test
-    fun `should show error message and continue when user enters out of range number`() {
+    fun `should show error message and continue when user enters out of range number`() = runTest {
         // Given
-        every { consoleIO.write(any()) } just runs
-        every { consoleIO.read() } returns "5" andThen "3"
+        coEvery { consoleIO.write(any()) } just runs
+        coEvery { consoleIO.read() } returns "5" andThen "3"
 
         // When
         auditUI()
 
         // Then
-        verify(exactly = 3) { consoleIO.write(any()) } // Menu + Error message + Menu again
-        verify(exactly = 2) { consoleIO.read() }
+        coVerify(exactly = 3) { consoleIO.write(any()) } // Menu + Error message + Menu again
+        coVerify(exactly = 2) { consoleIO.read() }
     }
 
     @Test
-    fun `should handle multiple valid inputs before exiting`() {
+    fun `should handle multiple valid inputs before exiting`() = runTest {
         // Given
-        every { consoleIO.write(any()) } just runs
+        coEvery { consoleIO.write(any()) } just runs
 
         val inputs = mutableListOf("1", "2", "3")
-        every { consoleIO.read() } answers { inputs.removeAt(0) }
+        coEvery { consoleIO.read() } answers { inputs.removeAt(0) }
 
-        every { viewAuditLogsByProjectUI.invoke() } just runs
-        every { viewAuditLogsByTaskUI.invoke() } just runs
+        coEvery { viewAuditLogsByProjectUI.invoke() } just runs
+        coEvery { viewAuditLogsByTaskUI.invoke() } just runs
 
         // When
         auditUI()
 
         // Then
-        verify { viewAuditLogsByProjectUI.invoke() }
-        verify { viewAuditLogsByTaskUI.invoke() }
-        verify(exactly = 3) { consoleIO.read() }
+        coVerify { viewAuditLogsByProjectUI.invoke() }
+        coVerify { viewAuditLogsByTaskUI.invoke() }
+        coVerify(exactly = 3) { consoleIO.read() }
     }
 }

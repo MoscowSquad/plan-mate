@@ -3,10 +3,11 @@ package presentation.audit
 import domain.models.AuditLog
 import domain.models.AuditLog.AuditType
 import domain.usecases.audit.ViewAuditLogsByProjectUseCase
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.coVerifySequence
 import io.mockk.mockk
-import io.mockk.verify
-import io.mockk.verifySequence
+import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -47,16 +48,16 @@ class ViewAuditLogsByProjectUITest {
     }
 
     @Test
-    fun `should display logs and return on exit command`() {
+    fun `should display logs and return on exit command`() = runTest {
         // Given
-        every { consoleIO.read() } returnsMany listOf(projectIdString, "exit")
-        every { viewAuditLogsByProjectUseCase(projectId) } returns sampleAuditLogs
+        coEvery { consoleIO.read() } returnsMany listOf(projectIdString, "exit")
+        coEvery { viewAuditLogsByProjectUseCase(projectId) } returns sampleAuditLogs
 
         // When
         viewAuditLogsByProjectUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             consoleIO.write("Enter project ID (or type 'exit' to quit): ")
             consoleIO.read()
             viewAuditLogsByProjectUseCase(projectId)
@@ -71,16 +72,16 @@ class ViewAuditLogsByProjectUITest {
     }
 
     @Test
-    fun `should handle empty logs`() {
+    fun `should handle empty logs`() = runTest {
         // Given
-        every { consoleIO.read() } returnsMany listOf(projectIdString, "exit")
-        every { viewAuditLogsByProjectUseCase(projectId) } returns emptyList()
+        coEvery { consoleIO.read() } returnsMany listOf(projectIdString, "exit")
+        coEvery { viewAuditLogsByProjectUseCase(projectId) } returns emptyList()
 
         // When
         viewAuditLogsByProjectUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             consoleIO.write("Enter project ID (or type 'exit' to quit): ")
             consoleIO.read()
             viewAuditLogsByProjectUseCase(projectId)
@@ -91,17 +92,17 @@ class ViewAuditLogsByProjectUITest {
     }
 
     @Test
-    fun `should handle exception when retrieving logs`() {
+    fun `should handle exception when retrieving logs`() = runTest {
         // Given
         val errorMessage = "Database connection error"
-        every { consoleIO.read() } returnsMany listOf(projectIdString, "exit")
-        every { viewAuditLogsByProjectUseCase(projectId) } throws RuntimeException(errorMessage)
+        coEvery { consoleIO.read() } returnsMany listOf(projectIdString, "exit")
+        coEvery { viewAuditLogsByProjectUseCase(projectId) } throws RuntimeException(errorMessage)
 
         // When
         viewAuditLogsByProjectUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             consoleIO.write("Enter project ID (or type 'exit' to quit): ")
             consoleIO.read()
             viewAuditLogsByProjectUseCase(projectId)
@@ -112,16 +113,16 @@ class ViewAuditLogsByProjectUITest {
     }
 
     @Test
-    fun `should handle invalid UUID input and retry`() {
+    fun `should handle invalid UUID input and retry`() = runTest {
         // Given
-        every { consoleIO.read() } returnsMany listOf("invalid-uuid", projectIdString, "exit")
-        every { viewAuditLogsByProjectUseCase(projectId) } returns sampleAuditLogs
+        coEvery { consoleIO.read() } returnsMany listOf("invalid-uuid", projectIdString, "exit")
+        coEvery { viewAuditLogsByProjectUseCase(projectId) } returns sampleAuditLogs
 
         // When
         viewAuditLogsByProjectUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             consoleIO.write("Enter project ID (or type 'exit' to quit): ")
             consoleIO.read()
             consoleIO.write(match { it.contains("❌ Invalid UUID format") })
@@ -139,42 +140,42 @@ class ViewAuditLogsByProjectUITest {
     }
 
     @Test
-    fun `should exit immediately when exit command is entered`() {
+    fun `should exit immediately when exit command is entered`() = runTest {
         // Given
-        every { consoleIO.read() } returns "exit"
+        coEvery { consoleIO.read() } returns "exit"
 
         // When
         viewAuditLogsByProjectUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             consoleIO.write("Enter project ID (or type 'exit' to quit): ")
             consoleIO.read()
         }
-        verify(exactly = 0) {
+        coVerify(exactly = 0) {
             viewAuditLogsByProjectUseCase(any())
         }
     }
 
     @Test
-    fun `should handle multiple valid queries before exiting`() {
+    fun `should handle multiple valid queries before exiting`() = runTest {
         // Given
         val secondProjectId = UUID.randomUUID()
-        every { consoleIO.read() } returnsMany listOf(
+        coEvery { consoleIO.read() } returnsMany listOf(
             projectIdString,
             secondProjectId.toString(),
             "exit"
         )
-        every { viewAuditLogsByProjectUseCase(projectId) } returns sampleAuditLogs
-        every { viewAuditLogsByProjectUseCase(secondProjectId) } returns listOf(sampleAuditLogs.first())
+        coEvery { viewAuditLogsByProjectUseCase(projectId) } returns sampleAuditLogs
+        coEvery { viewAuditLogsByProjectUseCase(secondProjectId) } returns listOf(sampleAuditLogs.first())
 
         // When
         viewAuditLogsByProjectUI.invoke()
 
         // Then
-        verify(exactly = 3) { consoleIO.write("Enter project ID (or type 'exit' to quit): ") }
-        verify(exactly = 3) { consoleIO.read() }
-        verify(exactly = 1) { viewAuditLogsByProjectUseCase(projectId) }
-        verify(exactly = 1) { viewAuditLogsByProjectUseCase(secondProjectId) }
+        coVerify(exactly = 3) { consoleIO.write("Enter project ID (or type 'exit' to quit): ") }
+        coVerify(exactly = 3) { consoleIO.read() }
+        coVerify(exactly = 1) { viewAuditLogsByProjectUseCase(projectId) }
+        coVerify(exactly = 1) { viewAuditLogsByProjectUseCase(secondProjectId) }
     }
 }

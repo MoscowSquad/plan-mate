@@ -3,10 +3,11 @@ package presentation.auth
 import domain.models.User.UserRole
 import domain.usecases.auth.RegisterUseCase
 import fake.FakeConsoleIO
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.coVerifySequence
 import io.mockk.mockk
-import io.mockk.verify
-import io.mockk.verifySequence
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.*
@@ -24,16 +25,16 @@ class RegisterAdminUITest {
     }
 
     @Test
-    fun `should register admin successfully on first attempt`() {
+    fun `should register admin successfully on first attempt`() = runTest {
         // Given
-        every { registerUseCase("test admin", "test password", UserRole.ADMIN) } returns mockk<domain.models.User>(
+        coEvery { registerUseCase("test admin", "test password", UserRole.ADMIN) } returns mockk<domain.models.User>(
             relaxed = true
         )
         // When
         registerAdminUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             registerUseCase("test admin", "test password", UserRole.ADMIN)
         }
 
@@ -53,13 +54,13 @@ class RegisterAdminUITest {
     }
 
     @Test
-    fun `should retry registration after failure`() {
+    fun `should retry registration after failure`() = runTest {
         // Given
         consoleIO = FakeConsoleIO(LinkedList(listOf("existing", "pass1", "new admin", "pass2")))
         registerAdminUI = RegisterAdminUI(registerUseCase, consoleIO)
 
-        every { registerUseCase("existing", "pass1", UserRole.ADMIN) } throws Exception("Username already exists")
-        every {
+        coEvery { registerUseCase("existing", "pass1", UserRole.ADMIN) } throws Exception("Username already exists")
+        coEvery {
             registerUseCase(
                 "new admin",
                 "pass2",
@@ -70,7 +71,7 @@ class RegisterAdminUITest {
         registerAdminUI.invoke()
 
         // Then
-        verifySequence {
+        coVerifySequence {
             registerUseCase("existing", "pass1", UserRole.ADMIN)
             registerUseCase("new admin", "pass2", UserRole.ADMIN)
         }
@@ -92,7 +93,7 @@ class RegisterAdminUITest {
     }
 
     @Test
-    fun `should handle multiple registration failures before success`() {
+    fun `should handle multiple registration failures before success`() = runTest {
         // Given
         consoleIO = FakeConsoleIO(
             LinkedList(
@@ -105,14 +106,20 @@ class RegisterAdminUITest {
         )
         registerAdminUI = RegisterAdminUI(registerUseCase, consoleIO)
 
-        every { registerUseCase("user1", "weak", UserRole.ADMIN) } throws Exception("Password too weak")
-        every { registerUseCase("user2", "short", UserRole.ADMIN) } throws Exception("Password too short")
-        every { registerUseCase("user3", "valid123", UserRole.ADMIN) } returns mockk<domain.models.User>(relaxed = true)
+        coEvery { registerUseCase("user1", "weak", UserRole.ADMIN) } throws Exception("Password too weak")
+        coEvery { registerUseCase("user2", "short", UserRole.ADMIN) } throws Exception("Password too short")
+        coEvery {
+            registerUseCase(
+                "user3",
+                "valid123",
+                UserRole.ADMIN
+            )
+        } returns mockk<domain.models.User>(relaxed = true)
         // When
         registerAdminUI.invoke()
 
         // Then
-        verify {
+        coVerify {
             registerUseCase("user1", "weak", UserRole.ADMIN)
             registerUseCase("user2", "short", UserRole.ADMIN)
             registerUseCase("user3", "valid123", UserRole.ADMIN)
