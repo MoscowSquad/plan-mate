@@ -1,7 +1,6 @@
 package di
 
 import org.koin.core.module.dsl.factoryOf
-import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import presentation.PlanMateConsoleUI
 import presentation.audit.AuditUI
@@ -24,13 +23,8 @@ val presentationModule = module {
     single<ConsoleIO> { ConsoleIOImpl(get()) }
 
     // Authentication UI
-    singleOf(::LoginUserUI)
-    factory {
-        RegisterAdminUI(
-            registerUseCase = get(),
-            consoleIO = get()
-        )
-    }
+    factoryOf(::LoginUserUI)
+    factoryOf(::RegisterAdminUI)
     factoryOf(::AuthenticationUI)
 
     // Project UI
@@ -55,102 +49,27 @@ val presentationModule = module {
     factoryOf(::StateUI)
 
     //Subtask UI
-    factory {
-        CreateSubTaskUI(
-            createSubTaskUseCase = get(),
-            consoleIO = get()
-        )
-    }
-    factory {
-        GetSubTasksByTaskIdUI(
-            getSubTasksByTaskIdUseCase = get(),
-            consoleIO = get()
-        )
-    }
-    factory{
-        DeleteSubTaskUI(
-            deleteSubTaskUseCase = get(),
-            consoleIO = get()
-        )
-    }
-    factory {
-        EditSubTaskUI(
-            updateSubTaskUseCase = get(),
-            consoleIO = get()
-        )
-    }
+    factoryOf(::CreateSubTaskUI)
+    factoryOf(::GetSubTasksByTaskIdUI)
+    factoryOf(::DeleteSubTaskUI)
+    factoryOf(::EditSubTaskUI)
+    factoryOf(::CreateSubTaskUI)
+    factoryOf(::CalculateSubTaskPercentageUI)
+    factoryOf(::SubTaskUI)
 
-    factory{
-        SubTaskUI(
-            getProjectByIdUseCase = get(),
-            createSubTaskUI = get(),
-            deleteSubTaskUI = get(),
-            getAllTasksUI = get(),
-            editTaskUI = get(),
-            getAllProjectsUI = get(),
-            consoleIO = get(),
-            getSubTasksByTaskIdUI = get()
-        )
-    }
+    // User UI
+    factoryOf(::CreateUserUI)
+    factoryOf(::GetAllUserUI)
+    factoryOf(::AssignProjectToUserUI)
+    factoryOf(::DeleteUserUI)
+    factoryOf(::GetUserByIdUI)
+    factoryOf(::UserUI)
 
-    factory{
-        CalculateSubTaskPercentageUI(
-            getSubTaskPercentageUseCase = get(),
-            consoleIO = get()
-        )
-    }
-
-
-    factory {
-        CreateUserUI(
-            createUserUseCase = get(),
-            consoleIO = get()
-        )
-    }
-
-    factory {
-        GetAllUserUI(
-            getAllUsersUseCase = get(),
-            consoleIO = get()
-        )
-    }
-
-    factory {
-        AssignProjectToUserUI(
-            assignProjectToUserUseCase = get(),
-            consoleIO = get(),
-            getAllProjectsUI = get()
-        )
-    }
-
-    factory {
-        DeleteUserUI(
-            deleteUserUseCase = get(),
-            consoleIO = get()
-        )
-    }
-    factory {
-        GetUserByIdUI(
-            getUserByIdUseCase = get(),
-            consoleIO = get(),
-            getTaskByIdUseCase = get()
-        )
-    }
-
-    factory {
-        UserUI(
-            createUserUI = get(),
-            getAllUserUI = get(),
-            assignProjectToUserUI = get(),
-            deleteUserUI = get(),
-            consoleIO = get(),
-            getUserByIdUI = get()
-        )
-    }
-
+    // Audit UI
     factoryOf(::ViewAuditLogsByProjectUI)
     factoryOf(::ViewAuditLogsByTaskUI)
     factoryOf(::AuditUI)
+
+    // Main UI
     factoryOf(::PlanMateConsoleUI)
-    factoryOf(::GetUserByIdUI)
 }
