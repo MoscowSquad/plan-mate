@@ -312,4 +312,41 @@ class MapperKtTest {
         )
         assertEquals(TASK, taskAuditLog.toDto().auditType)
     }
+
+    @Test
+    fun `test String to SubTask conversion`() {
+        val uuidString = "550e8400-e29b-41d4-a716-446655440000"
+
+        val subTask = uuidString.toSubTask()
+
+        assertEquals(UUID.fromString(uuidString), subTask.id)
+        assertEquals("", subTask.title)
+        assertEquals("", subTask.description)
+        assertEquals(false, subTask.isCompleted)
+        assertEquals(UUID.fromString(uuidString), subTask.parentTaskId)
+    }
+
+    @Test
+    fun `test TaskDto to Task conversion with subTasks`() {
+        val taskDto = TaskDto(
+            id = "550e8400-e29b-41d4-a716-446655440000",
+            name = "Test Task",
+            description = "Task Description",
+            projectId = "550e8400-e29b-41d4-a716-446655440001",
+            stateId = "550e8400-e29b-41d4-a716-446655440002",
+            subTasks = listOf("550e8400-e29b-41d4-a716-446655440003")
+        )
+
+        val task = taskDto.toTask()
+
+        assertEquals(UUID.fromString("550e8400-e29b-41d4-a716-446655440000"), task.id)
+        assertEquals("Test Task", task.title)
+        assertEquals("Task Description", task.description)
+        assertEquals(1, task.subTasks.size)
+        val subTask = task.subTasks[0]
+        assertEquals(UUID.fromString("550e8400-e29b-41d4-a716-446655440003"), subTask.id)
+        assertEquals("", subTask.title)
+        assertEquals(false, subTask.isCompleted)
+    }
+
 }
