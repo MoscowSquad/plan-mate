@@ -3,9 +3,11 @@ package domain.usecases.task_state
 import domain.models.TaskState
 import domain.repositories.TaskStateRepository
 import domain.util.IllegalStateTitle
-import io.mockk.every
+import domain.util.NotAdminException
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -14,7 +16,6 @@ import java.util.*
 
 class AddTaskStateUseCaseTest {
     private lateinit var stateRepository: TaskStateRepository
-
     private lateinit var addStateUseCase: AddTaskStateUseCase
 
     @BeforeEach
@@ -24,7 +25,7 @@ class AddTaskStateUseCaseTest {
     }
 
     @Test
-    fun `should return true when state is successfully added`() {
+    fun `should return true when state is successfully added`() = runTest {
         // Given
         val validState = TaskState(
             id = UUID.randomUUID(),
@@ -32,18 +33,18 @@ class AddTaskStateUseCaseTest {
             projectId = UUID.randomUUID()
         )
 
-        every { stateRepository.addTaskState(validState.projectId, validState) } returns true
+        coEvery { stateRepository.addTaskState(validState.projectId, validState) } returns true
 
         // When
         val result = addStateUseCase(validState, true)
 
         // Then
         assertTrue(result)
-        verify(exactly = 1) { stateRepository.addTaskState(validState.projectId, validState) }
+        coVerify(exactly = 1) { stateRepository.addTaskState(validState.projectId, validState) }
     }
 
     @Test
-    fun `should throw IllegalStateTitle when title is blank`() {
+    fun `should throw IllegalStateTitle when title is blank`() = runTest {
         // Given
         val invalidState = TaskState(
             id = UUID.randomUUID(),
@@ -53,13 +54,13 @@ class AddTaskStateUseCaseTest {
 
         // When & Then
         assertThrows<IllegalStateTitle> {
-            addStateUseCase(invalidState, true)
+             addStateUseCase(invalidState, true)
         }
-        verify(exactly = 0) { stateRepository.addTaskState(any(), any()) }
+        coVerify(exactly = 0) { stateRepository.addTaskState(any(), any()) }
     }
 
     @Test
-    fun `should throw IllegalStateTitle when title is too long`() {
+    fun `should throw IllegalStateTitle when title is too long`() = runTest {
         // Given
         val longTitle = "a".repeat(101)
         val invalidState = TaskState(
@@ -70,13 +71,29 @@ class AddTaskStateUseCaseTest {
 
         // When & Then
         assertThrows<IllegalStateTitle> {
-            addStateUseCase(invalidState, true)
+             addStateUseCase(invalidState, true)
         }
-        verify(exactly = 0) { stateRepository.addTaskState(any(), any()) }
+        coVerify(exactly = 0) { stateRepository.addTaskState(any(), any()) }
     }
 
     @Test
-    fun `should throw when repository fails to add`() {
+    fun `should throw NotAdminException when user is not admin`() = runTest {
+        // Given
+        val validState = TaskState(
+            id = UUID.randomUUID(),
+            name = "Valid State",
+            projectId = UUID.randomUUID()
+        )
+
+        // When & Then
+        assertThrows<NotAdminException> {
+             addStateUseCase(validState, false)
+        }
+        coVerify(exactly = 0) { stateRepository.addTaskState(any(), any()) }
+    }
+
+    @Test
+    fun `should throw when repository fails to add`() = runTest {
         // Given
         val validState = TaskState(
             id = UUID.randomUUID(),
@@ -84,18 +101,18 @@ class AddTaskStateUseCaseTest {
             projectId = UUID.randomUUID()
         )
 
-        every { stateRepository.addTaskState(validState.projectId, validState) } returns false
+        coEvery { stateRepository.addTaskState(validState.projectId, validState) } returns false
 
         // When & Then
         assertThrows<IllegalStateException> {
-            addStateUseCase(validState, true)
+             addStateUseCase(validState, true)
         }
 
-        verify(exactly = 1) { stateRepository.addTaskState(validState.projectId, validState) }
+        coVerify(exactly = 1) { stateRepository.addTaskState(validState.projectId, validState) }
     }
 
     @Test
-    fun `should accept titles at boundary conditions`() {
+    fun `should accept titles at boundary conditions`() = runTest {
         // Given
         val minLengthState = TaskState(
             id = UUID.randomUUID(),
@@ -109,15 +126,13 @@ class AddTaskStateUseCaseTest {
             projectId = UUID.randomUUID()
         )
 
-        every { stateRepository.addTaskState(any(), any()) } returns true
+        coEvery { stateRepository.addTaskState(any(), any()) } returns true
 
         // When & Then
-
         assertTrue(addStateUseCase(minLengthState, true))
-        verify(exactly = 1) { stateRepository.addTaskState(minLengthState.projectId, minLengthState) }
-
+        coVerify(exactly = 1) { stateRepository.addTaskState(minLengthState.projectId, minLengthState) }
 
         assertTrue(addStateUseCase(maxLengthState, true))
-        verify(exactly = 1) { stateRepository.addTaskState(maxLengthState.projectId, maxLengthState) }
+        coVerify(exactly = 1) { stateRepository.addTaskState(maxLengthState.projectId, maxLengthState) }
     }
 }

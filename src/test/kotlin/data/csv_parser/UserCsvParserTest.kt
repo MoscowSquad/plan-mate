@@ -94,8 +94,9 @@ class UserCsvParserTest {
     @Test
     fun `should return empty list when serialize and parse user with empty project ids string`() {
         // Given
-        val user = createUser("test-id", "TestUser", "password123", MATE, emptyList())
-        val serialized = listOf("id,name,hashedPassword,role,projectIds", "test-id,TestUser,password123,${MATE},[]")
+        val user = createUser("test-id", "TestUser", "password123", MATE, emptyList(), emptyList())
+        val serialized =
+            listOf("id,name,hashedPassword,role,projectIds,taskIds", "test-id,TestUser,password123,${MATE},[],[]")
 
         // When
         val parsedResult = parser.parse(serialized)
@@ -117,7 +118,7 @@ class UserCsvParserTest {
 
         // Then
         Truth.assertThat(result).containsExactly(
-            createUser("test-id", "TestUser", "password123", MATE, emptyList())
+            createUser("test-id", "TestUser", "password123", MATE, emptyList(), emptyList())
         )
     }
 
@@ -134,7 +135,7 @@ class UserCsvParserTest {
 
         // Then
         Truth.assertThat(result).containsExactly(
-            createUser("test-id", "TestUser", "password123", MATE, emptyList())
+            createUser("test-id", "TestUser", "password123", MATE, emptyList(), emptyList())
         )
     }
 }

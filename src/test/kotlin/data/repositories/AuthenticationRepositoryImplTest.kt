@@ -10,6 +10,7 @@ import domain.models.User.UserRole
 import domain.util.UserNotFoundException
 import domain.util.toMD5Hash
 import io.mockk.*
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.*
@@ -47,11 +48,11 @@ class AuthenticationRepositoryImplTest {
         // Then
         verify { userDataSource.fetch() }
         assertEquals(1, repository.users.size)
-            assertEquals(testUser.id, repository.users[0].toUser().id)
+        assertEquals(testUser.id, repository.users[0].toUser().id)
     }
 
     @Test
-    fun `register should add user and update data source`() {
+    fun `register should add user and update data source`() = runTest {
         // Given
         val hashedPassword = "password456".toMD5Hash()
         val newUser = User(
@@ -74,7 +75,7 @@ class AuthenticationRepositoryImplTest {
     }
 
     @Test
-    fun `register should throw exception for duplicate username`() {
+    fun `register should throw exception for duplicate username`() = runTest {
         // Given
         val duplicateUser = testUser.copy(id = UUID.randomUUID())
 
@@ -87,7 +88,7 @@ class AuthenticationRepositoryImplTest {
     }
 
     @Test
-    fun `login should update session and return true for valid credentials`() {
+    fun `login should update session and return user for valid credentials`() = runTest {
         // When
         val result = repository.login("testUser", "password123")
 
@@ -97,7 +98,7 @@ class AuthenticationRepositoryImplTest {
     }
 
     @Test
-    fun `login should throw UserNotFoundException for invalid credentials`() {
+    fun `login should throw UserNotFoundException for invalid credentials`() = runTest {
         // When & Then
         assertFailsWith<UserNotFoundException> {
             repository.login("testUser", "wrongPassword")
@@ -107,7 +108,7 @@ class AuthenticationRepositoryImplTest {
     }
 
     @Test
-    fun `login should throw UserNotFoundException for non-existent user`() {
+    fun `login should throw UserNotFoundException for non-existent user`() = runTest {
         // When & Then
         assertFailsWith<UserNotFoundException> {
             repository.login("nonExistentUser", "anyPassword")

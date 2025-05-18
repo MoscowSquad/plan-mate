@@ -11,6 +11,7 @@ import domain.util.TaskIsNotFoundException
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -19,7 +20,7 @@ import java.util.*
 class TasksRepositoryImplTest {
 
     private lateinit var dataSource: TaskDataSource
-    private lateinit var tasksRepository: TasksRepositoryImpl
+    private lateinit var repository: TasksRepositoryImpl
     private lateinit var testTask1: Task
     private lateinit var testTask2: Task
     private lateinit var testTask3: Task
@@ -57,7 +58,7 @@ class TasksRepositoryImplTest {
 
         every { dataSource.fetch() } returns emptyList()
 
-        tasksRepository = TasksRepositoryImpl(dataSource)
+        repository = TasksRepositoryImpl(dataSource)
     }
 
     @Test
@@ -77,168 +78,168 @@ class TasksRepositoryImplTest {
     }
 
     @Test
-    fun `getAllTasks should return empty list when repository is empty`() {
+    fun `getAllTasks should return empty list when repository is empty`() = runTest {
         // When
-        val result = tasksRepository.getAllTasks()
+        val result = repository.getAllTasks()
 
         // Then
         assertThat(result).isEmpty()
     }
 
     @Test
-    fun `getAllTasks should return all tasks in repository`() {
+    fun `getAllTasks should return all tasks in repository`(): Unit = runTest {
         // Given
-        tasksRepository.addTask(testTask1)
-        tasksRepository.addTask(testTask2)
-        tasksRepository.addTask(testTask3)
+        repository.addTask(testTask1)
+        repository.addTask(testTask2)
+        repository.addTask(testTask3)
 
         // When
-        val result = tasksRepository.getAllTasks()
+        val result = repository.getAllTasks()
 
         // Then
         assertThat(result).containsExactly(testTask1, testTask2, testTask3)
     }
 
     @Test
-    fun `getAllTasks should return a copy of the internal list`() {
+    fun `getAllTasks should return a copy of the internal list`() = runTest {
         // Given
-        tasksRepository.addTask(testTask1)
+        repository.addTask(testTask1)
 
         // When
-        val tasks = tasksRepository.getAllTasks()
+        val tasks = repository.getAllTasks()
         tasks.toMutableList().add(testTask2)
 
         // Then
-        assertThat(tasksRepository.tasks).doesNotContain(testTask2)
+        assertThat(repository.tasks).doesNotContain(testTask2)
     }
 
     @Test
-    fun `addTask should store task in repository`() {
+    fun `addTask should store task in repository`() = runTest {
         // When
-        val result = tasksRepository.addTask(testTask1)
+        val result = repository.addTask(testTask1)
 
         // Then
         assertThat(result).isTrue()
-        assertThat(tasksRepository.tasks).contains(testTask1)
+        assertThat(repository.tasks).contains(testTask1)
         verify { dataSource.save(any()) }
     }
 
     @Test
-    fun `addTask should throw TaskIsExist when task with same ID already exists`() {
+    fun `addTask should throw TaskIsExist when task with same ID already exists`() = runTest {
         // Given
-        tasksRepository.addTask(testTask1)
+        repository.addTask(testTask1)
         val duplicateTask = Task(testTask1.id, "Duplicate Task", "Duplicate Description", projectId1, UUID.randomUUID())
 
         // When & Then
         assertThrows<TaskIsExist> {
-            tasksRepository.addTask(duplicateTask)
+            repository.addTask(duplicateTask)
         }
         verify(exactly = 1) { dataSource.save(any()) }
     }
 
     @Test
-    fun `editTask should modify existing task`() {
+    fun `editTask should modify existing task`() = runTest {
         // Given
-        tasksRepository.addTask(testTask1)
+        repository.addTask(testTask1)
         val updatedTask =
             Task(testTask1.id, "Updated Task", "Updated Description", testTask1.projectId, testTask1.stateId)
 
         // When
-        val result = tasksRepository.editTask(updatedTask)
+        val result = repository.editTask(updatedTask)
 
         // Then
         assertThat(result).isTrue()
-        assertThat(tasksRepository.getTaskById(testTask1.id)).isEqualTo(updatedTask)
+        assertThat(repository.getTaskById(testTask1.id)).isEqualTo(updatedTask)
         verify(exactly = 2) { dataSource.save(any()) }
     }
 
     @Test
-    fun `editTask should throw TaskIsNotFoundException when task does not exist`() {
+    fun `editTask should throw TaskIsNotFoundException when task does not exist`() = runTest {
         // Given
         val nonExistingTask = Task(UUID.randomUUID(), "Non-existing", "Description", projectId1, UUID.randomUUID())
 
         // When & Then
         assertThrows<TaskIsNotFoundException> {
-            tasksRepository.editTask(nonExistingTask)
+            repository.editTask(nonExistingTask)
         }
         verify(exactly = 0) { dataSource.save(any()) }
     }
 
     @Test
-    fun `deleteTask should remove task from repository`() {
+    fun `deleteTask should remove task from repository`() = runTest {
         // Given
-        tasksRepository.addTask(testTask1)
-        tasksRepository.addTask(testTask2)
+        repository.addTask(testTask1)
+        repository.addTask(testTask2)
 
         // When
-        val result = tasksRepository.deleteTask(testTask1.id)
+        val result = repository.deleteTask(testTask1.id)
 
         // Then
         assertThat(result).isTrue()
-        assertThat(tasksRepository.tasks).doesNotContain(testTask1)
-        assertThat(tasksRepository.tasks).contains(testTask2)
+        assertThat(repository.tasks).doesNotContain(testTask1)
+        assertThat(repository.tasks).contains(testTask2)
         verify(exactly = 3) { dataSource.save(any()) }
     }
 
     @Test
-    fun `deleteTask should throw TaskIsNotFoundException when task does not exist`() {
+    fun `deleteTask should throw TaskIsNotFoundException when task does not exist`() = runTest {
         // Given
         val nonExistingId = UUID.randomUUID()
 
         // When & Then
         assertThrows<TaskIsNotFoundException> {
-            tasksRepository.deleteTask(nonExistingId)
+            repository.deleteTask(nonExistingId)
         }
         verify(exactly = 0) { dataSource.save(any()) }
     }
 
     @Test
-    fun `getTaskById should return task when it exists`() {
+    fun `getTaskById should return task when it exists`() = runTest {
         // Given
-        tasksRepository.addTask(testTask1)
-        tasksRepository.addTask(testTask2)
+        repository.addTask(testTask1)
+        repository.addTask(testTask2)
 
         // When
-        val result = tasksRepository.getTaskById(testTask2.id)
+        val result = repository.getTaskById(testTask2.id)
 
         // Then
         assertThat(result).isEqualTo(testTask2)
     }
 
     @Test
-    fun `getTaskById should throw TaskIsNotFoundException when task does not exist`() {
+    fun `getTaskById should throw TaskIsNotFoundException when task does not exist`(): Unit = runTest {
         // Given
         val nonExistingId = UUID.randomUUID()
 
         // When & Then
         assertThrows<TaskIsNotFoundException> {
-            tasksRepository.getTaskById(nonExistingId)
+            repository.getTaskById(nonExistingId)
         }
     }
 
     @Test
-    fun `getTaskByProjectId should return tasks with matching project ID`() {
+    fun `getTaskByProjectId should return tasks with matching project ID`(): Unit = runTest {
         // Given
-        tasksRepository.addTask(testTask1)
-        tasksRepository.addTask(testTask2)
-        tasksRepository.addTask(testTask3)
+        repository.addTask(testTask1)
+        repository.addTask(testTask2)
+        repository.addTask(testTask3)
 
         // When
-        val result = tasksRepository.getTaskByProjectId(projectId1)
+        val result = repository.getTaskByProjectId(projectId1)
 
         // Then
         assertThat(result).containsExactly(testTask1, testTask2)
     }
 
     @Test
-    fun `getTaskByProjectId should return empty list when no tasks match project ID`() {
+    fun `getTaskByProjectId should return empty list when no tasks match project ID`() = runTest {
         // Given
-        tasksRepository.addTask(testTask1)
-        tasksRepository.addTask(testTask2)
+        repository.addTask(testTask1)
+        repository.addTask(testTask2)
         val nonExistingProjectId = UUID.randomUUID()
 
         // When
-        val result = tasksRepository.getTaskByProjectId(nonExistingProjectId)
+        val result = repository.getTaskByProjectId(nonExistingProjectId)
 
         // Then
         assertThat(result).isEmpty()

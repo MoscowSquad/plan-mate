@@ -1,12 +1,12 @@
 package domain.usecases.user
 
-import domain.models.User
 import domain.models.User.UserRole
 import domain.repositories.UserRepository
 import domain.util.UnauthorizedAccessException
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -19,10 +19,7 @@ class DeleteUserUseCaseTest {
 
     private val adminRole = UserRole.ADMIN
     private val mateRole = UserRole.MATE
-    private val user = User(
-        UUID.randomUUID(), "User1", UserRole.MATE, listOf(),
-        taskIds = listOf()
-    )
+    private val userId = UUID.randomUUID()
 
     @BeforeEach
     fun setup() {
@@ -31,38 +28,40 @@ class DeleteUserUseCaseTest {
     }
 
     @Test
-    fun `should throw UnauthorizedAccessException for mates`() {
+    fun `should throw UnauthorizedAccessException when mate tries to delete user`() = runTest {
         // Given
-        every { userRepository.addUser(any(), any()) } returns true
+        coEvery { userRepository.deleteUser(any()) } returns true
 
         // When & Then
         assertThrows<UnauthorizedAccessException> {
-            deleteUserUseCase(mateRole, user.id)
+             deleteUserUseCase(mateRole, userId)
         }
+
+        coVerify(exactly = 0) { userRepository.deleteUser(any()) }
     }
 
     @Test
-    fun `should throw exception when user is not exist`() {
+    fun `should throw NoSuchElementException when user does not exist`() = runTest {
         // Given
-        every { userRepository.getAllUsers() } returns listOf(user)
-        every { userRepository.deleteUser(user.id) } returns false
+        coEvery { userRepository.deleteUser(userId) } returns false
 
         // When & Then
         assertThrows<NoSuchElementException> {
-            deleteUserUseCase(adminRole, user.id)
+             deleteUserUseCase(adminRole, userId)
         }
+
+        coVerify(exactly = 1) { userRepository.deleteUser(userId) }
     }
 
     @Test
-    fun `should delete user for admins`() {
+    fun `should delete user when admin tries to delete`() = runTest {
         // Given
-        every { userRepository.getAllUsers() } returns listOf(user)
-        every { userRepository.deleteUser(user.id) } returns true
+        coEvery { userRepository.deleteUser(userId) } returns true
 
         // When
-        deleteUserUseCase(adminRole, user.id)
+        deleteUserUseCase(adminRole, userId)
 
         // Then
-        verify(exactly = 1) { userRepository.deleteUser(user.id) }
+        coVerify(exactly = 1) { userRepository.deleteUser(userId) }
     }
 }

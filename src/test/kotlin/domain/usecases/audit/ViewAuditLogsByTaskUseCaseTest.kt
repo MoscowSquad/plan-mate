@@ -3,9 +3,10 @@ package domain.usecases.audit
 import domain.models.AuditLog
 import domain.models.AuditLog.AuditType
 import domain.repositories.AuditRepository
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
-import io.mockk.verify
+import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDateTime
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
@@ -25,20 +26,20 @@ class ViewAuditLogsByTaskUseCaseTest {
     }
 
     @Test
-    fun `invoke should return empty list when no logs exist for task`() {
+    fun `invoke should return empty list when no logs exist for task`() = runTest {
         // Given
-        every { repository.getAllLogsByTaskId(taskId) } returns emptyList()
+        coEvery { repository.getAllLogsByTaskId(taskId) } returns emptyList()
 
         // When
         val result = useCase(taskId)
 
         // Then
         assertTrue(result.isEmpty())
-        verify(exactly = 1) { repository.getAllLogsByTaskId(taskId) }
+        coVerify(exactly = 1) { repository.getAllLogsByTaskId(taskId) }
     }
 
     @Test
-    fun `invoke should return logs for given task ID`() {
+    fun `invoke should return logs for given task ID`() = runTest {
         // Given
         val expectedLog = AuditLog(
             id = UUID.randomUUID(),
@@ -48,7 +49,7 @@ class ViewAuditLogsByTaskUseCaseTest {
             entityId = taskId
         )
 
-        every { repository.getAllLogsByTaskId(taskId) } returns listOf(expectedLog)
+        coEvery { repository.getAllLogsByTaskId(taskId) } returns listOf(expectedLog)
 
         // When
         val result = useCase(taskId)
@@ -57,11 +58,11 @@ class ViewAuditLogsByTaskUseCaseTest {
         assertEquals(1, result.size)
         assertEquals(taskId, result[0].entityId)
         assertEquals(AuditType.TASK, result[0].auditType)
-        verify(exactly = 1) { repository.getAllLogsByTaskId(taskId) }
+        coVerify(exactly = 1) { repository.getAllLogsByTaskId(taskId) }
     }
 
     @Test
-    fun `invoke should return multiple logs when multiple logs exist`() {
+    fun `invoke should return multiple logs when multiple logs exist`() = runTest {
         // Given
         val log1 = AuditLog(
             id = UUID.randomUUID(),
@@ -80,13 +81,13 @@ class ViewAuditLogsByTaskUseCaseTest {
         )
 
         val expectedLogs = listOf(log1, log2)
-        every { repository.getAllLogsByTaskId(taskId) } returns expectedLogs
+        coEvery { repository.getAllLogsByTaskId(taskId) } returns expectedLogs
 
         // When
         val result = useCase(taskId)
 
         // Then
         assertEquals(2, result.size)
-        verify(exactly = 1) { repository.getAllLogsByTaskId(taskId) }
+        coVerify(exactly = 1) { repository.getAllLogsByTaskId(taskId) }
     }
 }

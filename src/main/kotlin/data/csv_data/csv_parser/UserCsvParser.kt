@@ -18,28 +18,19 @@ class UserCsvParser : CsvParser<UserDto> {
                 name = it[NAME],
                 hashedPassword = it[HASHED_PASSWORD],
                 role = it[ROLE],
-                projectIds = it[PROJECT_IDS].toProjectIds(),
-                taskIds = it[Task_IDS].toTaskIds()
+                projectIds = it[PROJECT_IDS].toStringList(),
+                taskIds = it[Task_IDS].toStringList()
             )
         }
     }
 
-    private fun String.toProjectIds(): List<String> {
+    private fun String.toStringList(): List<String> {
         if (this.isBlank() || this == "[]") {
             return emptyList()
         }
 
-        return this.removeSurrounding("[", "]")
-            .split(",")
-            .filter { it.trim().isNotBlank() }
-            .map { it.trim() }
-    }
-    private fun String.toTaskIds(): List<String> {
-        if (this.isBlank() || this == "[]") {
-            return emptyList()
-        }
-
-        return this.removeSurrounding("[", "]")
+        return this.removePrefix("[")
+            .removeSuffix("]")
             .split(",")
             .filter { it.trim().isNotBlank() }
             .map { it.trim() }

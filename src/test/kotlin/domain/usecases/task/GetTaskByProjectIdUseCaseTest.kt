@@ -2,8 +2,10 @@ package domain.usecases.task
 
 import domain.models.Task
 import domain.repositories.TasksRepository
-import io.mockk.every
+import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
+import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -20,32 +22,32 @@ class GetTaskByProjectIdUseCaseTest {
     }
 
     @Test
-    fun `should return list of Task model when found project successfully `() {
+    fun `should return list of Task model when found project successfully`() = runTest {
         // Given
-        val projectID = UUID.fromString("00000000-0000-0000-0000-000000000001")
+        val projectId = UUID.fromString("00000000-0000-0000-0000-000000000001")
         val tasks: List<Task> = listOf(
             Task(
                 id = UUID.randomUUID(),
                 title = "Videos",
-                projectId = projectID,
+                projectId = projectId,
                 description = "description",
                 stateId = UUID.randomUUID()
             ),
             Task(
                 id = UUID.randomUUID(),
                 title = "Videos2",
-                projectId = projectID,
+                projectId = projectId,
                 description = "description",
                 stateId = UUID.randomUUID()
-            ),
+            )
         )
-        every { tasksRepository.getTaskByProjectId(projectID) } returns tasks
-
+        coEvery { tasksRepository.getTaskByProjectId(projectId) } returns tasks
 
         // When
-        val result = getTaskByProjectIdUseCase(projectID)
+        val result = getTaskByProjectIdUseCase(projectId)
 
         // Then
-        assertEquals(result, tasks)
+        assertEquals(tasks, result)
+        coVerify(exactly = 1) { tasksRepository.getTaskByProjectId(projectId) }
     }
 }
