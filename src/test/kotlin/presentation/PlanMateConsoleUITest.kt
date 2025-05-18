@@ -1,8 +1,8 @@
 package presentation
 
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import presentation.audit.AuditUI
@@ -43,7 +43,7 @@ class PlanMateConsoleUITest {
 
 
         // Then
-        verify {
+        coVerify {
             authenticationUI.invoke()
             projectsUI.invoke()
         }
@@ -56,7 +56,7 @@ class PlanMateConsoleUITest {
 
 
         // Then
-        verify {
+        coVerify {
             authenticationUI.invoke()
             userUI.invoke()
         }
@@ -69,7 +69,7 @@ class PlanMateConsoleUITest {
 
 
         // Then
-        verify {
+        coVerify {
             authenticationUI.invoke()
             tasksUI.invoke()
         }
@@ -82,7 +82,7 @@ class PlanMateConsoleUITest {
 
 
         // Then
-        verify {
+        coVerify {
             authenticationUI.invoke()
             taskStateUI.invoke()
         }
@@ -95,7 +95,7 @@ class PlanMateConsoleUITest {
 
 
         // Then
-        verify {
+        coVerify {
             authenticationUI.invoke()
             auditUI.invoke()
         }
@@ -109,7 +109,7 @@ class PlanMateConsoleUITest {
 
 
         // Then
-        verify {
+        coVerify {
             authenticationUI.invoke()
             consoleIO.write(match { it.contains("Invalid input") })
         }
@@ -123,7 +123,7 @@ class PlanMateConsoleUITest {
 
 
         // Then
-        verify {
+        coVerify {
             authenticationUI.invoke()
             consoleIO.write(match { it.contains("Invalid input") })
         }
@@ -136,7 +136,7 @@ class PlanMateConsoleUITest {
 
 
         // Then
-        verify(exactly = 1) {
+        coVerify(exactly = 1) {
             consoleIO.read()
             projectsUI.invoke()
             consoleIO.write(match { it.contains("Main Menu") })
