@@ -42,11 +42,11 @@ val presentationModule = module {
     factoryOf(::TasksUI)
 
     // State UI
-    factoryOf(::CreateStateUI)
-    factoryOf(::DeleteStateUI)
-    factoryOf(::GetAllStatesUI)
-    factoryOf(::EditStateUI)
-    factoryOf(::StateUI)
+    factoryOf(::CreateTaskStateUI)
+    factoryOf(::DeleteTaskStateUI)
+    factoryOf(::GetAllTaskStatesUI)
+    factoryOf(::EditTaskStateUI)
+    factoryOf(::TaskStateUI)
 
     //Subtask UI
     factoryOf(::CreateSubTaskUI)

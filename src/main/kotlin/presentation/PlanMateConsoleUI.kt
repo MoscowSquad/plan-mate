@@ -4,7 +4,7 @@ import presentation.audit.AuditUI
 import presentation.auth.AuthenticationUI
 import presentation.io.ConsoleIO
 import presentation.project.ProjectsUI
-import presentation.state.StateUI
+import presentation.state.TaskStateUI
 import presentation.task.TasksUI
 import presentation.user.UserUI
 import kotlin.system.exitProcess
@@ -13,7 +13,7 @@ class PlanMateConsoleUI(
     val authenticationUI: AuthenticationUI,
     private val projectsUI: ProjectsUI,
     private val tasksUI: TasksUI,
-    private val stateUI: StateUI,
+    private val taskStateUI: TaskStateUI,
     private val userUI: UserUI,
     private val auditUI: AuditUI,
     private val consoleIO: ConsoleIO
@@ -58,7 +58,7 @@ Enter your option:""".trimIndent()
             1 -> projectsUI()
             2 -> userUI()
             3 -> tasksUI()
-            4 -> stateUI()
+            4 -> taskStateUI()
             5 -> auditUI()
             6 -> exitProcess(0)
             else -> {

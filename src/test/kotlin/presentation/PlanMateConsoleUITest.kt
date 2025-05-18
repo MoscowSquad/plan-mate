@@ -9,7 +9,7 @@ import presentation.audit.AuditUI
 import presentation.auth.AuthenticationUI
 import presentation.io.ConsoleIO
 import presentation.project.ProjectsUI
-import presentation.state.StateUI
+import presentation.state.TaskStateUI
 import presentation.task.TasksUI
 import presentation.user.UserUI
 
@@ -18,7 +18,7 @@ class PlanMateConsoleUITest {
     private lateinit var authenticationUI: AuthenticationUI
     private lateinit var projectsUI: ProjectsUI
     private lateinit var tasksUI: TasksUI
-    private lateinit var stateUI: StateUI
+    private lateinit var taskStateUI: TaskStateUI
     private lateinit var userUI: UserUI
     private lateinit var auditUI: AuditUI
     private lateinit var consoleIO: ConsoleIO
@@ -29,7 +29,7 @@ class PlanMateConsoleUITest {
         authenticationUI = mockk(relaxed = true)
         projectsUI = mockk(relaxed = true)
         tasksUI = mockk(relaxed = true)
-        stateUI = mockk(relaxed = true)
+        taskStateUI = mockk(relaxed = true)
         userUI = mockk(relaxed = true)
         auditUI = mockk(relaxed = true)
         consoleIO = mockk(relaxed = true)
@@ -84,7 +84,7 @@ class PlanMateConsoleUITest {
         // Then
         verify {
             authenticationUI.invoke()
-            stateUI.invoke()
+            taskStateUI.invoke()
         }
     }
 

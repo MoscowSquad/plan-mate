@@ -5,12 +5,12 @@ import domain.usecases.project.GetProjectByIdUseCase
 import presentation.io.ConsoleIO
 import presentation.project.GetAllProjectsUI
 
-class StateUI(
+class TaskStateUI(
     private val getProjectByIdUseCase: GetProjectByIdUseCase,
-    private val createStateUI: CreateStateUI,
-    private val getAllStatesUI: GetAllStatesUI,
-    private val editStateUI: EditStateUI,
-    private val deleteStateUI: DeleteStateUI,
+    private val createTaskStateUI: CreateTaskStateUI,
+    private val getAllTaskStatesUI: GetAllTaskStatesUI,
+    private val editTaskStateUI: EditTaskStateUI,
+    private val deleteTaskStateUI: DeleteTaskStateUI,
     private val getAllProjectsUI: GetAllProjectsUI,
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
@@ -28,7 +28,7 @@ class StateUI(
             return
         }
 
-        getAllStatesUI(projectId)
+        getAllTaskStatesUI(projectId)
 
         write(
             """
@@ -41,9 +41,9 @@ class StateUI(
         )
 
         when (read().trim()) {
-            "1" -> createStateUI(projectId)
-            "2" -> editStateUI(projectId)
-            "3" -> deleteStateUI(projectId)
+            "1" -> createTaskStateUI(projectId)
+            "2" -> editTaskStateUI(projectId)
+            "3" -> deleteTaskStateUI(projectId)
             "4" -> write("Navigating back...")
             else -> {
                 write("❌ Invalid option.")

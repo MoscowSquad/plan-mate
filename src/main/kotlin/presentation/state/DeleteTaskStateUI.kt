@@ -4,7 +4,7 @@ import domain.usecases.task_state.DeleteTaskStateUseCase
 import presentation.io.ConsoleIO
 import java.util.*
 
-class DeleteStateUI(
+class DeleteTaskStateUI(
     private val deleteTaskStateUseCase: DeleteTaskStateUseCase,
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {

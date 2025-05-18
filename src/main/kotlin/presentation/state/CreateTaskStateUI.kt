@@ -5,7 +5,7 @@ import domain.usecases.task_state.AddTaskStateUseCase
 import presentation.io.ConsoleIO
 import java.util.*
 
-class CreateStateUI(
+class CreateTaskStateUI(
     private val addTaskStateUseCase: AddTaskStateUseCase,
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {

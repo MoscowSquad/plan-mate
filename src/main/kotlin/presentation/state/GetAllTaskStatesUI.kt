@@ -4,7 +4,7 @@ import domain.usecases.task_state.GetTaskStatesByProjectIdUseCase
 import presentation.io.ConsoleIO
 import java.util.*
 
-class GetAllStatesUI(
+class GetAllTaskStatesUI(
     private val getTaskStatesByProjectIdUseCase: GetTaskStatesByProjectIdUseCase,
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {
