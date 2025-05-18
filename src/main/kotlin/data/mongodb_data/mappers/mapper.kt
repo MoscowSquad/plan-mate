@@ -24,7 +24,7 @@ fun UserDto.toUser(): User {
     )
 }
 
-fun User.toDto(hashedPassword:String): UserDto {
+fun User.toDto(hashedPassword: String): UserDto {
     return UserDto(
         id = id.toString(),
         name = name,
@@ -56,7 +56,7 @@ fun TaskDto.toTask(): Task {
         description = description,
         projectId = projectId.toUUID(),
         stateId = stateId.toUUID(),
-        subTasks=subTasks.map {it.toSubTask()}
+        subTasks = subTasks.map { it.toSubTask() }
     )
 }
 
@@ -67,7 +67,7 @@ fun Task.toDto(): TaskDto {
         description = description,
         projectId = projectId.toString(),
         stateId = stateId.toString(),
-        subTasks = emptyList()     // change later
+        subTasks = subTasks.map { it.toDto() }
     )
 }
 
