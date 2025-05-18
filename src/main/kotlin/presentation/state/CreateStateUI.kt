@@ -1,8 +1,6 @@
 package presentation.state
 
-import data.session_manager.SessionManager
 import domain.models.TaskState
-import domain.models.User.UserRole
 import domain.usecases.task_state.AddTaskStateUseCase
 import presentation.io.ConsoleIO
 import java.util.*
@@ -21,12 +19,7 @@ class CreateStateUI(
             projectId = projectId
         )
 
-        runCatching {
-            addTaskStateUseCase(
-                state,
-                isAdmin = SessionManager.currentUser?.role == UserRole.ADMIN
-            )
-        }
+        runCatching { addTaskStateUseCase(state) }
             .onSuccess { write("✅ State created successfully.") }
             .onFailure { write("❌ Failed to create state: ${it.message}") }
     }

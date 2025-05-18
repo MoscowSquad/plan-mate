@@ -7,6 +7,7 @@ import data.data_source.UserDataSource
 import data.mongodb_data.dto.AuditLogDto
 import data.mongodb_data.mappers.toDto
 import data.mongodb_data.mappers.toProject
+import data.mongodb_data.util.ensureAdminPrivileges
 import data.mongodb_data.util.executeInIO
 import data.session_manager.SessionManager
 import domain.models.AuditLog.AuditType
@@ -25,6 +26,7 @@ class ProjectsRepositoryImpl(
 ) : ProjectsRepository {
 
     override suspend fun addProject(project: Project) = executeInIO {
+        ensureAdminPrivileges()
         val result = projectsDataSource.addProject(project.toDto())
         userDataSource.assignUserToProject(
             project.id,
@@ -46,6 +48,7 @@ class ProjectsRepositoryImpl(
     }
 
     override suspend fun updateProject(project: Project) = executeInIO {
+        ensureAdminPrivileges()
         val result = projectsDataSource.updateProject(project.toDto())
         auditLogDataSource.addLog(
             log = AuditLogDto(
@@ -60,6 +63,7 @@ class ProjectsRepositoryImpl(
     }
 
     override suspend fun deleteProject(id: UUID) = executeInIO {
+        ensureAdminPrivileges()
         val result = projectsDataSource.deleteProject(id)
         auditLogDataSource.addLog(
             log = AuditLogDto(

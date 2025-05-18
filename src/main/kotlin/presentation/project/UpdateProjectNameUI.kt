@@ -1,8 +1,6 @@
 package presentation.project
 
 import data.mongodb_data.mappers.toUUID
-import data.session_manager.SessionManager
-import domain.models.User.UserRole
 import domain.usecases.project.UpdateProjectUseCase
 import presentation.io.ConsoleIO
 import java.util.*
@@ -18,7 +16,6 @@ class UpdateProjectNameUI(
             projectId = read().trimIndent().toUUID()
         }.onFailure {
             write("❌ please enter correct ID ")
-            invoke()
             return
         }
 
@@ -28,7 +25,6 @@ class UpdateProjectNameUI(
             updateProjectUseCase(
                 id = projectId,
                 name = newProjectName,
-                isAdmin = SessionManager.currentUser?.role == UserRole.ADMIN
             )
         }.onSuccess {
             write("✅ Project updated successfully.")

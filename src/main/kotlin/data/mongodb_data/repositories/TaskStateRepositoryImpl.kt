@@ -5,6 +5,7 @@ import data.data_source.TaskStateDataSource
 import data.mongodb_data.dto.AuditLogDto
 import data.mongodb_data.mappers.toDto
 import data.mongodb_data.mappers.toTaskState
+import data.mongodb_data.util.ensureAdminPrivileges
 import data.mongodb_data.util.executeInIO
 import domain.models.AuditLog.AuditType
 import domain.models.TaskState
@@ -28,6 +29,7 @@ class TaskStateRepositoryImpl(
     }
 
     override suspend fun updateTaskState(state: TaskState): Boolean = executeInIO {
+        ensureAdminPrivileges()
         val result = taskStateDataSource.updateTaskState(state.toDto())
         auditLogDataSource.addLog(
             log = AuditLogDto(
@@ -42,6 +44,7 @@ class TaskStateRepositoryImpl(
     }
 
     override suspend fun addTaskState(projectId: UUID, state: TaskState): Boolean = executeInIO {
+        ensureAdminPrivileges()
         val result = taskStateDataSource.addTaskState(projectId, state.toDto())
         auditLogDataSource.addLog(
             log = AuditLogDto(
@@ -56,6 +59,7 @@ class TaskStateRepositoryImpl(
     }
 
     override suspend fun deleteTaskState(projectId: UUID, stateId: UUID): Boolean = executeInIO {
+        ensureAdminPrivileges()
         val result = taskStateDataSource.deleteTaskState(projectId, stateId)
         auditLogDataSource.addLog(
             log = AuditLogDto(

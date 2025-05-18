@@ -5,6 +5,7 @@ import data.data_source.UserDataSource
 import data.mongodb_data.dto.AuditLogDto
 import data.mongodb_data.mappers.toDto
 import data.mongodb_data.mappers.toUser
+import data.mongodb_data.util.ensureAdminPrivileges
 import data.mongodb_data.util.executeInIO
 import data.session_manager.LoggedInUser
 import data.session_manager.SessionManager
@@ -21,6 +22,7 @@ class UserRepositoryImpl(
 ) : UserRepository, AuthenticationRepository {
 
     override suspend fun addUser(user: User, hashedPassword: String): Boolean = executeInIO {
+        ensureAdminPrivileges()
         val result = userDataSource.addUser(user.toDto(hashedPassword))
         auditLogDataSource.addLog(
             log = AuditLogDto(
@@ -35,6 +37,7 @@ class UserRepositoryImpl(
     }
 
     override suspend fun deleteUser(id: UUID): Boolean = executeInIO {
+        ensureAdminPrivileges()
         val result = userDataSource.deleteUser(id)
         auditLogDataSource.addLog(
             log = AuditLogDto(
@@ -63,6 +66,7 @@ class UserRepositoryImpl(
     }
 
     override suspend fun assignUserToTask(taskId: UUID, userId: UUID): Boolean = executeInIO {
+        ensureAdminPrivileges()
         val result = userDataSource.assignUserToTask(taskId, userId)
         auditLogDataSource.addLog(
             log = AuditLogDto(
@@ -117,6 +121,7 @@ class UserRepositoryImpl(
     }
 
     private suspend fun modifyUserAssignment(projectId: UUID, userId: UUID, assign: Boolean): Boolean = executeInIO {
+        ensureAdminPrivileges()
         val result = if (assign) {
             userDataSource.assignUserToProject(projectId, userId)
         } else {

@@ -1,8 +1,6 @@
 package presentation.project
 
 import data.csv_data.mappers.toUUID
-import data.session_manager.SessionManager
-import domain.models.User.UserRole
 import domain.usecases.project.DeleteProjectUseCase
 import presentation.io.ConsoleIO
 
@@ -16,7 +14,6 @@ class DeleteProjectUI(
         runCatching {
             deleteProjectUseCase(
                 projectId,
-                isAdmin = SessionManager.currentUser?.role == UserRole.ADMIN
             )
         }
             .onSuccess {

@@ -4,16 +4,12 @@ import domain.models.Project
 import domain.repositories.ProjectsRepository
 import domain.util.InvalidProjectNameException
 import domain.util.NoExistProjectException
-import domain.util.NotAdminException
 import java.util.*
 
 class UpdateProjectUseCase(
     private val projectsRepository: ProjectsRepository
 ) {
-    suspend operator fun invoke(id: UUID, name: String, isAdmin: Boolean): Boolean {
-        if (!isAdmin) {
-            throw NotAdminException()
-        }
+    suspend operator fun invoke(id: UUID, name: String): Boolean {
 
         if (name.isBlank()) {
             throw InvalidProjectNameException()

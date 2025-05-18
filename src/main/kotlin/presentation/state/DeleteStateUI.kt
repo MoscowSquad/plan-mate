@@ -1,7 +1,5 @@
 package presentation.state
 
-import data.session_manager.SessionManager
-import domain.models.User.UserRole
 import domain.usecases.task_state.DeleteTaskStateUseCase
 import presentation.io.ConsoleIO
 import java.util.*
@@ -19,12 +17,7 @@ class DeleteStateUI(
             return
         }
 
-        runCatching {
-            deleteTaskStateUseCase(
-                stateId, projectId,
-                isAdmin = SessionManager.currentUser?.role == UserRole.ADMIN
-            )
-        }
+        runCatching { deleteTaskStateUseCase(stateId, projectId) }
             .onSuccess { write("✅ State deleted successfully.") }
             .onFailure { write("❌ Failed to delete state: ${it.message}") }
     }

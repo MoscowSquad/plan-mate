@@ -1,8 +1,6 @@
 package presentation.state
 
-import data.session_manager.SessionManager
 import domain.models.TaskState
-import domain.models.User.UserRole
 import domain.usecases.task_state.EditTaskStateUseCase
 import presentation.io.ConsoleIO
 import java.util.*
@@ -29,12 +27,7 @@ class EditStateUI(
             projectId = projectId
         )
 
-        runCatching {
-            editTaskStateUseCase(
-                state,
-                isAdmin = SessionManager.currentUser?.role == UserRole.ADMIN
-            )
-        }
+        runCatching { editTaskStateUseCase(state) }
             .onSuccess { write("✅ State updated successfully.") }
             .onFailure { write("❌ Failed to update state: ${it.message}") }
     }
