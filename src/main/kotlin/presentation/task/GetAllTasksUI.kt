@@ -26,7 +26,7 @@ class GetAllTasksUI(
 ║ 📌 State ID    : ${task.stateId}
 ║ 📁 Project ID  : ${task.projectId}
 ║ 📋 Sub-Tasks   :
-${task.subTasks.joinToString(separator = "\n") { "║   • ${it.title} (ID: ${it.id})" }}
+${task.subTasks.joinToString(separator = "\n") { "║   • ${it.title} (ID: ${it.id}) (Status: ${if (it.isCompleted) "Completed" else "Pending"})" }}
 ╚════════════════════════════════════════════════════╝
 """.trimIndent()
 
