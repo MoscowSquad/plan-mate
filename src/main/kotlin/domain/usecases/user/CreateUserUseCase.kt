@@ -10,7 +10,7 @@ class CreateUserUseCase(private val userRepository: UserRepository) {
     suspend operator fun invoke(currentUserRole: UserRole, user: User, password: String): Boolean {
         return when (currentUserRole) {
             UserRole.ADMIN -> {
-                val hashedPassword = password.toMD5Hash()
+                val hashedPassword = toMD5Hash(password)
                 userRepository.addUser(user, hashedPassword)
             }
 

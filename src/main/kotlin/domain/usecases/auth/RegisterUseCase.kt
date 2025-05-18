@@ -19,7 +19,7 @@ class RegisterUseCase(
     ): User {
         require(name.isNotBlank()) { "Username cannot be blank" }
         require(plainPassword.isNotBlank()) { "Password cannot be blank" }
-        require(plainPassword.isValidPasswordFormat()) {
+        require(isValidPasswordFormat(plainPassword)) {
             "Password must be at least 8 characters long and contain at least one digit, one uppercase letter, and one lowercase letter"
         }
 
@@ -31,7 +31,7 @@ class RegisterUseCase(
                 projectIds = projectIds,
                 taskIds = taskIds
             ),
-            plainPassword.toMD5Hash()
+            toMD5Hash(plainPassword)
         )
     }
 }

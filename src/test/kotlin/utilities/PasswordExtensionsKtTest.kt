@@ -18,7 +18,7 @@ class PasswordExtensionsKtTest {
             val password = "Alternative123*"
             // When
             val expected = "f834f1ba5e63f744bfab1d5c4b787d4e"
-            val actual = password.toMD5Hash()
+            val actual = toMD5Hash(password)
             // Then
             assertEquals(expected, actual)
         }
@@ -29,7 +29,7 @@ class PasswordExtensionsKtTest {
             val password = ""
             // When
             val expected = "d41d8cd98f00b204e9800998ecf8427e"
-            val actual = password.toMD5Hash()
+            val actual = toMD5Hash(password)
             // Then
             assertEquals(expected, actual)
         }
@@ -40,7 +40,7 @@ class PasswordExtensionsKtTest {
             val password = "Alternative# * @ % ! ^"
             // When
             val expected = "a31c7a3f2f3f1f059bf19c6e97ee9918"
-            val actual = password.toMD5Hash()
+            val actual = toMD5Hash(password)
             // Then
             assertEquals(expected, actual)
         }
@@ -53,7 +53,7 @@ class PasswordExtensionsKtTest {
             // Given
             val password = "Alt12*"
             // When
-            val actual = password.isValidPasswordFormat()
+            val actual = isValidPasswordFormat(password)
             // Then
             assertFalse { actual }
         }
@@ -63,7 +63,7 @@ class PasswordExtensionsKtTest {
             // Given
             val password = "ALTERNATIVE#I12"
             // When
-            val actual = password.isValidPasswordFormat()
+            val actual = isValidPasswordFormat(password)
             // Then
             assertFalse { actual }
         }
@@ -73,7 +73,7 @@ class PasswordExtensionsKtTest {
             // Given
             val password = "alternative12*"
             // When
-            val actual = password.isValidPasswordFormat()
+            val actual = isValidPasswordFormat(password)
             // Then
             assertFalse { actual }
         }
@@ -83,7 +83,7 @@ class PasswordExtensionsKtTest {
             // Given
             val password = "Alternative1"
             // When
-            val actual = password.isValidPasswordFormat()
+            val actual = isValidPasswordFormat(password)
             // Then
             assertFalse { actual }
         }
@@ -93,7 +93,7 @@ class PasswordExtensionsKtTest {
             // Given
             val password = "Alternative#"
             // When
-            val actual = password.isValidPasswordFormat()
+            val actual = isValidPasswordFormat(password)
             // Then
             assertFalse { actual }
         }
@@ -103,7 +103,7 @@ class PasswordExtensionsKtTest {
             // Given
             val password = "Alternative123#"
             // When
-            val actual = password.isValidPasswordFormat()
+            val actual = isValidPasswordFormat(password)
             // Then
             assertTrue { actual }
         }
@@ -116,7 +116,7 @@ class PasswordExtensionsKtTest {
             // Given
             val hash = "f834f1ba5e63f744bfab1d5c4b787d4e"
             // When
-            val actual = hash.matchesMD5Hash("fcdb8862247d1b571b2715c7e8762d57")
+            val actual = matchesMD5Hash(hash, "fcdb8862247d1b571b2715c7e8762d57")
             // Then
             assertFalse { actual }
         }
@@ -126,7 +126,7 @@ class PasswordExtensionsKtTest {
             // Given
             val hash = ""
             // When
-            val actual = hash.matchesMD5Hash("")
+            val actual = matchesMD5Hash(hash, "")
             // Then
             assertTrue { actual }
         }
@@ -136,7 +136,7 @@ class PasswordExtensionsKtTest {
             // Given
             val hash = "f834f1ba5e63f744bfab1d5c4b787d4e"
             // When
-            val actual = hash.matchesMD5Hash("f834f1ba5e63f744bfab1d5c4b787d4e")
+            val actual = matchesMD5Hash(hash, "f834f1ba5e63f744bfab1d5c4b787d4e")
             // Then
             assertTrue { actual }
         }

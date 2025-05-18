@@ -30,7 +30,7 @@ class AuthenticationRepositoryImpl(
     }
 
     override suspend fun login(name: String, password: String): User {
-        val hashedPassword = password.toMD5Hash()
+        val hashedPassword = toMD5Hash(password)
         val userDto = users.find { it.name == name && it.hashedPassword == hashedPassword }
             ?: throw UserNotFoundException(name)
         val user = userDto.toUser()
