@@ -4,6 +4,7 @@ import data.session_manager.SessionManager
 import domain.models.User
 import domain.models.User.UserRole
 import domain.usecases.user.CreateUserUseCase
+import domain.util.isValidPasswordFormat
 import presentation.io.ConsoleIO
 import java.util.*
 
@@ -47,10 +48,18 @@ class CreateUserUI(
 
     private fun promptForPassword(): String {
         while (true) {
-            write("\nEnter password (min 8 characters):")
-            val input = read()
-            if (input.length >= 8) return input
-            write("❌ Password must be at least 8 characters")
+            write(
+                """
+            At least one lowercase letter
+            At least one uppercase letter
+            At least one digit
+            At least one special character
+            Minimum length of 8 characters
+            """.trimIndent()
+            )
+            val password = read().trim()
+            if (isValidPasswordFormat(password)) return password
+            write("❌ Password must meet the specified criteria")
         }
     }
 
