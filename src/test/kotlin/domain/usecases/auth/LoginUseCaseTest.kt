@@ -34,12 +34,12 @@ class LoginUseCaseTest {
             authRepository = mockk()
             loginUseCase = LoginUseCase(authRepository)
 
-            coEvery { authRepository.login("validUser", "correctPassword".toMD5Hash()) } returns validUser
-            coEvery { authRepository.login("VALID USER", "correctPassword".toMD5Hash()) } returns validUser
+            coEvery { authRepository.login("validUser", toMD5Hash("correctPassword")) } returns validUser
+            coEvery { authRepository.login("VALID USER", toMD5Hash("correctPassword")) } returns validUser
             coEvery {
                 authRepository.login(
                     "validUser",
-                    "wrongPassword".toMD5Hash()
+                    toMD5Hash("wrongPassword")
                 )
             } throws UserNotFoundException("validUser")
             coEvery { authRepository.login("nonExistentUser", any()) } throws UserNotFoundException("nonExistentUser")
@@ -56,7 +56,7 @@ class LoginUseCaseTest {
             // Then
             assertNotNull(result)
             assertEquals("validUser", result.name)
-            coVerify(exactly = 1) { authRepository.login("validUser", "correctPassword".toMD5Hash()) }
+            coVerify(exactly = 1) { authRepository.login("validUser", toMD5Hash("correctPassword")) }
         }
 
         @Test
@@ -68,7 +68,7 @@ class LoginUseCaseTest {
                 loginUseCase("validUser", "wrongPassword")
             }
 
-            coVerify(exactly = 1) { authRepository.login("validUser", "wrongPassword".toMD5Hash()) }
+            coVerify(exactly = 1) { authRepository.login("validUser", toMD5Hash("wrongPassword")) }
         }
 
         @Test
@@ -111,7 +111,7 @@ class LoginUseCaseTest {
             // Then
             assertNotNull(result)
             assertEquals("validUser", result.name)
-            coVerify(exactly = 1) { authRepository.login("VALID USER", "correctPassword".toMD5Hash()) }
+            coVerify(exactly = 1) { authRepository.login("VALID USER", toMD5Hash("correctPassword")) }
         }
 
         @Test
@@ -124,7 +124,7 @@ class LoginUseCaseTest {
                 loginUseCase("validUser", "correctPassword")
             }
 
-            coVerify(exactly = 1) { authRepository.login("validUser", "correctPassword".toMD5Hash()) }
+            coVerify(exactly = 1) { authRepository.login("validUser", toMD5Hash("correctPassword")) }
         }
 
         @Test
@@ -136,7 +136,7 @@ class LoginUseCaseTest {
                 loginUseCase("nonExistentUser", "anyPassword12")
             }
 
-            coVerify(exactly = 1) { authRepository.login("nonExistentUser", "anyPassword12".toMD5Hash()) }
+            coVerify(exactly = 1) { authRepository.login("nonExistentUser", toMD5Hash("anyPassword12")) }
         }
 
         @Test
@@ -148,6 +148,6 @@ class LoginUseCaseTest {
                 loginUseCase("testUser", "password123")
             }
 
-            coVerify(exactly = 1) { authRepository.login("testUser", "password123".toMD5Hash()) }
+            coVerify(exactly = 1) { authRepository.login("testUser", toMD5Hash("password123")) }
         }
     }

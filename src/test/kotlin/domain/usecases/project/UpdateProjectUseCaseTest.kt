@@ -36,7 +36,7 @@ class UpdateProjectUseCaseTest {
         coEvery { projectsRepository.updateProject(any()) } returns true
 
         // When
-        val result = updateProjectUseCase(projectId, projectName, isAdmin = true)
+        val result = updateProjectUseCase(projectId, projectName)
 
         // Then
         assertTrue(result)
@@ -54,7 +54,7 @@ class UpdateProjectUseCaseTest {
 
         // When & Then
         assertThrows<NotAdminException> {
-            updateProjectUseCase(projectId, projectName, isAdmin = false)
+            updateProjectUseCase(projectId, projectName)
         }
         coVerify(exactly = 0) { projectsRepository.updateProject(any()) }
     }
@@ -65,7 +65,7 @@ class UpdateProjectUseCaseTest {
     fun `should throw InvalidProjectNameException when project name is blank`(name: String) = runTest {
         // When & Then
         assertThrows<InvalidProjectNameException> {
-            updateProjectUseCase(projectId, name, isAdmin = true)
+            updateProjectUseCase(projectId, name)
         }
         coVerify(exactly = 0) { projectsRepository.updateProject(any()) }
     }
@@ -78,7 +78,7 @@ class UpdateProjectUseCaseTest {
 
         // When & Then
         assertThrows<NoExistProjectException> {
-            updateProjectUseCase(projectId, projectName, isAdmin = true)
+            updateProjectUseCase(projectId, projectName)
         }
     }
 
@@ -89,7 +89,7 @@ class UpdateProjectUseCaseTest {
         coEvery { projectsRepository.updateProject(any()) } returns true
 
         // When
-        val result = updateProjectUseCase(projectId, projectName, isAdmin = true)
+        val result = updateProjectUseCase(projectId, projectName)
 
         // Then
         assertTrue(result)
@@ -107,7 +107,7 @@ class UpdateProjectUseCaseTest {
         coEvery { projectsRepository.updateProject(any()) } returns true
 
         // When
-        updateProjectUseCase(projectId, projectName, isAdmin = true)
+        updateProjectUseCase(projectId, projectName)
 
         // Then
         coVerify {

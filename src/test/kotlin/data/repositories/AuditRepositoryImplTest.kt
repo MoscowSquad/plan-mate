@@ -1,8 +1,9 @@
-package data.csv_data.repositories
+package data.repositories
 
 import com.google.common.truth.Truth.assertThat
 import data.csv_data.datasource.AuditLogDataSource
 import data.csv_data.mappers.toDto
+import data.csv_data.repositories.AuditRepositoryImpl
 import domain.models.AuditLog
 import domain.models.AuditLog.AuditType
 import io.mockk.every

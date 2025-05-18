@@ -38,7 +38,7 @@ class DeleteTaskStateUseCaseTest {
         coEvery { stateRepository.deleteTaskState(projectId, stateId) } returns true
 
         // When
-        val result = deleteStateUseCase(stateId, projectId, true)
+        val result = deleteStateUseCase(stateId, projectId)
 
         // Then
         assertTrue(result)
@@ -56,7 +56,7 @@ class DeleteTaskStateUseCaseTest {
 
         // When & Then
         assertThrows<NotAdminException> {
-             deleteStateUseCase(stateId, projectId, false)
+            deleteStateUseCase(stateId, projectId)
         }
 
         coVerify(exactly = 0) { stateRepository.getTaskStateByProjectId(any()) }
@@ -73,7 +73,7 @@ class DeleteTaskStateUseCaseTest {
 
         // When/Then
         assertThrows<NoStateExistException> {
-            deleteStateUseCase(stateId, projectId, true)
+            deleteStateUseCase(stateId, projectId)
         }
 
         coVerify(exactly = 0) { stateRepository.deleteTaskState(any(), any()) }
@@ -90,7 +90,7 @@ class DeleteTaskStateUseCaseTest {
 
         // When/Then
         assertThrows<IllegalStateException> {
-            deleteStateUseCase(stateId, projectId, true)
+            deleteStateUseCase(stateId, projectId)
         }
 
         coVerify(exactly = 0) { stateRepository.deleteTaskState(any(), any()) }
@@ -109,7 +109,7 @@ class DeleteTaskStateUseCaseTest {
 
         // When/Then
         assertThrows<IllegalStateException> {
-            deleteStateUseCase(stateId, projectId, true)
+            deleteStateUseCase(stateId, projectId)
         }
 
         coVerifyOrder {

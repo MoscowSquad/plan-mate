@@ -46,10 +46,10 @@ class TaskDataSourceTest {
         val stateId = UUID.randomUUID().toString()
         val description = "Watch all videos"
         val tasks = listOf(
-            TaskDto(UUID.randomUUID().toString(), "Videos 101 to 110", description, projectId, stateId),
-            TaskDto(UUID.randomUUID().toString(), "Videos 201 to 210", description, projectId, stateId),
-            TaskDto(UUID.randomUUID().toString(), "Videos 301 to 210", description, projectId, stateId),
-            TaskDto(UUID.randomUUID().toString(), "Videos 401 to 210", description, projectId, stateId),
+            TaskDto(UUID.randomUUID().toString(), "Videos 101 to 110", description, projectId, stateId, listOf()),
+            TaskDto(UUID.randomUUID().toString(), "Videos 201 to 210", description, projectId, stateId, listOf()),
+            TaskDto(UUID.randomUUID().toString(), "Videos 301 to 210", description, projectId, stateId, listOf()),
+            TaskDto(UUID.randomUUID().toString(), "Videos 401 to 210", description, projectId, stateId, listOf()),
         )
         every { csvHandler.getLines() } returns listOf("id,name,description,projectId,stateId")
         every { taskCsvParser.parse(any()) } returns tasks
@@ -80,7 +80,7 @@ class TaskDataSourceTest {
         // Given
         val projectId = UUID.randomUUID().toString()
         val stateId = UUID.randomUUID().toString()
-        val tasks = listOf(TaskDto("1", "Task1", "Description", projectId, stateId))
+        val tasks = listOf(TaskDto("1", "Task1", "Description", projectId, stateId, listOf()))
         val serializedData = listOf("id,name,description,projectId,stateId", "1,Task1,Description,$projectId,$stateId")
         every { taskCsvParser.serialize(tasks) } returns serializedData
 

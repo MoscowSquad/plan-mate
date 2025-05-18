@@ -28,11 +28,10 @@ class DeleteProjectUseCaseTest {
     fun `should delete project successfully when user is admin and project exists`() = runTest {
         // Given
         val projectId = UUID.randomUUID()
-        val isAdmin = true
         coEvery { projectsRepository.deleteProject(projectId) } returns true
 
         // When
-        val result = deleteProjectUseCase(projectId, isAdmin)
+        val result = deleteProjectUseCase(projectId)
 
         // Then
         assertThat(result).isTrue()
@@ -43,12 +42,11 @@ class DeleteProjectUseCaseTest {
     fun `should throw NoExistProjectException when project does not exist`(): Unit = runTest {
         // Given
         val projectId = UUID.randomUUID()
-        val isAdmin = true
         coEvery { projectsRepository.deleteProject(projectId) } returns false
 
         // When & Then
         assertThrows<NoExistProjectException> {
-            deleteProjectUseCase(projectId, isAdmin)
+            deleteProjectUseCase(projectId)
         }
         coVerify(exactly = 1) { projectsRepository.deleteProject(projectId) }
     }
@@ -57,11 +55,10 @@ class DeleteProjectUseCaseTest {
     fun `should throw NotAdminException when user is not admin`(): Unit = runTest {
         // Given
         val projectId = UUID.randomUUID()
-        val isAdmin = false
 
         // When & Then
         assertThrows<NotAdminException> {
-            deleteProjectUseCase(projectId, isAdmin)
+            deleteProjectUseCase(projectId)
         }
         coVerify(exactly = 0) { projectsRepository.deleteProject(any()) }
     }
@@ -70,12 +67,11 @@ class DeleteProjectUseCaseTest {
     fun `should include project ID in NoExistProjectException message`(): Unit = runTest {
         // Given
         val projectId = UUID.randomUUID()
-        val isAdmin = true
         coEvery { projectsRepository.deleteProject(projectId) } returns false
 
         // When & Then
         val exception = assertThrows<NoExistProjectException> {
-            deleteProjectUseCase(projectId, isAdmin)
+            deleteProjectUseCase(projectId)
         }
         assertThat(exception.message).contains(projectId.toString())
     }
@@ -84,11 +80,10 @@ class DeleteProjectUseCaseTest {
     fun `should not call repository when user is not admin`(): Unit = runTest {
         // Given
         val projectId = UUID.randomUUID()
-        val isAdmin = false
 
         // When & Then
         assertThrows<NotAdminException> {
-            deleteProjectUseCase(projectId, isAdmin)
+            deleteProjectUseCase(projectId)
         }
         coVerify(exactly = 0) { projectsRepository.deleteProject(any()) }
     }
@@ -97,11 +92,10 @@ class DeleteProjectUseCaseTest {
     fun `should return true when project is successfully deleted`() = runTest {
         // Given
         val projectId = UUID.randomUUID()
-        val isAdmin = true
         coEvery { projectsRepository.deleteProject(projectId) } returns true
 
         // When
-        val result = deleteProjectUseCase(projectId, isAdmin)
+        val result = deleteProjectUseCase(projectId)
 
         // Then
         assertThat(result).isTrue()

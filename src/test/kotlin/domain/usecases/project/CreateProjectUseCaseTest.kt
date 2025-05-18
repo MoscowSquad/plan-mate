@@ -29,11 +29,10 @@ class CreateProjectUseCaseTest {
     fun `should create project when user is admin`() = runTest {
         // Given
         val projectName = "Test Project"
-        val isAdmin = true
         coEvery { projectsRepository.addProject(any()) } returns true
 
         // When
-        val result = createProjectUseCase(projectName, isAdmin)
+        val result = createProjectUseCase(projectName)
 
         // Then
         assertThat(result).isNotNull()
@@ -48,11 +47,10 @@ class CreateProjectUseCaseTest {
     fun `should throw NotAdminException when user is not admin`(): Unit = runTest {
         // Given
         val projectName = "Test Project"
-        val isAdmin = false
 
         // When & Then
         assertThrows<NotAdminException> {
-            createProjectUseCase(projectName, isAdmin)
+            createProjectUseCase(projectName)
         }
     }
 
@@ -60,11 +58,10 @@ class CreateProjectUseCaseTest {
     fun `should throw InvalidProjectNameException when project name is blank`(): Unit = runTest {
         // Given
         val projectName = "  "
-        val isAdmin = true
 
         // When & Then
         assertThrows<InvalidProjectNameException> {
-            createProjectUseCase(projectName, isAdmin)
+            createProjectUseCase(projectName)
         }
     }
 
@@ -72,11 +69,10 @@ class CreateProjectUseCaseTest {
     fun `should throw InvalidProjectNameException when project name is empty`(): Unit = runTest {
         // Given
         val projectName = ""
-        val isAdmin = true
 
         // When & Then
         assertThrows<InvalidProjectNameException> {
-            createProjectUseCase(projectName, isAdmin)
+            createProjectUseCase(projectName)
         }
     }
 
@@ -84,12 +80,11 @@ class CreateProjectUseCaseTest {
     fun `should throw ProjectCreationFailedException when repository fails to add project`(): Unit = runTest {
         // Given
         val projectName = "Test Project"
-        val isAdmin = true
         coEvery { projectsRepository.addProject(any()) } returns false
 
         // When & Then
         assertThrows<ProjectCreationFailedException> {
-            createProjectUseCase(projectName, isAdmin)
+            createProjectUseCase(projectName)
         }
     }
 
@@ -97,11 +92,10 @@ class CreateProjectUseCaseTest {
     fun `should create project with valid UUID`() = runTest {
         // Given
         val projectName = "Test Project"
-        val isAdmin = true
         coEvery { projectsRepository.addProject(any()) } returns true
 
         // When
-        val result = createProjectUseCase(projectName, isAdmin)
+        val result = createProjectUseCase(projectName)
 
         // Then
         try {
@@ -115,11 +109,10 @@ class CreateProjectUseCaseTest {
     fun `should pass project with correct name to repository`() = runTest {
         // Given
         val projectName = "Specific Project Name"
-        val isAdmin = true
         coEvery { projectsRepository.addProject(any()) } returns true
 
         // When
-        createProjectUseCase(projectName, isAdmin)
+        createProjectUseCase(projectName)
 
         // Then
         coVerify {
@@ -133,11 +126,10 @@ class CreateProjectUseCaseTest {
     fun `should return generated UUID when project is created successfully`() = runTest {
         // Given
         val projectName = "Test Project"
-        val isAdmin = true
         coEvery { projectsRepository.addProject(any()) } returns true
 
         // When
-        val result = createProjectUseCase(projectName, isAdmin)
+        val result = createProjectUseCase(projectName)
 
         // Then
         assertThat(result).isInstanceOf(UUID::class.java)

@@ -30,7 +30,8 @@ class AddTaskUseCaseTest {
                 title = "Task Title",
                 projectId = UUID.randomUUID(),
                 description = "Task description",
-                stateId = UUID.randomUUID()
+                stateId = UUID.randomUUID(),
+                subTasks = listOf()
             )
             coEvery { tasksRepository.addTask(task) } returns true
 
@@ -50,7 +51,8 @@ class AddTaskUseCaseTest {
                 title = "Task Title",
                 projectId = UUID.randomUUID(),
                 description = "Task description",
-                stateId = UUID.randomUUID()
+                stateId = UUID.randomUUID(),
+                subTasks = listOf()
             )
             coEvery { tasksRepository.addTask(task) } returns false
 
@@ -73,7 +75,8 @@ class AddTaskUseCaseTest {
                 title = "Test Task",
                 projectId = projectId,
                 description = "Test description",
-                stateId = stateId
+                stateId = stateId,
+                subTasks = listOf()
             )
             coEvery { tasksRepository.addTask(any()) } returns true
 

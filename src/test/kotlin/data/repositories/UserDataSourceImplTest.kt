@@ -52,7 +52,7 @@ class UserRepositoryImplTest {
         val duplicateUser = user.copy(name = "Duplicate")
 
         // When & Then
-        val exception = assertThrows<IllegalArgumentException> {
+        assertThrows<IllegalArgumentException> {
             repository.addUser(duplicateUser, hashedPassword)
         }
     }

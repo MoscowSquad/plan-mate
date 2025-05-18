@@ -37,7 +37,7 @@ class EditTaskStateUseCaseTest {
         coEvery { stateRepository.updateTaskState(updatedState) } returns true
 
         // When
-        val result = editStateUseCase(updatedState, true)
+        val result = editStateUseCase(updatedState)
 
         // Then
         assertThat(result).isEqualTo(updatedState)
@@ -55,7 +55,7 @@ class EditTaskStateUseCaseTest {
 
         // When & Then
         assertThrows<IllegalStateTitle> {
-             editStateUseCase(invalidState, true)
+            editStateUseCase(invalidState)
         }
         coVerify(exactly = 0) { stateRepository.updateTaskState(any()) }
     }
@@ -73,7 +73,7 @@ class EditTaskStateUseCaseTest {
 
         // When & Then
         assertThrows<NoStateExistException> {
-             editStateUseCase(state, true)
+            editStateUseCase(state)
         }
     }
 
@@ -88,7 +88,7 @@ class EditTaskStateUseCaseTest {
 
         // When & Then
         assertThrows<NotAdminException> {
-             editStateUseCase(state, false)
+            editStateUseCase(state)
         }
         coVerify(exactly = 0) { stateRepository.updateTaskState(any()) }
     }

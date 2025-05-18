@@ -36,7 +36,7 @@ class AddTaskStateUseCaseTest {
         coEvery { stateRepository.addTaskState(validState.projectId, validState) } returns true
 
         // When
-        val result = addStateUseCase(validState, true)
+        val result = addStateUseCase(validState)
 
         // Then
         assertTrue(result)
@@ -54,7 +54,7 @@ class AddTaskStateUseCaseTest {
 
         // When & Then
         assertThrows<IllegalStateTitle> {
-             addStateUseCase(invalidState, true)
+            addStateUseCase(invalidState)
         }
         coVerify(exactly = 0) { stateRepository.addTaskState(any(), any()) }
     }
@@ -71,7 +71,7 @@ class AddTaskStateUseCaseTest {
 
         // When & Then
         assertThrows<IllegalStateTitle> {
-             addStateUseCase(invalidState, true)
+            addStateUseCase(invalidState)
         }
         coVerify(exactly = 0) { stateRepository.addTaskState(any(), any()) }
     }
@@ -87,7 +87,7 @@ class AddTaskStateUseCaseTest {
 
         // When & Then
         assertThrows<NotAdminException> {
-             addStateUseCase(validState, false)
+            addStateUseCase(validState)
         }
         coVerify(exactly = 0) { stateRepository.addTaskState(any(), any()) }
     }
@@ -105,7 +105,7 @@ class AddTaskStateUseCaseTest {
 
         // When & Then
         assertThrows<IllegalStateException> {
-             addStateUseCase(validState, true)
+            addStateUseCase(validState)
         }
 
         coVerify(exactly = 1) { stateRepository.addTaskState(validState.projectId, validState) }
@@ -129,10 +129,10 @@ class AddTaskStateUseCaseTest {
         coEvery { stateRepository.addTaskState(any(), any()) } returns true
 
         // When & Then
-        assertTrue(addStateUseCase(minLengthState, true))
+        assertTrue(addStateUseCase(minLengthState))
         coVerify(exactly = 1) { stateRepository.addTaskState(minLengthState.projectId, minLengthState) }
 
-        assertTrue(addStateUseCase(maxLengthState, true))
+        assertTrue(addStateUseCase(maxLengthState))
         coVerify(exactly = 1) { stateRepository.addTaskState(maxLengthState.projectId, maxLengthState) }
     }
 }

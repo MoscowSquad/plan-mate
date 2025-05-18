@@ -130,7 +130,7 @@ class RegisterUseCaseTest {
         )
 
         // Then
-        assertEquals(password.toMD5Hash(), fakeRepository.registeredUsers[0].hashedPassword)
+        assertEquals(toMD5Hash(password), fakeRepository.registeredUsers[0].hashedPassword)
     }
 
     @Test

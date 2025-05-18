@@ -39,21 +39,24 @@ class TasksRepositoryImplTest {
             "Task 1",
             "Description 1",
             projectId1,
-            UUID.randomUUID()
+            UUID.randomUUID(),
+            listOf()
         )
         testTask2 = Task(
             UUID.fromString("22222222-2222-2222-2222-222222222222"),
             "Task 2",
             "Description 2",
             projectId1,
-            UUID.randomUUID()
+            UUID.randomUUID(),
+            listOf()
         )
         testTask3 = Task(
             UUID.fromString("33333333-3333-3333-3333-333333333333"),
             "Task 3",
             "Description 3",
             projectId2,
-            UUID.randomUUID()
+            UUID.randomUUID(),
+            listOf()
         )
 
         every { dataSource.fetch() } returns emptyList()
@@ -128,7 +131,13 @@ class TasksRepositoryImplTest {
     fun `addTask should throw TaskIsExist when task with same ID already exists`() = runTest {
         // Given
         repository.addTask(testTask1)
-        val duplicateTask = Task(testTask1.id, "Duplicate Task", "Duplicate Description", projectId1, UUID.randomUUID())
+        val duplicateTask = Task(
+            testTask1.id,
+            "Duplicate Task",
+            "Duplicate Description",
+            projectId1, UUID.randomUUID(),
+            listOf()
+        )
 
         // When & Then
         assertThrows<TaskIsExist> {
@@ -142,7 +151,14 @@ class TasksRepositoryImplTest {
         // Given
         repository.addTask(testTask1)
         val updatedTask =
-            Task(testTask1.id, "Updated Task", "Updated Description", testTask1.projectId, testTask1.stateId)
+            Task(
+                testTask1.id,
+                "Updated Task",
+                "Updated Description",
+                testTask1.projectId,
+                testTask1.stateId,
+                listOf()
+            )
 
         // When
         val result = repository.editTask(updatedTask)
@@ -156,7 +172,14 @@ class TasksRepositoryImplTest {
     @Test
     fun `editTask should throw TaskIsNotFoundException when task does not exist`() = runTest {
         // Given
-        val nonExistingTask = Task(UUID.randomUUID(), "Non-existing", "Description", projectId1, UUID.randomUUID())
+        val nonExistingTask = Task(
+            UUID.randomUUID(),
+            "Non-existing",
+            "Description",
+            projectId1,
+            UUID.randomUUID(),
+            listOf()
+        )
 
         // When & Then
         assertThrows<TaskIsNotFoundException> {

@@ -31,7 +31,8 @@ class EditTaskUseCaseTest {
             title = "Videos",
             projectId = UUID.randomUUID(),
             description = "description",
-            stateId = UUID.randomUUID()
+            stateId = UUID.randomUUID(),
+            subTasks = listOf()
         )
 
         coEvery { tasksRepository.editTask(task) } returns true
@@ -52,7 +53,8 @@ class EditTaskUseCaseTest {
             title = "Videos",
             projectId = UUID.randomUUID(),
             description = "description",
-            stateId = UUID.randomUUID()
+            stateId = UUID.randomUUID(),
+            subTasks = listOf()
         )
 
         coEvery { tasksRepository.editTask(task) } returns false

@@ -31,14 +31,16 @@ class GetTaskByProjectIdUseCaseTest {
                 title = "Videos",
                 projectId = projectId,
                 description = "description",
-                stateId = UUID.randomUUID()
+                stateId = UUID.randomUUID(),
+                subTasks = listOf()
             ),
             Task(
                 id = UUID.randomUUID(),
                 title = "Videos2",
                 projectId = projectId,
                 description = "description",
-                stateId = UUID.randomUUID()
+                stateId = UUID.randomUUID(),
+                subTasks = listOf()
             )
         )
         coEvery { tasksRepository.getTaskByProjectId(projectId) } returns tasks

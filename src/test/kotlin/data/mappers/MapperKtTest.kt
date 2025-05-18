@@ -90,7 +90,8 @@ class MapperKtTest {
             name = "Test Task",
             description = "Task Description",
             projectId = "550e8400-e29b-41d4-a716-446655440001",
-            stateId = "550e8400-e29b-41d4-a716-446655440002"
+            stateId = "550e8400-e29b-41d4-a716-446655440002",
+            subTasks = listOf()
         )
 
         val task = taskDto.toTask()
@@ -109,7 +110,8 @@ class MapperKtTest {
             title = "Test Task",
             description = "Task Description",
             projectId = UUID.fromString("550e8400-e29b-41d4-a716-446655440001"),
-            stateId = UUID.fromString("550e8400-e29b-41d4-a716-446655440002")
+            stateId = UUID.fromString("550e8400-e29b-41d4-a716-446655440002"),
+            subTasks = listOf()
         )
 
         val taskDto = task.toDto()

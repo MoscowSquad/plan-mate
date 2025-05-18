@@ -22,7 +22,7 @@ class AuthenticationRepositoryImplTest {
     private lateinit var userDataSource: UserDataSource
     private lateinit var repository: AuthenticationRepositoryImpl
     private lateinit var testUser: User
-    private val hashedPassword = "password123".toMD5Hash()
+    private val hashedPassword = toMD5Hash("password123")
 
     @BeforeEach
     fun setUp() {
@@ -54,7 +54,7 @@ class AuthenticationRepositoryImplTest {
     @Test
     fun `register should add user and update data source`() = runTest {
         // Given
-        val hashedPassword = "password456".toMD5Hash()
+        val hashedPassword = toMD5Hash("password456")
         val newUser = User(
             id = UUID.randomUUID(),
             name = "newUser",
