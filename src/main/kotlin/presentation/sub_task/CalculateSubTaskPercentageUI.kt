@@ -4,7 +4,7 @@ import domain.usecases.sub_task.GetSubTaskPrcentageUseCase
 import presentation.io.ConsoleIO
 
 
-class CalculatSubTaskPercentageUI(
+class CalculateSubTaskPercentageUI(
     private val getSubTaskPercentageUseCase: GetSubTaskPrcentageUseCase,
     private val consoleIO: ConsoleIO
 ) : ConsoleIO by consoleIO {

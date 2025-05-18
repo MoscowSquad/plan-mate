@@ -94,7 +94,7 @@ val presentationModule = module {
     }
 
     factory{
-        CalculatSubTaskPercentageUI(
+        CalculateSubTaskPercentageUI(
             getSubTaskPercentageUseCase = get(),
             consoleIO = get()
         )

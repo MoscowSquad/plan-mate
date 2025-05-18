@@ -4,8 +4,6 @@ import data.mongodb_data.mappers.toUUID
 import domain.usecases.project.GetProjectByIdUseCase
 import presentation.io.ConsoleIO
 import presentation.project.GetAllProjectsUI
-import presentation.sub_task.CalculatSubTaskPercentageUI
-import presentation.sub_task.CreateSubTaskUI
 import presentation.sub_task.SubTaskUI
 
 class TasksUI(

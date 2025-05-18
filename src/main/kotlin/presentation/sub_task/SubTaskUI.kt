@@ -7,13 +7,14 @@ import presentation.project.GetAllProjectsUI
 import presentation.task.EditTaskUI
 import presentation.task.GetAllTasksUI
 
-class SubTaskUI (private val getProjectByIdUseCase: GetProjectByIdUseCase,
-private val createSubTaskUI: CreateSubTaskUI,
-private val deleteSubTaskUI: DeleteSubTaskUI,
-private val getAllTasksUI: GetAllTasksUI,
-private val editTaskUI: EditTaskUI,
-private val getAllProjectsUI: GetAllProjectsUI,
-private val consoleIO: ConsoleIO,
+class SubTaskUI(
+    private val getProjectByIdUseCase: GetProjectByIdUseCase,
+    private val createSubTaskUI: CreateSubTaskUI,
+    private val deleteSubTaskUI: DeleteSubTaskUI,
+    private val getAllTasksUI: GetAllTasksUI,
+    private val editTaskUI: EditTaskUI,
+    private val getAllProjectsUI: GetAllProjectsUI,
+    private val consoleIO: ConsoleIO,
     private val getSubTasksByTaskIdUI: GetSubTasksByTaskIdUI
 ) : ConsoleIO by consoleIO {
 
@@ -49,8 +50,8 @@ private val consoleIO: ConsoleIO,
             "1" -> createSubTaskUI()
             "2" -> editTaskUI(projectId)
             "3" -> deleteSubTaskUI()
-            "4" ->getSubTasksByTaskIdUI()
-            "5"-> write("Navigating back...")
+            "4" -> getSubTasksByTaskIdUI()
+            "5" -> write("Navigating back...")
 
             else -> {
                 write("❌ Invalid option.")
