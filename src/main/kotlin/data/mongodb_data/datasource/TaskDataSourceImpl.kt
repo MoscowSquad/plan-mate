@@ -29,7 +29,8 @@ class TaskDataSourceImpl(
             Updates.set(TaskDto::name.name, updatedTask.name),
             Updates.set(TaskDto::description.name, updatedTask.description),
             Updates.set(TaskDto::stateId.name, updatedTask.stateId),
-            Updates.set(TaskDto::projectId.name, updatedTask.projectId)
+            Updates.set(TaskDto::projectId.name, updatedTask.projectId),
+            Updates.set(TaskDto::subTasks.name, updatedTask.subTasks)
         )
         return collection.updateOne(filter, updates).wasAcknowledged()
     }

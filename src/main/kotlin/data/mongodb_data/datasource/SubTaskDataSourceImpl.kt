@@ -1,6 +1,7 @@
 package data.mongodb_data.datasource
 
 import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Updates
 import com.mongodb.kotlin.client.coroutine.MongoCollection
 import data.data_source.SubTaskDataSource
 import data.mongodb_data.dto.SubTaskDto
@@ -23,9 +24,15 @@ class SubTaskDataSourceImpl(
     }
 
     override suspend fun updateSubTask(subTask: SubTaskDto): Boolean {
-        return collection.replaceOne(
+        return collection.updateOne(
             Filters.eq(SubTaskDto::id.name, subTask.id),
-            subTask
+            Updates.combine(
+                Updates.set(SubTaskDto::id.name, subTask.id),
+                Updates.set(SubTaskDto::title.name, subTask.title),
+                Updates.set(SubTaskDto::description.name, subTask.description),
+                Updates.set(SubTaskDto::isCompleted.name, subTask.isCompleted),
+                Updates.set(SubTaskDto::parentTaskId.name, subTask.parentTaskId)
+            )
         ).wasAcknowledged()
     }
 
