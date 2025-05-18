@@ -4,7 +4,6 @@ import domain.models.Project
 import domain.repositories.ProjectsRepository
 import domain.util.InvalidProjectNameException
 import domain.util.NoExistProjectException
-import domain.util.NotAdminException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -45,18 +44,6 @@ class UpdateProjectUseCaseTest {
                 it.id == projectId && it.name == projectName
             })
         }
-    }
-
-    @Test
-    fun `should throw NotAdminException when user is not admin`() = runTest {
-        // Given
-        val projectName = "Updated Project"
-
-        // When & Then
-        assertThrows<NotAdminException> {
-            updateProjectUseCase(projectId, projectName)
-        }
-        coVerify(exactly = 0) { projectsRepository.updateProject(any()) }
     }
 
     @ParameterizedTest

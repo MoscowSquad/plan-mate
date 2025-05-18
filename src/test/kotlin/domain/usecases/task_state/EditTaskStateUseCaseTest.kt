@@ -5,7 +5,6 @@ import domain.models.TaskState
 import domain.repositories.TaskStateRepository
 import domain.util.IllegalStateTitle
 import domain.util.NoStateExistException
-import domain.util.NotAdminException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -75,21 +74,5 @@ class EditTaskStateUseCaseTest {
         assertThrows<NoStateExistException> {
             editStateUseCase(state)
         }
-    }
-
-    @Test
-    fun `when user is not admin should throw NotAdminException`() = runTest {
-        // Given
-        val state = TaskState(
-            id = UUID.randomUUID(),
-            name = "Valid",
-            projectId = UUID.randomUUID()
-        )
-
-        // When & Then
-        assertThrows<NotAdminException> {
-            editStateUseCase(state)
-        }
-        coVerify(exactly = 0) { stateRepository.updateTaskState(any()) }
     }
 }

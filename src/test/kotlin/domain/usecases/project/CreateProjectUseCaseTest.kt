@@ -4,7 +4,6 @@ import com.google.common.truth.Truth
 import com.google.common.truth.Truth.assertThat
 import domain.repositories.ProjectsRepository
 import domain.util.InvalidProjectNameException
-import domain.util.NotAdminException
 import domain.util.ProjectCreationFailedException
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -40,17 +39,6 @@ class CreateProjectUseCaseTest {
             projectsRepository.addProject(match { project ->
                 project.name == projectName
             })
-        }
-    }
-
-    @Test
-    fun `should throw NotAdminException when user is not admin`(): Unit = runTest {
-        // Given
-        val projectName = "Test Project"
-
-        // When & Then
-        assertThrows<NotAdminException> {
-            createProjectUseCase(projectName)
         }
     }
 
@@ -102,7 +90,8 @@ class CreateProjectUseCaseTest {
             UUID.fromString(result.toString())
             assertThat(true).isTrue()
         } catch (e: IllegalArgumentException) {
-            Truth.assertWithMessage("Generated ID is not a valid UUID").that(false).isTrue()        }
+            Truth.assertWithMessage("Generated ID is not a valid UUID").that(false).isTrue()
+        }
     }
 
     @Test

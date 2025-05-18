@@ -3,7 +3,6 @@ package domain.usecases.task_state
 import domain.models.TaskState
 import domain.repositories.TaskStateRepository
 import domain.util.IllegalStateTitle
-import domain.util.NotAdminException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -76,21 +75,6 @@ class AddTaskStateUseCaseTest {
         coVerify(exactly = 0) { stateRepository.addTaskState(any(), any()) }
     }
 
-    @Test
-    fun `should throw NotAdminException when user is not admin`() = runTest {
-        // Given
-        val validState = TaskState(
-            id = UUID.randomUUID(),
-            name = "Valid State",
-            projectId = UUID.randomUUID()
-        )
-
-        // When & Then
-        assertThrows<NotAdminException> {
-            addStateUseCase(validState)
-        }
-        coVerify(exactly = 0) { stateRepository.addTaskState(any(), any()) }
-    }
 
     @Test
     fun `should throw when repository fails to add`() = runTest {

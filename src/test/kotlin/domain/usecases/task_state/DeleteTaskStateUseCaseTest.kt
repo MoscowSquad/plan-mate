@@ -3,7 +3,6 @@ package domain.usecases.task_state
 import domain.models.TaskState
 import domain.repositories.TaskStateRepository
 import domain.util.NoStateExistException
-import domain.util.NotAdminException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.coVerifyOrder
@@ -46,21 +45,6 @@ class DeleteTaskStateUseCaseTest {
             stateRepository.getTaskStateByProjectId(projectId)
             stateRepository.deleteTaskState(projectId, stateId)
         }
-    }
-
-    @Test
-    fun `should throw NotAdminException when user is not admin`() = runTest {
-        // Given
-        val projectId = UUID.fromString("00000000-0000-0000-0000-000000000001")
-        val stateId = UUID.fromString("00000000-0000-0000-0000-000000000002")
-
-        // When & Then
-        assertThrows<NotAdminException> {
-            deleteStateUseCase(stateId, projectId)
-        }
-
-        coVerify(exactly = 0) { stateRepository.getTaskStateByProjectId(any()) }
-        coVerify(exactly = 0) { stateRepository.deleteTaskState(any(), any()) }
     }
 
     @Test

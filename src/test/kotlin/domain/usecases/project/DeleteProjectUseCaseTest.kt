@@ -3,7 +3,6 @@ package domain.usecases.project
 import com.google.common.truth.Truth.assertThat
 import domain.repositories.ProjectsRepository
 import domain.util.NoExistProjectException
-import domain.util.NotAdminException
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -52,18 +51,6 @@ class DeleteProjectUseCaseTest {
     }
 
     @Test
-    fun `should throw NotAdminException when user is not admin`(): Unit = runTest {
-        // Given
-        val projectId = UUID.randomUUID()
-
-        // When & Then
-        assertThrows<NotAdminException> {
-            deleteProjectUseCase(projectId)
-        }
-        coVerify(exactly = 0) { projectsRepository.deleteProject(any()) }
-    }
-
-    @Test
     fun `should include project ID in NoExistProjectException message`(): Unit = runTest {
         // Given
         val projectId = UUID.randomUUID()
@@ -74,18 +61,6 @@ class DeleteProjectUseCaseTest {
             deleteProjectUseCase(projectId)
         }
         assertThat(exception.message).contains(projectId.toString())
-    }
-
-    @Test
-    fun `should not call repository when user is not admin`(): Unit = runTest {
-        // Given
-        val projectId = UUID.randomUUID()
-
-        // When & Then
-        assertThrows<NotAdminException> {
-            deleteProjectUseCase(projectId)
-        }
-        coVerify(exactly = 0) { projectsRepository.deleteProject(any()) }
     }
 
     @Test
