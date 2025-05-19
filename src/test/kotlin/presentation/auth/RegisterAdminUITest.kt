@@ -1,133 +1,173 @@
 package presentation.auth
 
+import domain.models.User
 import domain.models.User.UserRole
 import domain.usecases.auth.RegisterUseCase
-import fake.FakeConsoleIO
-import io.mockk.coEvery
-import io.mockk.coVerify
-import io.mockk.coVerifySequence
-import io.mockk.mockk
+import io.mockk.*
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.util.*
+import presentation.io.ConsoleIO
 
 class RegisterAdminUITest {
     private lateinit var registerUseCase: RegisterUseCase
-    private lateinit var consoleIO: FakeConsoleIO
+    private lateinit var consoleIO: ConsoleIO
     private lateinit var registerAdminUI: RegisterAdminUI
 
     @BeforeEach
     fun setUp() {
         registerUseCase = mockk(relaxed = true)
-        consoleIO = FakeConsoleIO(LinkedList(listOf("test admin", "test password")))
+        consoleIO = mockk(relaxed = true)
         registerAdminUI = RegisterAdminUI(registerUseCase, consoleIO)
     }
 
     @Test
     fun `should register admin successfully on first attempt`() = runTest {
         // Given
-        coEvery { registerUseCase("test admin", "test password", UserRole.ADMIN) } returns mockk<domain.models.User>(
-            relaxed = true
-        )
+        val username = "adminUser"
+        val password = "P@ssw0rd123"
+        val mockUser = mockk<User>(relaxed = true)
+
+        coEvery { consoleIO.read() } returnsMany listOf(username, password)
+        coEvery { registerUseCase(username, password, UserRole.ADMIN) } returns mockUser
+        coEvery { consoleIO.write(any()) } just runs
+
         // When
-        registerAdminUI.invoke()
+        registerAdminUI()
 
         // Then
         coVerifySequence {
-            registerUseCase("test admin", "test password", UserRole.ADMIN)
-        }
-
-        val expectedOutputs = listOf(
-            "🛡️ Register Admin",
-            "Enter admin username: ",
-            "Enter password: 🔑",
-            "Admin registered successfully! 🎉",
-            "✅ Welcome, test admin Let's begin by adding your first project."
-        )
-
-        expectedOutputs.forEachIndexed { index, message ->
-            assert(consoleIO.outputs[index] == message) {
-                "Expected '${expectedOutputs[index]}' but got '${consoleIO.outputs[index]}'"
-            }
+            consoleIO.write("🛡️ Register Admin")
+            consoleIO.write("Enter admin username: ")
+            consoleIO.read()
+            consoleIO.write(any()) // Password requirements
+            consoleIO.write("Enter password: 🔑")
+            consoleIO.read()
+            registerUseCase(username, password, UserRole.ADMIN)
+            consoleIO.write("Admin registered successfully! 🎉")
+            consoleIO.write("✅ Welcome, $username Let's begin by adding your first project.")
         }
     }
 
     @Test
     fun `should retry registration after failure`() = runTest {
         // Given
-        consoleIO = FakeConsoleIO(LinkedList(listOf("existing", "pass1", "new admin", "pass2")))
-        registerAdminUI = RegisterAdminUI(registerUseCase, consoleIO)
+        val failedUsername = "existingAdmin"
+        val failedPassword = "WeakPw1!"
+        val successUsername = "newAdmin"
+        val successPassword = "Str0ng#Pass2"
+        val mockUser = mockk<User>(relaxed = true)
+        val errorMessage = "Username already exists"
 
-        coEvery { registerUseCase("existing", "pass1", UserRole.ADMIN) } throws Exception("Username already exists")
-        coEvery {
-            registerUseCase(
-                "new admin",
-                "pass2",
-                UserRole.ADMIN
-            )
-        } returns mockk<domain.models.User>(relaxed = true)
+        coEvery { consoleIO.read() } returnsMany listOf(
+            failedUsername,
+            failedPassword,
+            successUsername,
+            successPassword
+        )
+        coEvery { registerUseCase(failedUsername, failedPassword, UserRole.ADMIN) } throws Exception(errorMessage)
+        coEvery { registerUseCase(successUsername, successPassword, UserRole.ADMIN) } returns mockUser
+        coEvery { consoleIO.write(any()) } just runs
+
         // When
-        registerAdminUI.invoke()
+        registerAdminUI()
 
         // Then
         coVerifySequence {
-            registerUseCase("existing", "pass1", UserRole.ADMIN)
-            registerUseCase("new admin", "pass2", UserRole.ADMIN)
+            consoleIO.write("🛡️ Register Admin")
+            consoleIO.write("Enter admin username: ")
+            consoleIO.read()
+            consoleIO.write(any()) // Password requirements
+            consoleIO.write("Enter password: 🔑")
+            consoleIO.read()
+            registerUseCase(failedUsername, failedPassword, UserRole.ADMIN)
+            consoleIO.write("Registration failed. $errorMessage ❌")
+            consoleIO.write("Enter admin username: ")
+            consoleIO.read()
+            consoleIO.write(any()) // Password requirements
+            consoleIO.write("Enter password: 🔑")
+            consoleIO.read()
+            registerUseCase(successUsername, successPassword, UserRole.ADMIN)
+            consoleIO.write("Admin registered successfully! 🎉")
+            consoleIO.write("✅ Welcome, $successUsername Let's begin by adding your first project.")
         }
 
-        val expectedOutputs = listOf(
-            "🛡️ Register Admin",
-            "Enter admin username: ",
-            "Enter password: 🔑",
-            "Registration failed. Username already exists ❌",
-            "Enter admin username: ",
-            "Enter password: 🔑",
-            "Admin registered successfully! 🎉",
-            "✅ Welcome, new admin Let's begin by adding your first project."
-        )
-
-        expectedOutputs.forEachIndexed { index, message ->
-            assert(consoleIO.outputs[index] == message)
+        coVerify {
+            registerUseCase(failedUsername, failedPassword, UserRole.ADMIN)
+            registerUseCase(successUsername, successPassword, UserRole.ADMIN)
+            consoleIO.write("Registration failed. $errorMessage ❌")
+            consoleIO.write("Admin registered successfully! 🎉")
+            consoleIO.write("✅ Welcome, $successUsername Let's begin by adding your first project.")
         }
     }
 
     @Test
     fun `should handle multiple registration failures before success`() = runTest {
         // Given
-        consoleIO = FakeConsoleIO(
-            LinkedList(
-                listOf(
-                    "user1", "weak",
-                    "user2", "short",
-                    "user3", "valid123"
-                )
-            )
+        val inputs = listOf(
+            "admin1", "weak1",
+            "admin2", "short2",
+            "admin3", "Valid@Pw3"
         )
-        registerAdminUI = RegisterAdminUI(registerUseCase, consoleIO)
+        val errors = listOf("Password too weak", "Password too short")
+        val mockUser = mockk<User>(relaxed = true)
 
-        coEvery { registerUseCase("user1", "weak", UserRole.ADMIN) } throws Exception("Password too weak")
-        coEvery { registerUseCase("user2", "short", UserRole.ADMIN) } throws Exception("Password too short")
-        coEvery {
-            registerUseCase(
-                "user3",
-                "valid123",
-                UserRole.ADMIN
-            )
-        } returns mockk<domain.models.User>(relaxed = true)
+        coEvery { consoleIO.read() } returnsMany inputs
+        coEvery { registerUseCase("admin1", "weak1", UserRole.ADMIN) } throws Exception(errors[0])
+        coEvery { registerUseCase("admin2", "short2", UserRole.ADMIN) } throws Exception(errors[1])
+        coEvery { registerUseCase("admin3", "Valid@Pw3", UserRole.ADMIN) } returns mockUser
+        coEvery { consoleIO.write(any()) } just runs
+
         // When
-        registerAdminUI.invoke()
+        registerAdminUI()
 
         // Then
-        coVerify {
-            registerUseCase("user1", "weak", UserRole.ADMIN)
-            registerUseCase("user2", "short", UserRole.ADMIN)
-            registerUseCase("user3", "valid123", UserRole.ADMIN)
-        }
+        // Then
+        coVerifySequence {
+            consoleIO.write("🛡️ Register Admin")
+            consoleIO.write("Enter admin username: ")
+            consoleIO.read()
+            // Match the actual multi-line password requirements format
+            consoleIO.write(
+                """# At least one lowercase letter
+# At least one uppercase letter
+# At least one digit
+# At least one special character
+# Minimum length of 8 characters"""
+            )
+            consoleIO.write("Enter password: 🔑")
+            consoleIO.read()
+            registerUseCase("admin1", "weak1", UserRole.ADMIN)
+            consoleIO.write("Registration failed. ${errors[0]} ❌")
 
-        assert(consoleIO.outputs.contains("Registration failed. Password too weak ❌"))
-        assert(consoleIO.outputs.contains("Registration failed. Password too short ❌"))
-        assert(consoleIO.outputs.contains("Admin registered successfully! 🎉"))
-        assert(consoleIO.outputs.contains("✅ Welcome, user3 Let's begin by adding your first project."))
+            consoleIO.write("Enter admin username: ")
+            consoleIO.read()
+            consoleIO.write(
+                """# At least one lowercase letter
+# At least one uppercase letter
+# At least one digit
+# At least one special character
+# Minimum length of 8 characters"""
+            )
+            consoleIO.write("Enter password: 🔑")
+            consoleIO.read()
+            registerUseCase("admin2", "short2", UserRole.ADMIN)
+            consoleIO.write("Registration failed. ${errors[1]} ❌")
+
+            consoleIO.write("Enter admin username: ")
+            consoleIO.read()
+            consoleIO.write(
+                """# At least one lowercase letter
+# At least one uppercase letter
+# At least one digit
+# At least one special character
+# Minimum length of 8 characters"""
+            )
+            consoleIO.write("Enter password: 🔑")
+            consoleIO.read()
+            registerUseCase("admin3", "Valid@Pw3", UserRole.ADMIN)
+            consoleIO.write("Admin registered successfully! 🎉")
+            consoleIO.write("✅ Welcome, admin3 Let's begin by adding your first project.")
+        }
     }
 }
