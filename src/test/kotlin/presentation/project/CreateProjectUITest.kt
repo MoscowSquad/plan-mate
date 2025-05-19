@@ -5,115 +5,135 @@ import data.session_manager.SessionManager
 import domain.models.User.UserRole
 import domain.usecases.project.CreateProjectUseCase
 import io.mockk.*
-import io.mockk.impl.annotations.MockK
-import io.mockk.junit5.MockKExtension
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import presentation.io.ConsoleIO
 import presentation.state.CreateTaskStateUI
 import java.util.*
 
-@ExtendWith(MockKExtension::class)
 class CreateProjectUITest {
-
-    @MockK
     private lateinit var createProjectUseCase: CreateProjectUseCase
-
-    @MockK
     private lateinit var consoleIO: ConsoleIO
-
-    @MockK
     private lateinit var createTaskStateUI: CreateTaskStateUI
-
     private lateinit var createProjectUI: CreateProjectUI
+    private val projectId = UUID.randomUUID()
+    private val projectName = "Test Project"
 
     @BeforeEach
     fun setUp() {
-        MockKAnnotations.init(this)
+        createProjectUseCase = mockk(relaxed = true)
+        consoleIO = mockk(relaxed = true)
+        createTaskStateUI = mockk(relaxed = true)
         createProjectUI = CreateProjectUI(createProjectUseCase, createTaskStateUI, consoleIO)
 
         mockkObject(SessionManager)
+
+        every { consoleIO.read() } returnsMany listOf(projectName, "no")
+        coEvery { createProjectUseCase(projectName) } returns projectId
     }
 
     @Test
-    fun `invoke should create project successfully for admin user`() = runTest {
-        val projectName = "Test Project"
-        val projectId = UUID.randomUUID()
+    fun `should create project successfully when user is admin`() = runTest {
+        // Given
         val adminUser = mockk<LoggedInUser>()
-
         coEvery { adminUser.role } returns UserRole.ADMIN
         coEvery { SessionManager.currentUser } returns adminUser
-        coEvery { consoleIO.read() } returns projectName
-        coEvery { consoleIO.write(any()) } just Runs
-        coEvery { createProjectUseCase(projectName) } returns projectId
 
+        // When
         createProjectUI.invoke()
 
-        coVerify { consoleIO.write("Enter project name:") }
-        coVerify { consoleIO.read() }
-        coVerify { createProjectUseCase(projectName) }
-        coVerify { consoleIO.write("Project $projectId created successfully!") }
+        // Then
+        coVerifySequence {
+            consoleIO.write("Enter project name:")
+            consoleIO.read()
+            createProjectUseCase(projectName)
+            consoleIO.write("Project named $projectName with id $projectId created successfully!")
+            consoleIO.write("Would you like to add a state to the project now? (yes/no):")
+            consoleIO.read()
+            consoleIO.write("⚠️ Warning: You won't be able to add tasks to this project unless you add at least one state.")
+        }
     }
 
     @Test
-    fun `invoke should create project successfully for regular user`() = runTest {
-        val projectName = "Test Project"
-        val projectId = UUID.randomUUID()
+    fun `should create project successfully when user is not admin`() = runTest {
+        // Given
         val regularUser = mockk<LoggedInUser>()
-
         coEvery { regularUser.role } returns UserRole.MATE
         coEvery { SessionManager.currentUser } returns regularUser
-        coEvery { consoleIO.read() } returns projectName
-        coEvery { consoleIO.write(any()) } just Runs
-        coEvery { createProjectUseCase(projectName) } returns projectId
 
+        // When
         createProjectUI.invoke()
 
-        // Assert
-        coVerify { consoleIO.write("Enter project name:") }
-        coVerify { consoleIO.read() }
-        coVerify { createProjectUseCase(projectName) }
-        coVerify { consoleIO.write("Project $projectId created successfully!") }
+        // Then
+        coVerifySequence {
+            consoleIO.write("Enter project name:")
+            consoleIO.read()
+            createProjectUseCase(projectName)
+            consoleIO.write("Project named $projectName with id $projectId created successfully!")
+            consoleIO.write("Would you like to add a state to the project now? (yes/no):")
+            consoleIO.read()
+            consoleIO.write("⚠️ Warning: You won't be able to add tasks to this project unless you add at least one state.")
+        }
     }
 
     @Test
-    fun `invoke should handle error when creating project fails`() = runTest {
-        // Arrange
-        val projectName = "Test Project"
+    fun `should handle exception when creating project`() = runTest {
+        // Given
         val errorMessage = "Invalid project name"
-        val user = mockk<LoggedInUser>()
-
-        coEvery { user.role } returns UserRole.MATE
-        coEvery { SessionManager.currentUser } returns user
-        coEvery { consoleIO.read() } returns projectName
-        coEvery { consoleIO.write(any()) } just Runs
+        coEvery { SessionManager.currentUser } returns null
         coEvery { createProjectUseCase(projectName) } throws IllegalArgumentException(errorMessage)
 
+        // When
         createProjectUI.invoke()
 
-        coVerify { consoleIO.write("Enter project name:") }
-        coVerify { consoleIO.read() }
-        coVerify { createProjectUseCase(projectName) }
-        coVerify { consoleIO.write("Error creating project: $errorMessage") }
+        // Then
+        coVerifySequence {
+            consoleIO.write("Enter project name:")
+            consoleIO.read()
+            createProjectUseCase(projectName)
+            consoleIO.write("Error creating project: $errorMessage")
+        }
     }
 
     @Test
-    fun `invoke should handle null user in SessionManager`() = runTest {
-        val projectName = "Test Project"
-        val projectId = UUID.randomUUID()
-
+    fun `should handle null user in session`() = runTest {
+        // Given
         coEvery { SessionManager.currentUser } returns null
-        coEvery { consoleIO.read() } returns projectName
-        coEvery { consoleIO.write(any()) } just Runs
-        coEvery { createProjectUseCase(projectName) } returns projectId
 
+        // When
         createProjectUI.invoke()
 
-        coVerify { consoleIO.write("Enter project name:") }
-        coVerify { consoleIO.read() }
-        coVerify { createProjectUseCase(projectName) }
-        coVerify { consoleIO.write("Project $projectId created successfully!") }
+        // Then
+        coVerifySequence {
+            consoleIO.write("Enter project name:")
+            consoleIO.read()
+            createProjectUseCase(projectName)
+            consoleIO.write("Project named $projectName with id $projectId created successfully!")
+            consoleIO.write("Would you like to add a state to the project now? (yes/no):")
+            consoleIO.read()
+            consoleIO.write("⚠️ Warning: You won't be able to add tasks to this project unless you add at least one state.")
+        }
+    }
+
+    @Test
+    fun `should create task state when user selects yes`() = runTest {
+        // Given
+        every { consoleIO.read() } returnsMany listOf(projectName, "yes")
+        coEvery { SessionManager.currentUser } returns null
+
+        // When
+        createProjectUI.invoke()
+
+        // Then
+        coVerifySequence {
+            consoleIO.write("Enter project name:")
+            consoleIO.read()
+            createProjectUseCase(projectName)
+            consoleIO.write("Project named $projectName with id $projectId created successfully!")
+            consoleIO.write("Would you like to add a state to the project now? (yes/no):")
+            consoleIO.read()
+            createTaskStateUI(projectId)
+        }
     }
 }
