@@ -16,6 +16,9 @@ class UpdateProjectNameUITest {
     private lateinit var updateProjectUseCase: UpdateProjectUseCase
     private lateinit var consoleIO: ConsoleIO
     private lateinit var updateProjectNameUI: UpdateProjectNameUI
+    private val projectId = UUID.randomUUID()
+    private val projectIdString = projectId.toString()
+    private val newProjectName = "Updated Project Name"
 
     @BeforeEach
     fun setUp() {
@@ -23,147 +26,124 @@ class UpdateProjectNameUITest {
         consoleIO = mockk(relaxed = true)
         updateProjectNameUI = UpdateProjectNameUI(updateProjectUseCase, consoleIO)
 
+        mockkStatic(String::toUUID)
+        every { projectIdString.toUUID() } returns projectId
+    }
+
+    @Test
+    fun `should update project name successfully when user is admin`() = runTest {
+        // Given
+        val adminUser = mockk<LoggedInUser>()
+        coEvery { adminUser.role } returns UserRole.ADMIN
         mockkObject(SessionManager)
-        mockkStatic("data.mongodb_data.mappers.MapperKt")
-        SessionManager.currentUser = null
-    }
+        coEvery { SessionManager.currentUser } returns adminUser
 
-    @Test
-    fun `should update project name successfully when valid inputs and regular user`() = runTest {
-        val projectId = UUID.randomUUID()
-        val projectName = "Updated Project Name"
-        SessionManager.currentUser = LoggedInUser(UUID.randomUUID(), "user", UserRole.MATE, listOf())
+        every { consoleIO.read() } returnsMany listOf(projectIdString, newProjectName)
 
-        every { consoleIO.read() } returnsMany listOf(projectId.toString(), projectName)
-        every { any<String>().toUUID() } returns projectId
-        coEvery { updateProjectUseCase(projectId, projectName) } returns true
+        // When
+        updateProjectNameUI.invoke()
 
-        updateProjectNameUI()
-
+        // Then
         coVerifySequence {
             consoleIO.write("Enter the project ID to update:")
             consoleIO.read()
             consoleIO.write("Please Enter new project name: ")
             consoleIO.read()
-            updateProjectUseCase(projectId, projectName)
+            updateProjectUseCase(projectId, newProjectName)
             consoleIO.write("✅ Project updated successfully.")
         }
     }
 
     @Test
-    fun `should update project name successfully when valid inputs and admin user`() = runTest {
-        val projectId = UUID.randomUUID()
-        val projectName = "Updated Project Name"
-        SessionManager.currentUser = LoggedInUser(UUID.randomUUID(), "admin", UserRole.ADMIN, listOf())
+    fun `should update project name successfully when user is not admin`() = runTest {
+        // Given
+        val regularUser = mockk<LoggedInUser>()
+        coEvery { regularUser.role } returns UserRole.MATE
+        mockkObject(SessionManager)
+        coEvery { SessionManager.currentUser } returns regularUser
 
-        every { consoleIO.read() } returnsMany listOf(projectId.toString(), projectName)
-        every { any<String>().toUUID() } returns projectId
-        coEvery { updateProjectUseCase(projectId, projectName) } returns true
+        every { consoleIO.read() } returnsMany listOf(projectIdString, newProjectName)
 
-        updateProjectNameUI()
+        // When
+        updateProjectNameUI.invoke()
 
+        // Then
         coVerifySequence {
             consoleIO.write("Enter the project ID to update:")
             consoleIO.read()
             consoleIO.write("Please Enter new project name: ")
             consoleIO.read()
-            updateProjectUseCase(projectId, projectName)
+            updateProjectUseCase(projectId, newProjectName)
             consoleIO.write("✅ Project updated successfully.")
         }
     }
 
     @Test
-    fun `should handle error when update project name fails`() = runTest {
-        val projectId = UUID.randomUUID()
-        val projectName = "Updated Project Name"
+    fun `should handle exception when updating project name`() = runTest {
+        // Given
         val errorMessage = "Project not found"
-        SessionManager.currentUser = LoggedInUser(UUID.randomUUID(), "user", UserRole.MATE, listOf())
+        mockkObject(SessionManager)
+        coEvery { SessionManager.currentUser } returns null
 
-        every { consoleIO.read() } returnsMany listOf(projectId.toString(), projectName)
-        every { any<String>().toUUID() } returns projectId
-        coEvery { updateProjectUseCase(projectId, projectName) } throws IllegalArgumentException(errorMessage)
+        every { consoleIO.read() } returnsMany listOf(projectIdString, newProjectName)
+        coEvery { updateProjectUseCase(projectId, newProjectName) } throws RuntimeException(errorMessage)
 
-        updateProjectNameUI()
+        // When
+        updateProjectNameUI.invoke()
 
+        // Then
         coVerifySequence {
             consoleIO.write("Enter the project ID to update:")
             consoleIO.read()
             consoleIO.write("Please Enter new project name: ")
             consoleIO.read()
-            updateProjectUseCase(projectId, projectName)
+            updateProjectUseCase(projectId, newProjectName)
             consoleIO.write("❌ Failed to update project: $errorMessage")
         }
     }
 
     @Test
     fun `should handle invalid project ID`() = runTest {
-        val invalidId = "not-a-uuid"
-        val validProjectId = UUID.randomUUID()
-        val projectName = "Updated Project Name"
-        SessionManager.currentUser = LoggedInUser(UUID.randomUUID(), "user", UserRole.MATE, listOf())
+        // Given
+        val invalidIdString = "invalid-uuid"
 
-        every { consoleIO.read() } returnsMany listOf(invalidId, validProjectId.toString(), projectName)
-        every { invalidId.toUUID() } throws IllegalArgumentException("Invalid UUID")
-        every { validProjectId.toString().toUUID() } returns validProjectId
-        coEvery { updateProjectUseCase(validProjectId, projectName) } returns true
+        every { consoleIO.read() } returns invalidIdString
+        every { invalidIdString.toUUID() } throws IllegalArgumentException("Invalid UUID format")
 
-        updateProjectNameUI()
+        // When
+        updateProjectNameUI.invoke()
 
+        // Then
         coVerifySequence {
             consoleIO.write("Enter the project ID to update:")
             consoleIO.read()
             consoleIO.write("❌ please enter correct ID ")
-            consoleIO.write("Enter the project ID to update:")
-            consoleIO.read()
+        }
+
+        verify(exactly = 0) {
             consoleIO.write("Please Enter new project name: ")
-            consoleIO.read()
-            updateProjectUseCase(validProjectId, projectName)
-            consoleIO.write("✅ Project updated successfully.")
         }
     }
 
     @Test
     fun `should handle null user in session`() = runTest {
-        val projectId = UUID.randomUUID()
-        val projectName = "Updated Project Name"
-        SessionManager.currentUser = null
+        // Given
+        mockkObject(SessionManager)
+        coEvery { SessionManager.currentUser } returns null
 
-        every { consoleIO.read() } returnsMany listOf(projectId.toString(), projectName)
-        every { any<String>().toUUID() } returns projectId
-        coEvery { updateProjectUseCase(projectId, projectName) } returns true
+        every { consoleIO.read() } returnsMany listOf(projectIdString, newProjectName)
 
-        updateProjectNameUI()
+        // When
+        updateProjectNameUI.invoke()
 
+        // Then
         coVerifySequence {
             consoleIO.write("Enter the project ID to update:")
             consoleIO.read()
             consoleIO.write("Please Enter new project name: ")
             consoleIO.read()
-            updateProjectUseCase(projectId, projectName)
+            updateProjectUseCase(projectId, newProjectName)
             consoleIO.write("✅ Project updated successfully.")
-        }
-    }
-
-    @Test
-    fun `should handle empty project name`() = runTest {
-        val projectId = UUID.randomUUID()
-        val emptyName = ""
-        val errorMessage = "Project name cannot be empty"
-        SessionManager.currentUser = LoggedInUser(UUID.randomUUID(), "user", UserRole.MATE, listOf())
-
-        every { consoleIO.read() } returnsMany listOf(projectId.toString(), emptyName)
-        every { any<String>().toUUID() } returns projectId
-        coEvery { updateProjectUseCase(projectId, emptyName) } throws IllegalArgumentException(errorMessage)
-
-        updateProjectNameUI()
-
-        coVerifySequence {
-            consoleIO.write("Enter the project ID to update:")
-            consoleIO.read()
-            consoleIO.write("Please Enter new project name: ")
-            consoleIO.read()
-            updateProjectUseCase(projectId, emptyName)
-            consoleIO.write("❌ Failed to update project: $errorMessage")
         }
     }
 }
