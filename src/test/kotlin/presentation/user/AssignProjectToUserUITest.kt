@@ -14,40 +14,35 @@ import java.util.*
 
 class AssignProjectToUserUITest {
     private lateinit var assignProjectToUserUseCase: AssignProjectToUserUseCase
-    private lateinit var sessionManager: SessionManager
     private lateinit var consoleIO: ConsoleIO
     private lateinit var getAllProjectsUI: GetAllProjectsUI
     private lateinit var assignProjectToUserUI: AssignProjectToUserUI
-    private val currentUserRole = UserRole.ADMIN
-    private val validProjectIdString = "123e4567-e89b-12d3-a456-426614174000"
-    private val validProjectId = UUID.fromString(validProjectIdString)
-    private val validUserIdString = "223e4567-e89b-12d3-a456-426614174001"
-    private val validUserId = UUID.fromString(validUserIdString)
+
+    private val validProjectId = UUID.randomUUID()
+    private val validProjectIdString = validProjectId.toString()
+    private val validUserId = UUID.randomUUID()
+    private val validUserIdString = validUserId.toString()
 
     @BeforeEach
     fun setUp() {
         assignProjectToUserUseCase = mockk(relaxed = true)
-        sessionManager = mockk(relaxed = true)
         consoleIO = mockk(relaxed = true)
         getAllProjectsUI = mockk(relaxed = true)
+        assignProjectToUserUI = AssignProjectToUserUI(assignProjectToUserUseCase, consoleIO, getAllProjectsUI)
 
-        mockkStatic("data.mongodb_data.mappers.MapperKt")
-
-        every { sessionManager.getCurrentUserRole() } returns currentUserRole
-
-        assignProjectToUserUI = AssignProjectToUserUI(
-            assignProjectToUserUseCase,
-            consoleIO,
-            getAllProjectsUI
-        )
+        mockkStatic(String::toUUID)
+        mockkObject(SessionManager)
     }
 
     @Test
-    fun `should assign project to user successfully with valid UUIDs`() = runTest {
+    fun `should assign project to user successfully when user is admin`() = runTest {
         // Given
+        coEvery { SessionManager.getCurrentUserRole() } returns UserRole.ADMIN
         coEvery { consoleIO.read() } returnsMany listOf(validProjectIdString, validUserIdString)
-        coEvery { validProjectIdString.toUUID() } returns validProjectId
-        coEvery { validUserIdString.toUUID() } returns validUserId
+
+        every { validProjectIdString.toUUID() } returns validProjectId
+        every { validUserIdString.toUUID() } returns validUserId
+
         coEvery { assignProjectToUserUseCase(UserRole.ADMIN, validProjectId, validUserId) } returns true
 
         // When
@@ -55,42 +50,15 @@ class AssignProjectToUserUITest {
 
         // Then
         coVerifySequence {
+            SessionManager.getCurrentUserRole()
             getAllProjectsUI.invoke()
             consoleIO.write("\n=== Assign Project to User ===")
             consoleIO.write("Enter Project ID:")
             consoleIO.read()
             consoleIO.write("Enter User ID:")
             consoleIO.read()
-            sessionManager.getCurrentUserRole()
             assignProjectToUserUseCase(UserRole.ADMIN, validProjectId, validUserId)
             consoleIO.write("User successfully assigned to the project.")
-        }
-    }
-
-    @Test
-    fun `should handle failed assignment`() = runTest {
-        // Given
-        val errorMessage = "Permission denied"
-        coEvery { consoleIO.read() } returnsMany listOf(validProjectIdString, validUserIdString)
-        coEvery { validProjectIdString.toUUID() } returns validProjectId
-        coEvery { validUserIdString.toUUID() } returns validUserId
-        coEvery { assignProjectToUserUseCase(UserRole.ADMIN, validProjectId, validUserId) } throws
-                IllegalStateException(errorMessage)
-
-        // When
-        assignProjectToUserUI.invoke()
-
-        // Then
-        coVerifySequence {
-            getAllProjectsUI.invoke()
-            consoleIO.write("\n=== Assign Project to User ===")
-            consoleIO.write("Enter Project ID:")
-            consoleIO.read()
-            consoleIO.write("Enter User ID:")
-            consoleIO.read()
-            sessionManager.getCurrentUserRole()
-            assignProjectToUserUseCase(UserRole.ADMIN, validProjectId, validUserId)
-            consoleIO.write("Failed to assign user. $errorMessage")
         }
     }
 
@@ -98,14 +66,16 @@ class AssignProjectToUserUITest {
     fun `should handle invalid project ID format`() = runTest {
         // Given
         val invalidProjectId = "not-a-uuid"
+        coEvery { SessionManager.getCurrentUserRole() } returns UserRole.ADMIN
         coEvery { consoleIO.read() } returns invalidProjectId
-        coEvery { invalidProjectId.toUUID() } throws IllegalArgumentException("Invalid UUID format")
+        every { invalidProjectId.toUUID() } throws IllegalArgumentException("Invalid UUID format")
 
         // When
         assignProjectToUserUI.invoke()
 
         // Then
         coVerifySequence {
+            SessionManager.getCurrentUserRole()
             getAllProjectsUI.invoke()
             consoleIO.write("\n=== Assign Project to User ===")
             consoleIO.write("Enter Project ID:")
@@ -122,15 +92,18 @@ class AssignProjectToUserUITest {
     fun `should handle invalid user ID format`() = runTest {
         // Given
         val invalidUserId = "not-a-uuid"
+        coEvery { SessionManager.getCurrentUserRole() } returns UserRole.ADMIN
         coEvery { consoleIO.read() } returnsMany listOf(validProjectIdString, invalidUserId)
-        coEvery { validProjectIdString.toUUID() } returns validProjectId
-        coEvery { invalidUserId.toUUID() } throws IllegalArgumentException("Invalid UUID format")
+
+        every { validProjectIdString.toUUID() } returns validProjectId
+        every { invalidUserId.toUUID() } throws IllegalArgumentException("Invalid UUID format")
 
         // When
         assignProjectToUserUI.invoke()
 
         // Then
         coVerifySequence {
+            SessionManager.getCurrentUserRole()
             getAllProjectsUI.invoke()
             consoleIO.write("\n=== Assign Project to User ===")
             consoleIO.write("Enter Project ID:")
@@ -144,28 +117,87 @@ class AssignProjectToUserUITest {
     @Test
     fun `should deny access when user is not admin`() = runTest {
         // Given
+        coEvery { SessionManager.getCurrentUserRole() } returns UserRole.MATE
         coEvery { consoleIO.read() } returnsMany listOf(validProjectIdString, validUserIdString)
-        coEvery { validProjectIdString.toUUID() } returns validProjectId
-        coEvery { validUserIdString.toUUID() } returns validUserId
-        coEvery { sessionManager.getCurrentUserRole() } returns UserRole.MATE
+
+        every { validProjectIdString.toUUID() } returns validProjectId
+        every { validUserIdString.toUUID() } returns validUserId
+
+        coEvery { assignProjectToUserUseCase(UserRole.MATE, validProjectId, validUserId) } throws
+            IllegalStateException("Only admins can assign users to projects.")
 
         // When
         assignProjectToUserUI.invoke()
 
         // Then
         coVerifySequence {
+            SessionManager.getCurrentUserRole()
             getAllProjectsUI.invoke()
             consoleIO.write("\n=== Assign Project to User ===")
             consoleIO.write("Enter Project ID:")
             consoleIO.read()
             consoleIO.write("Enter User ID:")
             consoleIO.read()
-            sessionManager.getCurrentUserRole()
+            assignProjectToUserUseCase(UserRole.MATE, validProjectId, validUserId)
             consoleIO.write("Failed to assign user. Only admins can assign users to projects.")
         }
+    }
 
-        coVerify(exactly = 0) {
-            assignProjectToUserUseCase(any(), any(), any())
+    @Test
+    fun `should handle project not found exception`() = runTest {
+        // Given
+        coEvery { SessionManager.getCurrentUserRole() } returns UserRole.ADMIN
+        coEvery { consoleIO.read() } returnsMany listOf(validProjectIdString, validUserIdString)
+
+        every { validProjectIdString.toUUID() } returns validProjectId
+        every { validUserIdString.toUUID() } returns validUserId
+
+        coEvery { assignProjectToUserUseCase(UserRole.ADMIN, validProjectId, validUserId) } throws
+            IllegalArgumentException("Project not found")
+
+        // When
+        assignProjectToUserUI.invoke()
+
+        // Then
+        coVerifySequence {
+            SessionManager.getCurrentUserRole()
+            getAllProjectsUI.invoke()
+            consoleIO.write("\n=== Assign Project to User ===")
+            consoleIO.write("Enter Project ID:")
+            consoleIO.read()
+            consoleIO.write("Enter User ID:")
+            consoleIO.read()
+            assignProjectToUserUseCase(UserRole.ADMIN, validProjectId, validUserId)
+            consoleIO.write("Failed to assign user. Project not found")
+        }
+    }
+
+    @Test
+    fun `should handle user not found exception`() = runTest {
+        // Given
+        coEvery { SessionManager.getCurrentUserRole() } returns UserRole.ADMIN
+        coEvery { consoleIO.read() } returnsMany listOf(validProjectIdString, validUserIdString)
+
+        every { validProjectIdString.toUUID() } returns validProjectId
+        every { validUserIdString.toUUID() } returns validUserId
+
+        coEvery { assignProjectToUserUseCase(UserRole.ADMIN, validProjectId, validUserId) } throws
+            IllegalArgumentException("User not found")
+
+        // When
+        assignProjectToUserUI.invoke()
+
+        // Then
+        coVerifySequence {
+            SessionManager.getCurrentUserRole()
+            getAllProjectsUI.invoke()
+            consoleIO.write("\n=== Assign Project to User ===")
+            consoleIO.write("Enter Project ID:")
+            consoleIO.read()
+            consoleIO.write("Enter User ID:")
+            consoleIO.read()
+            assignProjectToUserUseCase(UserRole.ADMIN, validProjectId, validUserId)
+            consoleIO.write("Failed to assign user. User not found")
         }
     }
 }
