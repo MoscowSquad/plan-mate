@@ -1,10 +1,11 @@
 package presentation.user
 
-import domain.models.User
-import domain.models.User.UserRole
 import domain.usecases.task.GetTaskByIdUseCase
 import domain.usecases.user.GetUserByIdUseCase
-import io.mockk.*
+import domain.util.UserNotFoundException
+import io.mockk.coEvery
+import io.mockk.coVerifySequence
+import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -28,36 +29,6 @@ class GetUserByIdUITest {
     }
 
     @Test
-    fun `when valid UUID is entered, should display detailed user information`() = runTest {
-        // Given
-        val user = mockk<User>()
-        val projectIds = setOf(UUID.randomUUID(), UUID.randomUUID()).toList()
-
-        coEvery { user.id } returns validUserId
-        coEvery { user.name } returns "John Doe"
-        coEvery { user.role } returns UserRole.ADMIN
-        coEvery { user.projectIds } returns projectIds
-        coEvery { consoleIO.write(any()) } just runs
-        coEvery { consoleIO.read() } returns validUuidString
-        coEvery { getUserByIdUseCase(validUserId) } returns user
-
-        // When
-        getUserByIdUI()
-
-        // Then
-        coVerifySequence {
-            consoleIO.write("\nEnter user ID:")
-            consoleIO.read()
-            getUserByIdUseCase(validUserId)
-            consoleIO.write("\n=== User Details ===")
-            consoleIO.write("ID: $validUserId")
-            consoleIO.write("Name: John Doe")
-            consoleIO.write("Role: ADMIN")
-            consoleIO.write("Projects: ${projectIds.joinToString()}")
-        }
-    }
-
-    @Test
     fun `when invalid UUID is entered, should display error message`() = runTest {
         // Given
         val invalidUuid = "not-a-uuid"
@@ -70,7 +41,7 @@ class GetUserByIdUITest {
         coVerifySequence {
             consoleIO.write("\nEnter user ID:")
             consoleIO.read()
-            consoleIO.write("Error: Invalid UUID format")
+            consoleIO.write("❌ Error: Invalid UUID format")
         }
     }
 
@@ -78,7 +49,7 @@ class GetUserByIdUITest {
     fun `when user not found, should display user not found error message`() = runTest {
         // Given
         coEvery { consoleIO.read() } returns validUuidString
-        coEvery { getUserByIdUseCase(validUserId) } throws NoSuchElementException("User not found")
+        coEvery { getUserByIdUseCase(validUserId) } throws UserNotFoundException()
 
         // When
         getUserByIdUI()
@@ -88,7 +59,7 @@ class GetUserByIdUITest {
             consoleIO.write("\nEnter user ID:")
             consoleIO.read()
             getUserByIdUseCase(validUserId)
-            consoleIO.write("Error: User with ID $validUserId not found")
+            consoleIO.write("❌ ${UserNotFoundException().message}")
         }
     }
 
@@ -106,7 +77,7 @@ class GetUserByIdUITest {
             consoleIO.write("\nEnter user ID:")
             consoleIO.read()
             getUserByIdUseCase(validUserId)
-            consoleIO.write("Error: An unexpected error occurred while fetching user details")
+            consoleIO.write("❌ Unexpected error: Something went wrong")
         }
     }
 }

@@ -24,7 +24,7 @@ class UserDataSourceImpl(
             Filters.eq(UserDto::name.name, name),
             Filters.eq(UserDto::hashedPassword.name, password)
         )
-        return collection.find(filter).firstOrNull() ?: throw UserNotFoundException(name)
+        return collection.find(filter).firstOrNull() ?: throw UserNotFoundException()
     }
 
     override suspend fun addUser(user: UserDto): Boolean {
@@ -47,7 +47,7 @@ class UserDataSourceImpl(
 
     override suspend fun unassignUserFromProject(projectId: UUID, userId: UUID): Boolean {
         val filter = Filters.eq(UserDto::id.name, userId)
-        val user = collection.find(filter).firstOrNull() ?: throw UserNotFoundException("User is not found")
+        val user = collection.find(filter).firstOrNull() ?: throw UserNotFoundException()
 
         if (!user.projectIds.contains(projectId.toString())) {
             throw ProjectNotFoundException(projectId)
@@ -63,7 +63,7 @@ class UserDataSourceImpl(
     override suspend fun getUserById(id: UUID): UserDto {
         val filter = Filters.eq(UserDto::id.name, id.toString())
         return collection.find(filter).firstOrNull()
-            ?: throw throw UserNotFoundException("User is not found")
+            ?: throw throw UserNotFoundException()
     }
 
     override suspend fun getAllUsers(): List<UserDto> {

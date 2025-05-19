@@ -3,6 +3,7 @@ package presentation.user
 import data.mongodb_data.mappers.toUUID
 import domain.usecases.task.GetTaskByIdUseCase
 import domain.usecases.user.GetUserByIdUseCase
+import domain.util.UserNotFoundException
 import presentation.io.ConsoleIO
 
 class GetUserByIdUI(
@@ -62,7 +63,7 @@ class GetUserByIdUI(
             }
             .onFailure { error ->
                 when (error) {
-                    is NoSuchElementException -> write("❌ ${error.message}")
+                    is UserNotFoundException -> write("❌ ${error.message}")
                     else -> write("❌ Unexpected error: ${error.message}")
                 }
             }

@@ -41,9 +41,9 @@ class LoginUseCaseTest {
                     "validUser",
                     toMD5Hash("wrongPassword")
                 )
-            } throws UserNotFoundException("validUser")
-            coEvery { authRepository.login("nonExistentUser", any()) } throws UserNotFoundException("nonExistentUser")
-            coEvery { authRepository.login("testUser", any()) } throws UserNotFoundException("testUser")
+            } throws UserNotFoundException()
+            coEvery { authRepository.login("nonExistentUser", any()) } throws UserNotFoundException()
+            coEvery { authRepository.login("testUser", any()) } throws UserNotFoundException()
         }
 
         @Test
