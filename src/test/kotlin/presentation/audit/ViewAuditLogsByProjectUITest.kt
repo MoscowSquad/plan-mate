@@ -106,7 +106,7 @@ class ViewAuditLogsByProjectUITest {
             consoleIO.write("Enter project ID (or type 'exit' to quit): ")
             consoleIO.read()
             viewAuditLogsByProjectUseCase(projectId)
-            consoleIO.write(match { it.contains("❌ Error retrieving project logs: $errorMessage") })
+            consoleIO.write("\n❌ Error retrieving project logs: Database connection error")
             consoleIO.write("Enter project ID (or type 'exit' to quit): ")
             consoleIO.read()
         }

@@ -18,7 +18,7 @@ class ViewAuditLogsByProjectUI(
                 val logs = viewAuditLogsByProjectUseCase(projectId)
                 displayLogs(logs, "Project ID: $projectId")
             } catch (e: Exception) {
-                write("\n❌ Error retrieving project logs: $e")
+                write("\n❌ Error retrieving project logs: ${e.message}")
             }
         }
     }
