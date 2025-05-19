@@ -12,14 +12,14 @@ private const val Task_IDS: Int = 5
 class UserCsvParser : CsvParser<UserDto> {
     override fun parse(data: List<CsvData>): List<UserDto> {
         return data.drop(1).map { line ->
-            val it = line.split(",", limit = 5)
+            val parts = line.split(",", limit = 6)
             UserDto(
-                id = it[ID],
-                name = it[NAME],
-                hashedPassword = it[HASHED_PASSWORD],
-                role = it[ROLE],
-                projectIds = it[PROJECT_IDS].toStringList(),
-                taskIds = it[Task_IDS].toStringList()
+                id = parts[ID],
+                name = parts[NAME],
+                hashedPassword = parts[HASHED_PASSWORD],
+                role = parts[ROLE],
+                projectIds = if (parts.size > PROJECT_IDS) parts[PROJECT_IDS].toStringList() else emptyList(),
+                taskIds = if (parts.size > Task_IDS) parts[Task_IDS].toStringList() else emptyList(),
             )
         }
     }
@@ -29,7 +29,8 @@ class UserCsvParser : CsvParser<UserDto> {
             return emptyList()
         }
 
-        return this.removePrefix("[")
+        return this.trim()
+            .removePrefix("[")
             .removeSuffix("]")
             .split(",")
             .filter { it.trim().isNotBlank() }

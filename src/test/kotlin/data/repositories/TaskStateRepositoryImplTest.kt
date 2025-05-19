@@ -17,7 +17,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.util.*
 
-class TaskStateDataSourceImplTest {
+class TaskStateRepositoryImplTest {
 
     private lateinit var dataSource: TaskDataSource
     private lateinit var repository: TasksRepositoryImpl
